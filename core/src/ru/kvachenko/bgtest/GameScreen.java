@@ -15,6 +15,7 @@
 package ru.kvachenko.bgtest;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
@@ -22,6 +23,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 
 /**
@@ -49,7 +51,33 @@ public class GameScreen implements Screen {
         worldWidth = 87 * 32;
         worldHeight = 87 * 32;
         mapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
-        BoardGame.im.addProcessor(new GameScreenInputListener(mainStage));
+        BoardGame.im.addProcessor(new InputAdapter(){
+            Vector3 lastTouchDown;
+
+            public boolean touchDown(int x, int y, int pointer, int button) {
+                lastTouchDown = new Vector3(x, y, 0);
+                return false;
+            }
+
+            @Override
+            public boolean touchDragged(int x, int y, int pointer) {
+                Camera stageCamera = mainStage.getCamera();
+                System.out.println("start pos: " + stageCamera.position);
+
+                Vector3 newPos = new Vector3(x, y, 0);
+                Vector3 offset = newPos.sub(lastTouchDown);
+                System.out.println("offset: " + offset);
+
+                stageCamera.position.x = stageCamera.position.x - offset.x;
+                stageCamera.position.y = stageCamera.position.y + offset.y;
+                lastTouchDown.add(offset);
+                System.out.println("new pos: " + stageCamera.position);
+
+                System.out.println();
+                //stage.getCamera().translate(1,1,0);
+                return false;
+            }
+        });
     }
 
     private void update(float dt) {
