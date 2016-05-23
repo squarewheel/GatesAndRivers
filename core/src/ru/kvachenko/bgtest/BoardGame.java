@@ -21,7 +21,6 @@ public class BoardGame extends Game {
 	static InputMultiplexer im;
 	@Override
 	public void create () {
-
         im = new InputMultiplexer();
         //im.addProcessor(new MyUiInputProcessor());
         //im.addProcessor(new GameScreenInputListener(mainScreen));

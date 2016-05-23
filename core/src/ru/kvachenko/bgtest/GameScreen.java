@@ -26,16 +26,19 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 /**
  * @author Sasha Kvachenko
  *         Created on 20.05.2016.
  *         <p>
- *         File description.
+ *         Class for main game screen.
  */
 public class GameScreen implements Screen {
     Stage mainStage;
     //private Stage uiStage;
+    ScreenViewport tiledViewport;
     OrthographicCamera tiledCamera;
     private OrthogonalTiledMapRenderer mapRenderer;
     int worldWidth;
@@ -44,13 +47,15 @@ public class GameScreen implements Screen {
     int viewHeight = 600;
 
     public GameScreen() {
-        mainStage = new Stage();
-        //uiStage = new Stage();
-        tiledCamera = new OrthographicCamera();
-        tiledCamera.setToOrtho(false, viewWidth, viewHeight);
-        TiledMap tiledMap = new TmxMapLoader().load("main_screen.tmx");
         worldWidth = 87 * 32;
         worldHeight = 87 * 32;
+        mainStage = new Stage(new FitViewport(viewWidth, viewHeight));
+        mainStage = new Stage(new ScreenViewport());
+        //uiStage = new Stage();
+        tiledCamera = new OrthographicCamera();
+        tiledViewport = new ScreenViewport(tiledCamera);
+        //tiledCamera.setToOrtho(false, viewWidth, viewHeight);
+        TiledMap tiledMap = new TmxMapLoader().load("main_screen.tmx");
         mapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
         BoardGame.im.addProcessor(new InputAdapter(){
             Vector3 lastTouchDown;
@@ -88,9 +93,15 @@ public class GameScreen implements Screen {
     private void update(float dt) {
 
         // Update camera position
-        Camera cam = mainStage.getCamera();
-        tiledCamera.position.x = cam.position.x;
-        tiledCamera.position.y = cam.position.y;
+        Camera mainCamera = mainStage.getCamera();
+        mainCamera.position.x = MathUtils.clamp(mainCamera.position.x,
+                mainCamera.viewportWidth/2,
+                worldWidth - mainCamera.viewportWidth/2);
+        mainCamera.position.y = MathUtils.clamp(mainCamera.position.y,
+                mainCamera.viewportHeight/2,
+                worldHeight - mainCamera.viewportHeight/2);
+        tiledCamera.position.set(mainStage.getCamera().position);
+        //tiledCamera.position.y = stageCamera.position.y;
         tiledCamera.update();
         mapRenderer.setView(tiledCamera);
     }
@@ -119,7 +130,16 @@ public class GameScreen implements Screen {
 
     @Override
     public void resize(int width, int height) {
+        // code for fitViewport
+        mainStage.getViewport().update(width, height);
+        tiledViewport.update(width, height);
+        //tiledCamera.update();
+        //mapRenderer.setView(tiledCamera);
 
+        //tiledCamera.setToOrtho(false, width, height);
+        //tiledCamera.position.set(mainStage.getCamera().position);
+        //tiledCamera.viewportHeight = height;
+        //tiledCamera.update();
     }
 
     @Override
