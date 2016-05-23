@@ -23,6 +23,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 
@@ -62,18 +63,22 @@ public class GameScreen implements Screen {
             @Override
             public boolean touchDragged(int x, int y, int pointer) {
                 Camera stageCamera = mainStage.getCamera();
-                System.out.println("start pos: " + stageCamera.position);
+                //System.out.println("start pos: " + stageCamera.position);
 
                 Vector3 newPos = new Vector3(x, y, 0);
                 Vector3 offset = newPos.sub(lastTouchDown);
-                System.out.println("offset: " + offset);
+                //System.out.println("offset: " + offset);
 
-                stageCamera.position.x = stageCamera.position.x - offset.x;
-                stageCamera.position.y = stageCamera.position.y + offset.y;
+                stageCamera.position.x = MathUtils.clamp(stageCamera.position.x - offset.x,
+                        stageCamera.viewportWidth/2,
+                        worldWidth - stageCamera.viewportWidth/2);
+                stageCamera.position.y = MathUtils.clamp(stageCamera.position.y + offset.y,
+                        stageCamera.viewportHeight/2,
+                        worldHeight - stageCamera.viewportHeight/2);
                 lastTouchDown.add(offset);
-                System.out.println("new pos: " + stageCamera.position);
+                //System.out.println("new pos: " + stageCamera.position);
 
-                System.out.println();
+                //System.out.println();
                 //stage.getCamera().translate(1,1,0);
                 return false;
             }
