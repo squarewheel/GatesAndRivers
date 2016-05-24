@@ -47,15 +47,15 @@ public class GameScreen implements Screen {
     int viewHeight = 600;
 
     public GameScreen() {
-        worldWidth = 87 * 32;
-        worldHeight = 87 * 32;
+        worldWidth = 64 * 32;
+        worldHeight = 64 * 32;
         //mainStage = new Stage(new FitViewport(viewWidth, viewHeight));
         mainStage = new Stage(new ScreenViewport());
         //uiStage = new Stage();
         tiledCamera = new OrthographicCamera();
         tiledViewport = new ScreenViewport(tiledCamera);
         //tiledCamera.setToOrtho(false, viewWidth, viewHeight);
-        TiledMap tiledMap = new TmxMapLoader().load("main_screen.tmx");
+        TiledMap tiledMap = new TmxMapLoader().load("main_screen2.tmx");
         mapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
         BoardGame.im.addProcessor(new InputAdapter(){
             Vector3 lastTouchDown;
@@ -110,7 +110,6 @@ public class GameScreen implements Screen {
                 mainCamera.viewportHeight/2,
                 worldHeight - mainCamera.viewportHeight/2);
         tiledCamera.position.set(mainStage.getCamera().position);
-        //tiledCamera.position.y = stageCamera.position.y;
         tiledCamera.update();
         mapRenderer.setView(tiledCamera);
     }
@@ -139,16 +138,8 @@ public class GameScreen implements Screen {
 
     @Override
     public void resize(int width, int height) {
-        // code for fitViewport
         mainStage.getViewport().update(width, height);
         tiledViewport.update(width, height);
-        //tiledCamera.update();
-        //mapRenderer.setView(tiledCamera);
-
-        //tiledCamera.setToOrtho(false, width, height);
-        //tiledCamera.position.set(mainStage.getCamera().position);
-        //tiledCamera.viewportHeight = height;
-        //tiledCamera.update();
     }
 
     @Override
