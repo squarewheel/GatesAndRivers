@@ -49,7 +49,7 @@ public class GameScreen implements Screen {
     public GameScreen() {
         worldWidth = 87 * 32;
         worldHeight = 87 * 32;
-        mainStage = new Stage(new FitViewport(viewWidth, viewHeight));
+        //mainStage = new Stage(new FitViewport(viewWidth, viewHeight));
         mainStage = new Stage(new ScreenViewport());
         //uiStage = new Stage();
         tiledCamera = new OrthographicCamera();
@@ -74,19 +74,28 @@ public class GameScreen implements Screen {
                 Vector3 offset = newPos.sub(lastTouchDown);
                 //System.out.println("offset: " + offset);
 
+                /*
                 stageCamera.position.x = MathUtils.clamp(stageCamera.position.x - offset.x,
                         stageCamera.viewportWidth/2,
                         worldWidth - stageCamera.viewportWidth/2);
                 stageCamera.position.y = MathUtils.clamp(stageCamera.position.y + offset.y,
                         stageCamera.viewportHeight/2,
                         worldHeight - stageCamera.viewportHeight/2);
+                */
+
+                stageCamera.position.x = stageCamera.position.x - offset.x;
+                stageCamera.position.y = stageCamera.position.y + offset.y;
+
                 lastTouchDown.add(offset);
+
                 //System.out.println("new pos: " + stageCamera.position);
 
                 //System.out.println();
                 //stage.getCamera().translate(1,1,0);
                 return false;
             }
+
+
         });
     }
 
