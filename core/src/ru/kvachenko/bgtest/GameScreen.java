@@ -30,6 +30,8 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 import java.util.ArrayList;
@@ -42,8 +44,10 @@ import java.util.LinkedList;
  *         Class for main game screen.
  */
 class GameScreen implements Screen {
+    private BoardGame game;
     private Stage mainStage;
     private Stage uiStage;
+    private Table uiTable;
     private ScreenViewport tiledViewport;
     private OrthographicCamera tiledCamera;
     private OrthogonalTiledMapRenderer mapRenderer;
@@ -55,11 +59,23 @@ class GameScreen implements Screen {
     //int viewWidth = 1200;
     //int viewHeight = 600;
 
-    GameScreen() {
+    GameScreen(BoardGame bg) {
+        game = bg;
         worldWidth = 64 * 32;
         worldHeight = 64 * 32;
         mainStage = new Stage(new ScreenViewport());
         uiStage = new Stage(new ScreenViewport());
+        uiTable = new Table(bg.skin);
+        uiStage.addActor(uiTable);
+
+        // user interface
+        Label customLabel = new Label("I'm Love my Wife", bg.skin, "labelStyle");
+        //customLabel.setScale(128);
+        customLabel.setColor(Color.DARK_GRAY);
+        uiTable.setDebug(true); // debug
+        uiTable.setFillParent(true);
+        uiTable.top();
+        uiTable.add(customLabel).expandX().right().pad(10);
 
         // tmx map and renderer
         TiledMap tiledMap = new TmxMapLoader().load("main_screen2.tmx");
@@ -96,7 +112,7 @@ class GameScreen implements Screen {
         mainCharacter.setPosition(fields.get(0).getX() + 32, fields.get(0).getY() + 32*3);
 
         // Input handlers
-        BoardGame.im.addProcessor(new InputAdapter(){
+        game.im.addProcessor(new InputAdapter(){
             Vector3 lastTouchDown;
 
             public boolean touchDown(int x, int y, int pointer, int button) {

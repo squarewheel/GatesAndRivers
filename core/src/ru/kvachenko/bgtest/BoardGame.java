@@ -15,21 +15,47 @@
 package ru.kvachenko.bgtest;
 
 import com.badlogic.gdx.*;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.NinePatch;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 
 public class BoardGame extends Game {
-    static InputMultiplexer im;
+    InputMultiplexer im;
 	//private GameScreen mainScreen;
-	private Skin skin;
+	Skin skin;
 
     @Override
 	public void create () {
         im = new InputMultiplexer();
-        //im.addProcessor(new MyUiInputProcessor());
-        //im.addProcessor(new GameScreenInputListener(mainScreen));
         Gdx.input.setInputProcessor(im);
-        //mainScreen = new GameScreen();
-        System.out.println(im.getProcessors());
-        setScreen(new GameScreen());
+        // System.out.println(im.getProcessors());
+
+        // skin
+        skin = new Skin();
+        skin.add("defaultFont", new BitmapFont(Gdx.files.local("pixelfont1.fnt")));
+        skin.add("labelStyle", new Label.LabelStyle(skin.getFont("defaultFont"), Color.LIME));
+        skin.add("buttonUpImg", new NinePatch(new Texture("gray_button12.png"), 10, 10, 10, 10));
+        skin.add("buttonDownImg", new NinePatch(new Texture("gray_button13.png"), 10, 10, 10, 10));
+        skin.add("defaultButtonStyle", new Button.ButtonStyle(skin.getDrawable("buttonUpImg"),
+                                                              skin.getDrawable("buttonDownImg"),
+                                                              skin.getDrawable("buttonUpImg")));
+        skin.add("textButtonStyle", new TextButton.TextButtonStyle(skin.getDrawable("buttonUpImg"),
+                skin.getDrawable("buttonDownImg"),
+                skin.getDrawable("buttonUpImg"),
+                skin.getFont("defaultFont")));
+
+        // load star screen
+        setScreen(new GameScreen(this));
 	}
+
+    @Override
+    public void dispose() {
+        super.dispose();
+        skin.dispose();
+    }
 }
