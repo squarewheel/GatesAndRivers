@@ -17,17 +17,26 @@ package ru.kvachenko.bgtest;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.maps.MapLayer;
+import com.badlogic.gdx.maps.MapObject;
+import com.badlogic.gdx.maps.MapObjects;
+import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.ListIterator;
 
 /**
  * @author Sasha Kvachenko
@@ -37,26 +46,59 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
  */
 public class GameScreen implements Screen {
     Stage mainStage;
-    //private Stage uiStage;
+    //Stage uiStage;
     ScreenViewport tiledViewport;
     OrthographicCamera tiledCamera;
-    private OrthogonalTiledMapRenderer mapRenderer;
+    OrthogonalTiledMapRenderer mapRenderer;
     int worldWidth;
     int worldHeight;
-    int viewWidth = 1200;
-    int viewHeight = 600;
+    ArrayList<ChipActor> players;
+    LinkedList<Actor> fields;
+
+    //int viewWidth = 1200;
+    //int viewHeight = 600;
 
     public GameScreen() {
         worldWidth = 64 * 32;
         worldHeight = 64 * 32;
-        //mainStage = new Stage(new FitViewport(viewWidth, viewHeight));
         mainStage = new Stage(new ScreenViewport());
         //uiStage = new Stage();
+
+        // tmx map and renderer
+        TiledMap tiledMap = new TmxMapLoader().load("main_screen2.tmx");
+        fields = new LinkedList<Actor>();
+        MapObjects fieldObjects = tiledMap.getLayers().get("fields").getObjects();
+        for (MapObject mo: fieldObjects) {
+            Rectangle fieldRectangle = ((RectangleMapObject) mo).getRectangle();
+            Actor field = new Actor();
+            fields.add(field);
+            mainStage.addActor(field);
+            field.setSize(fieldRectangle.width, fieldRectangle.height);
+            field.setPosition(fieldRectangle.x, fieldRectangle.y);
+            // debug output
+            //System.out.println(field.getX() + " " + field.getY());
+            //System.out.println();
+        }
+
+        mapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
         tiledCamera = new OrthographicCamera();
         tiledViewport = new ScreenViewport(tiledCamera);
         //tiledCamera.setToOrtho(false, viewWidth, viewHeight);
-        TiledMap tiledMap = new TmxMapLoader().load("main_screen2.tmx");
-        mapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
+
+        // GameBoard fields
+
+        // Players
+        Texture playerTexture = new Texture("chip_white.png");
+        playerTexture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        players = new ArrayList<ChipActor>();
+        players.add(new ChipActor(new TextureRegion(playerTexture, 64, 64), fields));
+        ChipActor mainCharacter = players.get(0);
+        mainStage.addActor(mainCharacter);
+        mainCharacter.setColor(Color.RED);
+        mainCharacter.setSize(32, 32);
+        mainCharacter.setPosition(fields.get(0).getX() + 32, fields.get(0).getY() + 32*3);
+
+        // Input handing
         BoardGame.im.addProcessor(new InputAdapter(){
             Vector3 lastTouchDown;
 
@@ -100,6 +142,9 @@ public class GameScreen implements Screen {
     }
 
     private void update(float dt) {
+        ChipActor p1 = players.get(0);
+        p1.moveForward();
+        //System.out.println(p1.getX() + " " + p1.getY());
 
         // Update camera position
         Camera mainCamera = mainStage.getCamera();
