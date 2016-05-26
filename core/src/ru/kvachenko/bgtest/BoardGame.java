@@ -19,7 +19,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 public class BoardGame extends Game {
     static InputMultiplexer im;
-	private GameScreen mainScreen;
+	//private GameScreen mainScreen;
 	private Skin skin;
 
     @Override
@@ -28,7 +28,7 @@ public class BoardGame extends Game {
         //im.addProcessor(new MyUiInputProcessor());
         //im.addProcessor(new GameScreenInputListener(mainScreen));
         Gdx.input.setInputProcessor(im);
-        mainScreen = new GameScreen();
+        //mainScreen = new GameScreen();
         System.out.println(im.getProcessors());
         setScreen(new GameScreen());
 	}
