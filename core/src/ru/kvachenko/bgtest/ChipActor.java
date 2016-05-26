@@ -58,7 +58,6 @@ public class ChipActor extends Actor {
     public void moveForward() {
         if (isInMove()) return;
 
-        inMove = true;
         ListIterator<Actor> fieldsItr = fields.listIterator(fields.indexOf(currentField)+1);
         if (fieldsItr.hasNext()) {
             Actor nextField = fieldsItr.next();
@@ -68,6 +67,8 @@ public class ChipActor extends Actor {
 
             offset.set(nextField.getX() + nextField.getWidth()/2 - getX(),
                        nextField.getY() + nextField.getHeight()/2 - getY());
+
+            inMove = true;
             addAction(Actions.sequence(Actions.moveBy(offset.x, offset.y, 2), Actions.delay(0.2f)));
         }
     }

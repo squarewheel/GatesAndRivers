@@ -98,7 +98,7 @@ public class GameScreen implements Screen {
         mainCharacter.setSize(32, 32);
         mainCharacter.setPosition(fields.get(0).getX() + 32, fields.get(0).getY() + 32*3);
 
-        // Input handing
+        // Input handlers
         BoardGame.im.addProcessor(new InputAdapter(){
             Vector3 lastTouchDown;
 
@@ -109,34 +109,15 @@ public class GameScreen implements Screen {
 
             @Override
             public boolean touchDragged(int x, int y, int pointer) {
+                // Map scrolling with touch
                 Camera stageCamera = mainStage.getCamera();
-                //System.out.println("start pos: " + stageCamera.position);
-
                 Vector3 newPos = new Vector3(x, y, 0);
                 Vector3 offset = newPos.sub(lastTouchDown);
-                //System.out.println("offset: " + offset);
-
-                /*
-                stageCamera.position.x = MathUtils.clamp(stageCamera.position.x - offset.x,
-                        stageCamera.viewportWidth/2,
-                        worldWidth - stageCamera.viewportWidth/2);
-                stageCamera.position.y = MathUtils.clamp(stageCamera.position.y + offset.y,
-                        stageCamera.viewportHeight/2,
-                        worldHeight - stageCamera.viewportHeight/2);
-                */
-
                 stageCamera.position.x = stageCamera.position.x - offset.x;
                 stageCamera.position.y = stageCamera.position.y + offset.y;
-
                 lastTouchDown.add(offset);
-
-                //System.out.println("new pos: " + stageCamera.position);
-
-                //System.out.println();
-                //stage.getCamera().translate(1,1,0);
                 return false;
             }
-
 
         });
     }
@@ -144,10 +125,21 @@ public class GameScreen implements Screen {
     private void update(float dt) {
         ChipActor p1 = players.get(0);
         p1.moveForward();
-        //System.out.println(p1.getX() + " " + p1.getY());
 
         // Update camera position
         Camera mainCamera = mainStage.getCamera();
+        for (ChipActor p: players) {    // if player chip movement centralize camera on chip
+            if (p.isInMove()) {
+                mainCamera.position.x = p.getX() - p.getWidth()/2;
+                mainCamera.position.y = p.getY() - p.getHeight()/2;
+                //mainCamera.update();
+
+                // debug
+                //System.out.println("cam pos: " + mainCamera.position);
+                //System.out.println("chip pos: " + p.getX() / 2 + " " + p.getY() / 2);
+                //System.out.println();
+            }
+        }
         mainCamera.position.x = MathUtils.clamp(mainCamera.position.x,
                 mainCamera.viewportWidth/2,
                 worldWidth - mainCamera.viewportWidth/2);
