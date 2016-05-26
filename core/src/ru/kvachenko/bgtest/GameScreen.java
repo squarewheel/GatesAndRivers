@@ -19,7 +19,6 @@ import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapObjects;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
@@ -31,12 +30,10 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.ListIterator;
 
 /**
  * @author Sasha Kvachenko
@@ -44,25 +41,25 @@ import java.util.ListIterator;
  *         <p>
  *         Class for main game screen.
  */
-public class GameScreen implements Screen {
-    Stage mainStage;
-    //Stage uiStage;
-    ScreenViewport tiledViewport;
-    OrthographicCamera tiledCamera;
-    OrthogonalTiledMapRenderer mapRenderer;
-    int worldWidth;
-    int worldHeight;
-    ArrayList<ChipActor> players;
-    LinkedList<Actor> fields;
+class GameScreen implements Screen {
+    private Stage mainStage;
+    private Stage uiStage;
+    private ScreenViewport tiledViewport;
+    private OrthographicCamera tiledCamera;
+    private OrthogonalTiledMapRenderer mapRenderer;
+    private int worldWidth;
+    private int worldHeight;
+    private ArrayList<ChipActor> players;
+    private LinkedList<Actor> fields;
 
     //int viewWidth = 1200;
     //int viewHeight = 600;
 
-    public GameScreen() {
+    GameScreen() {
         worldWidth = 64 * 32;
         worldHeight = 64 * 32;
         mainStage = new Stage(new ScreenViewport());
-        //uiStage = new Stage();
+        uiStage = new Stage(new ScreenViewport());
 
         // tmx map and renderer
         TiledMap tiledMap = new TmxMapLoader().load("main_screen2.tmx");
@@ -154,7 +151,7 @@ public class GameScreen implements Screen {
     @Override
     public void render(float dt) {
         /*-----------------------------------UPDATE SECTION-------------------------------------------------*/
-        //uiStage.act(dt);
+        uiStage.act(dt);
         //if (!isPaused()) {
         mainStage.act(dt);
         update(dt);
@@ -165,7 +162,7 @@ public class GameScreen implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         mapRenderer.render();
         mainStage.draw();
-        //uiStage.draw();
+        uiStage.draw();
     }
 
     @Override
@@ -176,6 +173,7 @@ public class GameScreen implements Screen {
     @Override
     public void resize(int width, int height) {
         mainStage.getViewport().update(width, height);
+        uiStage.getViewport().update(width, height, true);
         tiledViewport.update(width, height);
     }
 
@@ -196,6 +194,7 @@ public class GameScreen implements Screen {
 
     @Override
     public void dispose() {
-
+        mainStage.dispose();
+        uiStage.dispose();
     }
 }

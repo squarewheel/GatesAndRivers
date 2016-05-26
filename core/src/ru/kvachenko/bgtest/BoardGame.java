@@ -15,11 +15,14 @@
 package ru.kvachenko.bgtest;
 
 import com.badlogic.gdx.*;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 public class BoardGame extends Game {
-	GameScreen mainScreen;
-	static InputMultiplexer im;
-	@Override
+    static InputMultiplexer im;
+	private GameScreen mainScreen;
+	private Skin skin;
+
+    @Override
 	public void create () {
         im = new InputMultiplexer();
         //im.addProcessor(new MyUiInputProcessor());
