@@ -37,17 +37,24 @@ public class BoardGame extends Game {
 
         // skin
         skin = new Skin();
-        skin.add("defaultFont", new BitmapFont(Gdx.files.local("pixelfont1.fnt")));
+        BitmapFont defaultFont = new BitmapFont(Gdx.files.local("pixelfont16.fnt"));
+        //defaultFont.setColor(Color.DARK_GRAY);
+        skin.add("defaultFont", defaultFont);
         skin.add("labelStyle", new Label.LabelStyle(skin.getFont("defaultFont"), Color.LIME));
-        skin.add("buttonUpImg", new NinePatch(new Texture("gray_button12.png"), 10, 10, 10, 10));
-        skin.add("buttonDownImg", new NinePatch(new Texture("gray_button13.png"), 10, 10, 10, 10));
+        skin.add("buttonUpImg", new NinePatch(new Texture("grey_button12.png"), 10, 10, 10, 10));
+        skin.add("buttonDownImg", new NinePatch(new Texture("grey_button13.png"), 10, 10, 10, 10));
         skin.add("defaultButtonStyle", new Button.ButtonStyle(skin.getDrawable("buttonUpImg"),
                                                               skin.getDrawable("buttonDownImg"),
                                                               skin.getDrawable("buttonUpImg")));
-        skin.add("textButtonStyle", new TextButton.TextButtonStyle(skin.getDrawable("buttonUpImg"),
+        TextButton.TextButtonStyle tbs = new TextButton.TextButtonStyle(
+                skin.getDrawable("buttonUpImg"),
                 skin.getDrawable("buttonDownImg"),
                 skin.getDrawable("buttonUpImg"),
-                skin.getFont("defaultFont")));
+                skin.getFont("defaultFont"));
+        //tbs.fontColor = Color.DARK_GRAY;
+        tbs.pressedOffsetY = -4;
+        skin.add("textButtonStyle", tbs);
+        //skin.get("textButtonStyle", TextButton.TextButtonStyle.class).fontColor.set(Color.DARK_GRAY);
 
         // load star screen
         setScreen(new GameScreen(this));

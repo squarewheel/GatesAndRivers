@@ -29,13 +29,20 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.ListIterator;
 
 /**
  * @author Sasha Kvachenko
@@ -69,13 +76,38 @@ class GameScreen implements Screen {
         uiStage.addActor(uiTable);
 
         // user interface
-        Label customLabel = new Label("I'm Love my Wife", bg.skin, "labelStyle");
-        //customLabel.setScale(128);
-        customLabel.setColor(Color.DARK_GRAY);
-        uiTable.setDebug(true); // debug
+        final Label customLabel = new Label("I'm Love my Wife", bg.skin, "labelStyle");
+        customLabel.setAlignment(Align.topLeft);
+        final TextButton moveForwardButton = new TextButton("Move Forward", bg.skin, "textButtonStyle");
+        moveForwardButton.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                // debug
+                //System.out.println("touch down: " + x + " " + y);
+                //System.out.println();
+                return true;
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                //debug
+                //System.out.println("touch up: " + x + " " + y);
+                //System.out.println();
+
+                if (x > 0 && x < moveForwardButton.getWidth() && y > 0 && y < moveForwardButton.getHeight()) {
+                    ChipActor p1 = players.get(0);
+                    p1.moveForward();
+                    customLabel.setText(customLabel.getText() + "\n" + "More Text for God of Text!");
+                }
+            }
+        });
+        ScrollPane console = new ScrollPane(customLabel);
+        //uiTable.setDebug(true);
         uiTable.setFillParent(true);
         uiTable.top();
-        uiTable.add(customLabel).expandX().right().pad(10);
+        uiTable.add(console).width(uiStage.getCamera().viewportWidth/3).height(uiStage.getCamera().viewportHeight/2).right().top();
+        uiTable.row();
+        uiTable.add(moveForwardButton).expand().right().bottom().pad(5);
 
         // tmx map and renderer
         TiledMap tiledMap = new TmxMapLoader().load("main_screen2.tmx");
@@ -112,6 +144,8 @@ class GameScreen implements Screen {
         mainCharacter.setPosition(fields.get(0).getX() + 32, fields.get(0).getY() + 32*3);
 
         // Input handlers
+        //uiStage.addListener(new InputListener(){});
+        game.im.addProcessor(uiStage);
         game.im.addProcessor(new InputAdapter(){
             Vector3 lastTouchDown;
 
@@ -136,8 +170,6 @@ class GameScreen implements Screen {
     }
 
     private void update(float dt) {
-        ChipActor p1 = players.get(0);
-        p1.moveForward();
 
         // Update camera position
         Camera mainCamera = mainStage.getCamera();
