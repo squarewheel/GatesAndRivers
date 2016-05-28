@@ -17,12 +17,10 @@ package ru.kvachenko.bgtest;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 
-import java.util.LinkedList;
 import java.util.ListIterator;
 
 /**
@@ -33,53 +31,51 @@ import java.util.ListIterator;
  */
 public class ChipActor extends Actor {
     private TextureRegion texture;
-    private LinkedList<Actor> fields;
-    private Actor currentField;
+    private FieldActor currentField;
     private Vector2 offset;
-    boolean inMove;
-    boolean playable;
+    private boolean inMove;
+    private boolean playable;
 
-    public ChipActor(TextureRegion r, LinkedList<Actor> f) {
+    public ChipActor(TextureRegion r, FieldActor startingField) {
         //super();
+        texture = r;
+        currentField = startingField;
         inMove = false;
         playable = false;
-        texture = r;
-        fields = f;
         offset = new Vector2();
-        currentField = fields.get(0);
+        setPosition(currentField.getX() + 32, currentField.getY() + 32*3);
     }
 
     public boolean isPlayable() { return playable; }
 
-    public boolean isInMove() { return inMove; }
+    public boolean isBusy() { return inMove; }
 
     public Actor getCurrentField() { return currentField; }
 
     public void moveForward() {
-        if (isInMove()) return;
-
-        ListIterator<Actor> fieldsItr = fields.listIterator(fields.indexOf(currentField)+1);
-        if (fieldsItr.hasNext()) {
-            Actor nextField = fieldsItr.next();
-            // debug
-            //System.out.println("curr: " + currentField.getX() + " " + currentField.getY());
-            //System.out.println("next: " + nextField.getX() + " " + nextField.getY());
-
-            offset.set(nextField.getX() + nextField.getWidth()/2 - getX(),
-                       nextField.getY() + nextField.getHeight()/2 - getY());
-
+        if (isBusy()) return;
+        if (currentField.hasNextField()) {
+            setOffset(currentField.getNextField());
             inMove = true;
             addAction(Actions.sequence(Actions.moveBy(offset.x, offset.y, 2), Actions.delay(0.2f)));
         }
     }
 
+    private void setOffset(FieldActor targetField) {
+        offset.set(targetField.getX() + targetField.getWidth()/2 - getX(),
+                   targetField.getY() + targetField.getHeight()/2 - getY());
+    }
+
     @Override
     public void act(float delta) {
         super.act(delta);
-        if (!hasActions() && isInMove()) {
+
+        // If chip has not actions, but still busy, need to release him
+        if (!hasActions() && isBusy()) {
             inMove = false;
-            ListIterator<Actor> fieldsItr = fields.listIterator(fields.indexOf(currentField) + 1);
-            if (fieldsItr.hasNext()) currentField = fieldsItr.next();
+            // Set new chip position
+            // TODO: new chip calculation algorithm
+            if (currentField.hasNextField()) currentField = currentField.getNextField();
         }
     }
 

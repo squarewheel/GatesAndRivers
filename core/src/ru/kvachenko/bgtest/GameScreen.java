@@ -28,7 +28,6 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -40,9 +39,6 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.ListIterator;
 
 /**
  * @author Sasha Kvachenko
@@ -61,7 +57,6 @@ class GameScreen implements Screen {
     private int worldWidth;
     private int worldHeight;
     private ArrayList<ChipActor> players;
-    private LinkedList<Actor> fields;
 
     //int viewWidth = 1200;
     //int viewHeight = 600;
@@ -102,46 +97,39 @@ class GameScreen implements Screen {
             }
         });
         ScrollPane console = new ScrollPane(customLabel);
-        //uiTable.setDebug(true);
         uiTable.setFillParent(true);
         uiTable.top();
         uiTable.add(console).width(uiStage.getCamera().viewportWidth/3).height(uiStage.getCamera().viewportHeight/2).right().top();
         uiTable.row();
         uiTable.add(moveForwardButton).expand().right().bottom().pad(5);
+        //uiTable.setDebug(true);
 
         // tmx map and renderer
         TiledMap tiledMap = new TmxMapLoader().load("main_screen2.tmx");
-        fields = new LinkedList<Actor>();
-        MapObjects fieldObjects = tiledMap.getLayers().get("fields").getObjects();
-        for (MapObject mo: fieldObjects) {
-            Rectangle fieldRectangle = ((RectangleMapObject) mo).getRectangle();
-            Actor field = new Actor();
-            fields.add(field);
-            mainStage.addActor(field);
-            field.setSize(fieldRectangle.width, fieldRectangle.height);
-            field.setPosition(fieldRectangle.x, fieldRectangle.y);
-            // debug output
-            //System.out.println(field.getX() + " " + field.getY());
-            //System.out.println();
-        }
-
         mapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
         tiledCamera = new OrthographicCamera();
         tiledViewport = new ScreenViewport(tiledCamera);
         //tiledCamera.setToOrtho(false, viewWidth, viewHeight);
 
-        // GameBoard fields
+        // Gameboard fields
+        MapObjects fieldObjects = tiledMap.getLayers().get("fields").getObjects();
+        for (MapObject mo: fieldObjects) {
+            Rectangle fieldRectangle = ((RectangleMapObject) mo).getRectangle();
+            FieldActor field = new FieldActor();
+            field.setSize(fieldRectangle.width, fieldRectangle.height);
+            field.setPosition(fieldRectangle.x, fieldRectangle.y);
+            mainStage.addActor(field);
+        }
 
         // Players
         Texture playerTexture = new Texture("chip_white.png");
         playerTexture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
         players = new ArrayList<ChipActor>();
-        players.add(new ChipActor(new TextureRegion(playerTexture, 64, 64), fields));
+        players.add(new ChipActor(new TextureRegion(playerTexture, 64, 64), FieldActor.getFieldsList().get(0)));
         ChipActor mainCharacter = players.get(0);
         mainStage.addActor(mainCharacter);
         mainCharacter.setColor(Color.RED);
         mainCharacter.setSize(32, 32);
-        mainCharacter.setPosition(fields.get(0).getX() + 32, fields.get(0).getY() + 32*3);
 
         // Input handlers
         //uiStage.addListener(new InputListener(){});
@@ -174,7 +162,7 @@ class GameScreen implements Screen {
         // Update camera position
         Camera mainCamera = mainStage.getCamera();
         for (ChipActor p: players) {    // if player chip movement centralize camera on chip
-            if (p.isInMove()) {
+            if (p.isBusy()) {
                 mainCamera.position.x = p.getX() - p.getWidth()/2;
                 mainCamera.position.y = p.getY() - p.getHeight()/2;
                 //mainCamera.update();

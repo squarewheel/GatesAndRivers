@@ -16,6 +16,9 @@ package ru.kvachenko.bgtest;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
+import java.util.ArrayList;
+import java.util.ListIterator;
+
 /**
  * @author Sasha Kvachenko
  *         Created on 25.05.2016.
@@ -23,5 +26,41 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
  *         Provides gameboard field.
  */
 public class FieldActor extends Actor{
+    private static ArrayList<FieldActor> fieldsList = new ArrayList<FieldActor>();
+    private FieldActor nextField;
+    private FieldActor previousField;
+
+    //static { fieldsList = new ArrayList<FieldActor>(); }
+
+    FieldActor() {
+        fieldsList.add(this);
+        ListIterator<FieldActor> fieldsItr = fieldsList.listIterator(fieldsList.indexOf(this));
+        previousField = fieldsItr.hasPrevious() ? fieldsItr.previous() : null;
+        if (hasPreviousField()) getPreviousField().setNextField(this);
+    }
+
+    private void setNextField(FieldActor field) {
+        nextField = field;
+    }
+
+    public FieldActor getNextField() {
+        return nextField;
+    }
+
+    public FieldActor getPreviousField() {
+        return previousField;
+    }
+
+    public boolean hasNextField() {
+        return nextField != null;
+    }
+
+    public boolean hasPreviousField() {
+        return previousField != null;
+    }
+
+    public static ArrayList<FieldActor> getFieldsList() {
+        return fieldsList;
+    }
 
 }
