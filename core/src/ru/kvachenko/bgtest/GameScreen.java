@@ -96,12 +96,40 @@ class GameScreen implements Screen {
                 }
             }
         });
+        final TextButton moveBackwardButton = new TextButton("Move Backward", bg.skin, "textButtonStyle");
+        moveBackwardButton.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                // debug
+                //System.out.println("touch down: " + x + " " + y);
+                //System.out.println();
+                return true;
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                //debug
+                //System.out.println("touch up: " + x + " " + y);
+                //System.out.println();
+
+                if (x > 0 && x < moveBackwardButton.getWidth() && y > 0 && y < moveBackwardButton.getHeight()) {
+                    ChipActor p1 = players.get(0);
+                    p1.moveBackward();
+                    customLabel.setText(customLabel.getText() + "\n" + "Chip moved backward.");
+                }
+            }
+        });
+        //moveForwardButton.setWidth(moveBackwardButton.getWidth());
+        //customLabel.setText("fwd: " + moveForwardButton.getWidth());
+        //customLabel.setText(customLabel.getText() + "\n" +"bck: " + moveBackwardButton.getWidth());
         ScrollPane console = new ScrollPane(customLabel);
         uiTable.setFillParent(true);
         uiTable.top();
         uiTable.add(console).width(uiStage.getCamera().viewportWidth/3).height(uiStage.getCamera().viewportHeight/2).right().top();
+        uiTable.row().expandY();
+        uiTable.add(moveForwardButton).expandX().right().bottom().pad(5);
         uiTable.row();
-        uiTable.add(moveForwardButton).expand().right().bottom().pad(5);
+        uiTable.add(moveBackwardButton).expandX().right().bottom().pad(5);
         //uiTable.setDebug(true);
 
         // tmx map and renderer

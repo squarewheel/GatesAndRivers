@@ -54,16 +54,24 @@ public class ChipActor extends Actor {
 
     public void moveForward() {
         if (isBusy()) return;
-        if (currentField.hasNextField()) {
-            setOffset(currentField.getNextField());
-            inMove = true;
-            addAction(Actions.sequence(Actions.moveBy(offset.x, offset.y, 2), Actions.delay(0.2f)));
+        if (currentField.hasNextField()) { // TODO: Chip must change movement direction if false
+            moveToField(currentField.getNextField());
         }
     }
 
-    private void setOffset(FieldActor targetField) {
+    public void moveBackward() {
+        if (isBusy()) return;
+        if (currentField.hasPreviousField()) { // TODO: Chip must change movement direction if false
+            moveToField(currentField.getPreviousField());
+        }
+    }
+
+    private void moveToField(FieldActor targetField) {
+        inMove = true;
         offset.set(targetField.getX() + targetField.getWidth()/2 - getX(),
                    targetField.getY() + targetField.getHeight()/2 - getY());
+        addAction(Actions.sequence(Actions.moveBy(offset.x, offset.y, 2), Actions.delay(0.2f)));
+        currentField = targetField;
     }
 
     @Override
@@ -73,9 +81,6 @@ public class ChipActor extends Actor {
         // If chip has not actions, but still busy, need to release him
         if (!hasActions() && isBusy()) {
             inMove = false;
-            // Set new chip position
-            // TODO: new chip calculation algorithm
-            if (currentField.hasNextField()) currentField = currentField.getNextField();
         }
     }
 
