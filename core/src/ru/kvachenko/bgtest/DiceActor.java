@@ -14,9 +14,10 @@
 
 package ru.kvachenko.bgtest;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import ru.kvachenko.basegame.AbstractActor;
 
 /**
@@ -28,9 +29,30 @@ import ru.kvachenko.basegame.AbstractActor;
 public class DiceActor extends AbstractActor {
     private Animation diceRoll;
 
-    public DiceActor(TextureRegion r) {
-        super(r);
+    public DiceActor() {
+        int        FRAME_COLS = 6;         // #1
+        int        FRAME_ROWS = 5;         // #2
+        Texture diceSheet;                                      // #4
+        TextureRegion[]                 walkFrames;             // #5
+        float stateTime;                                        // #8
+
+        diceSheet = new Texture(Gdx.files.internal("animation_sheet.png"));
+        TextureRegion[][] tmp = TextureRegion.split(diceSheet, diceSheet.getWidth()/FRAME_COLS,
+                                                               diceSheet.getHeight()/FRAME_ROWS);
+        walkFrames = new TextureRegion[FRAME_COLS * FRAME_ROWS];
+        int index = 0;
+        for (int i = 0; i < FRAME_ROWS; i++) {
+            for (int j = 0; j < FRAME_COLS; j++) {
+                walkFrames[index++] = tmp[i][j];
+            }
+        }
+        diceRoll = new Animation(0.025f, walkFrames);      // #11
+        stateTime = 0f;
     }
 
-
+    @Override
+    public void act(float delta) {
+        super.act(delta);
+        //diceRoll.
+    }
 }

@@ -32,6 +32,10 @@ public abstract class AbstractActor extends Actor {
         texture = r;
     }
 
+    public AbstractActor(){
+        super();
+    }
+
     protected void setTexture(TextureRegion r) {
         texture = r;
     }
@@ -42,9 +46,11 @@ public abstract class AbstractActor extends Actor {
 
     @Override
     public void draw (Batch batch, float parentAlpha) {
-        Color color = getColor();
-        batch.setColor(color.r, color.g, color.b, color.a * parentAlpha);
-        batch.draw(texture, getX(), getY(), getOriginX(), getOriginY(),
-                getWidth(), getHeight(), getScaleX(), getScaleY(), getRotation());
+        if (texture != null) {
+            Color color = getColor();
+            batch.setColor(color.r, color.g, color.b, color.a * parentAlpha);
+            batch.draw(texture, getX(), getY(), getOriginX(), getOriginY(),
+                    getWidth(), getHeight(), getScaleX(), getScaleY(), getRotation());
+        }
     }
 }
