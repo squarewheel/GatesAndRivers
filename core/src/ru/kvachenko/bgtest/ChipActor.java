@@ -14,14 +14,11 @@
 
 package ru.kvachenko.bgtest;
 
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
-
-import java.util.ListIterator;
+import ru.kvachenko.basegame.AbstractActor;
 
 /**
  * @author Sasha Kvachenko
@@ -29,16 +26,15 @@ import java.util.ListIterator;
  *         <p>
  *         Provides player chip code.
  */
-public class ChipActor extends Actor {
-    private TextureRegion texture;
+public class ChipActor extends AbstractActor {
+    //private TextureRegion texture;
     private FieldActor currentField;
     private Vector2 offset;
     private boolean inMove;
     private boolean playable;
 
     public ChipActor(TextureRegion r, FieldActor startingField) {
-        //super();
-        texture = r;
+        super(r);
         currentField = startingField;
         inMove = false;
         playable = false;
@@ -82,14 +78,6 @@ public class ChipActor extends Actor {
         if (!hasActions() && isBusy()) {
             inMove = false;
         }
-    }
-
-    @Override
-    public void draw (Batch batch, float parentAlpha) {
-        Color color = getColor();
-        batch.setColor(color.r, color.g, color.b, color.a * parentAlpha);
-        batch.draw(texture, getX(), getY(), getOriginX(), getOriginY(),
-                getWidth(), getHeight(), getScaleX(), getScaleY(), getRotation());
     }
 
 }
