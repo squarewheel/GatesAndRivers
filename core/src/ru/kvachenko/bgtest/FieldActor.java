@@ -24,6 +24,7 @@ import java.util.ListIterator;
  *         Created on 25.05.2016.
  *         <p>
  *         Provides gameboard field.
+ *         Field must be created before players;
  */
 public class FieldActor extends Actor{
     private static ArrayList<FieldActor> fieldsList = new ArrayList<FieldActor>();

@@ -53,7 +53,7 @@ class GameScreen implements Screen {
     private OrthogonalTiledMapRenderer mapRenderer;
     private int worldWidth;
     private int worldHeight;
-    private ArrayList<ChipActor> players;
+    //private ArrayList<ChipActor> players;
     private DiceImage dice;
 
     //int viewWidth = 1200;
@@ -99,8 +99,8 @@ class GameScreen implements Screen {
                 //System.out.println();
 
                 if (x > 0 && x < moveForwardButton.getWidth() && y > 0 && y < moveForwardButton.getHeight()) {
-                    ChipActor p1 = players.get(0);
-                    p1.moveForward();
+                    ChipActor chip = Player.getPlayersList().get(0).getChip();
+                    chip.moveForward();
                 }
             }
         });
@@ -121,8 +121,8 @@ class GameScreen implements Screen {
                 //System.out.println();
 
                 if (x > 0 && x < moveBackwardButton.getWidth() && y > 0 && y < moveBackwardButton.getHeight()) {
-                    ChipActor p1 = players.get(0);
-                    p1.moveBackward();
+                    ChipActor chip = Player.getPlayersList().get(0).getChip();
+                    chip.moveBackward();
                 }
             }
         });
@@ -155,14 +155,8 @@ class GameScreen implements Screen {
         }
 
         // Players
-        Texture playerTexture = new Texture("chip_white.png");
-        playerTexture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
-        players = new ArrayList<ChipActor>();
-        players.add(new ChipActor(new TextureRegion(playerTexture, 64, 64), FieldActor.getFieldsList().get(0)));
-        ChipActor mainCharacter = players.get(0);
-        mainStage.addActor(mainCharacter);
-        mainCharacter.setColor(Color.RED);
-        mainCharacter.setSize(32, 32);
+        new Player();
+        mainStage.addActor(Player.getPlayersList().get(0).getChip());
 
         // Input handlers
         //uiStage.addListener(new InputListener(){});
@@ -195,10 +189,11 @@ class GameScreen implements Screen {
 
         // Update camera position
         Camera mainCamera = mainStage.getCamera();
-        for (ChipActor p: players) {    // if player chip movement centralize camera on chip
-            if (p.isBusy()) {
-                mainCamera.position.x = p.getX() - p.getWidth()/2;
-                mainCamera.position.y = p.getY() - p.getHeight()/2;
+        for (Player p: Player.getPlayersList()) {    // if player chip movement centralize camera on chip
+            ChipActor chip = p.getChip();
+            if (chip.isBusy()) {
+                mainCamera.position.x = chip.getX() - chip.getWidth()/2;
+                mainCamera.position.y = chip.getY() - chip.getHeight()/2;
                 //mainCamera.update();
 
                 // debug

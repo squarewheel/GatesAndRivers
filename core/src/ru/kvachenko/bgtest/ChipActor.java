@@ -27,24 +27,19 @@ import ru.kvachenko.basegame.AbstractActor;
  *         Provides player chip code.
  */
 public class ChipActor extends AbstractActor {
-    //private TextureRegion texture;
     private FieldActor currentField;
     private Vector2 offset;
-    private boolean inMove;
-    private boolean playable;
+    private boolean busy;
 
     public ChipActor(TextureRegion r, FieldActor startingField) {
         super(r);
         currentField = startingField;
-        inMove = false;
-        playable = false;
+        busy = false;
         offset = new Vector2();
         setPosition(currentField.getX() + 32, currentField.getY() + 32*3);
     }
 
-    public boolean isPlayable() { return playable; }
-
-    public boolean isBusy() { return inMove; }
+    public boolean isBusy() { return busy; }
 
     public Actor getCurrentField() { return currentField; }
 
@@ -63,7 +58,7 @@ public class ChipActor extends AbstractActor {
     }
 
     private void moveToField(FieldActor targetField) {
-        inMove = true;
+        busy = true;
         offset.set(targetField.getX() + targetField.getWidth()/2 - getX(),
                    targetField.getY() + targetField.getHeight()/2 - getY());
         addAction(Actions.sequence(Actions.moveBy(offset.x, offset.y, 2), Actions.delay(0.2f)));
@@ -76,7 +71,7 @@ public class ChipActor extends AbstractActor {
 
         // If chip has not actions, but still busy, need to release him
         if (!hasActions() && isBusy()) {
-            inMove = false;
+            busy = false;
         }
     }
 
