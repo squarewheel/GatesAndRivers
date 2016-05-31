@@ -31,10 +31,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
@@ -57,6 +54,7 @@ class GameScreen implements Screen {
     private int worldWidth;
     private int worldHeight;
     private ArrayList<ChipActor> players;
+    private DiceImage dice;
 
     //int viewWidth = 1200;
     //int viewHeight = 600;
@@ -70,10 +68,20 @@ class GameScreen implements Screen {
         uiStage = new Stage(new ScreenViewport());
         uiTable = new Table(bg.skin);
         uiStage.addActor(uiTable);
+        dice = new DiceImage();
 
         // User interface
-        final Label customLabel = new Label("I'm Love my Wife", bg.skin, "labelStyle");
-        customLabel.setAlignment(Align.topLeft);
+        //List<Label> statsList = new List<Label>(bg.skin);
+        Label customLabel = new Label("I'm Love my Wife ", bg.skin, "labelStyle");
+        Label rollResultLabel = new Label("Roll Result: ", bg.skin, "labelStyle");
+        Label rollResult = new Label("-", bg.skin, "labelStyle");
+        dice.setRollResultLabel(rollResult);
+        Table statsList = new Table();
+        statsList.add(customLabel).left().top().pad(5, 5, 0, 0);
+        statsList.row();
+        statsList.add(rollResultLabel).right().top().pad(5, 5, 0, 0);
+        statsList.add(rollResult).left().top().padTop(5);
+        //statsList.debug();
         final TextButton moveForwardButton = new TextButton("Move Forward", bg.skin, "textButtonStyle");
         moveForwardButton.addListener(new InputListener() {
             @Override
@@ -93,7 +101,6 @@ class GameScreen implements Screen {
                 if (x > 0 && x < moveForwardButton.getWidth() && y > 0 && y < moveForwardButton.getHeight()) {
                     ChipActor p1 = players.get(0);
                     p1.moveForward();
-                    customLabel.setText(customLabel.getText() + "\n" + "More Text for God of Text!");
                 }
             }
         });
@@ -116,26 +123,19 @@ class GameScreen implements Screen {
                 if (x > 0 && x < moveBackwardButton.getWidth() && y > 0 && y < moveBackwardButton.getHeight()) {
                     ChipActor p1 = players.get(0);
                     p1.moveBackward();
-                    customLabel.setText(customLabel.getText() + "\n" + "Chip moved backward.");
                 }
             }
         });
-        //moveForwardButton.setWidth(moveBackwardButton.getWidth());
-        //customLabel.setText("fwd: " + moveForwardButton.getWidth());
-        //customLabel.setText(customLabel.getText() + "\n" +"bck: " + moveBackwardButton.getWidth());
-        ScrollPane console = new ScrollPane(customLabel);
         uiTable.setFillParent(true);
         uiTable.top();
-        uiTable.add(console).width(uiStage.getCamera().viewportWidth/3).height(uiStage.getCamera().viewportHeight/2).right().top();
+        uiTable.add(statsList).left().top();
         uiTable.row().expandY();
-        uiTable.add(moveForwardButton).expandX().right().bottom().pad(5);
+        uiTable.add(moveForwardButton).expandX().right().bottom().padRight(5);
         uiTable.row();
-        uiTable.add(moveBackwardButton).expandX().right().bottom().pad(5);
+        uiTable.add(moveBackwardButton).expandX().right().bottom().padRight(5);
         uiTable.row();
-        uiTable.add(new DiceImage()).expandX().right().pad(5);
+        uiTable.add(dice).expandX().right().bottom().pad(1, 0, 5, 5);
         //uiTable.setDebug(true);
-
-
 
         // tmx map and renderer
         TiledMap tiledMap = new TmxMapLoader().load("main_screen2.tmx");
@@ -191,6 +191,7 @@ class GameScreen implements Screen {
     }
 
     private void update(float dt) {
+        // Update UI
 
         // Update camera position
         Camera mainCamera = mainStage.getCamera();

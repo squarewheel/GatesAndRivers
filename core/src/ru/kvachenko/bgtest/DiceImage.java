@@ -22,6 +22,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
 /**
@@ -37,6 +38,7 @@ public class DiceImage extends Image {
     private float stateTime;
     private float rollingTimer;
     private int lastRollResult;
+    private Label rollResultLabel;
     private boolean rolled;
 
     public DiceImage() {
@@ -76,7 +78,6 @@ public class DiceImage extends Image {
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                System.out.println("clicked");
                 if (!isRolled() && x > 0 && x < 64 && y > 0 && y < 64) {
                     roll();
                 }
@@ -85,6 +86,10 @@ public class DiceImage extends Image {
 
         // set start image
         setSide();
+    }
+
+    public void setRollResultLabel(Label l) {
+        rollResultLabel = l;
     }
 
     public int getLastRollResult() {
@@ -120,9 +125,15 @@ public class DiceImage extends Image {
             if (rollingTimer <= 0) {
                 rolled = false;
                 setSide();
+                if (rollResultLabel != null) rollResultLabel.setText(toString());
             }
             else currentImage.setRegion(diceRoll.getKeyFrame(stateTime, true));
         }
         setDrawable(currentImage);
+    }
+
+    @Override
+    public String toString() {
+        return Integer.toString(lastRollResult);
     }
 }
