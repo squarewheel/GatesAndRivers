@@ -33,8 +33,9 @@ public class Player {
     private static final int MAX_PLAYERS = 4;
 
     private ChipActor chip;
-    private boolean moved;      // indicates whether or not the player has made his move
-    private boolean playable;   // indicates who control this player: human or ai
+    private int moves;              // num of fields what player must move in this turn
+    private boolean moved;          // indicates whether or not the player has made his move
+    private boolean playable;       // indicates who control this player: human or ai
 
     static {
         colors.add(Color.RED);
@@ -61,6 +62,26 @@ public class Player {
     }
 
     public ChipActor getChip() { return chip; }
+
+    public void doTurn() {
+        if (!isMoved() && moves > 0 && !chip.isBusy()) {
+            getChip().moveForward();
+            moves--;
+            if (moves <= 0) moved = true;
+        }
+    }
+
+    public void switchMovementState() { moved = !moved; }
+
+    public void setMovedState(boolean b) { moved = b; }
+
+    public void setMoves(int moves) {
+        if (!isMoved()) this.moves = moves;
+    }
+
+    public int getMoves() {
+        return moves;
+    }
 
     public boolean isMoved() { return moved; }
 

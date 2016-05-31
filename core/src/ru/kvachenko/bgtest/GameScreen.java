@@ -18,7 +18,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.*;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapObjects;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
@@ -32,7 +31,6 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
-import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 import java.util.ArrayList;
@@ -56,6 +54,8 @@ class GameScreen implements Screen {
     //private ArrayList<ChipActor> players;
     private DiceImage dice;
 
+    // Temp variables
+    Player currentPlayer;
     //int viewWidth = 1200;
     //int viewHeight = 600;
 
@@ -69,6 +69,23 @@ class GameScreen implements Screen {
         uiTable = new Table(bg.skin);
         uiStage.addActor(uiTable);
         dice = new DiceImage();
+
+        dice.addListener(new InputListener(){
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                System.out.println("123");
+                if (!dice.isLocked()) {
+                    dice.roll();
+                    dice.lock();
+                    currentPlayer.setMoves(dice.getLastRollResult());
+                }
+            }
+
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
+        });
 
         // User interface
         //List<Label> statsList = new List<Label>(bg.skin);
@@ -155,8 +172,9 @@ class GameScreen implements Screen {
         }
 
         // Players
-        new Player();
-        mainStage.addActor(Player.getPlayersList().get(0).getChip());
+        currentPlayer = new Player();
+        mainStage.addActor(currentPlayer.getChip());
+        //mainStage.addActor(Player.getPlayersList().get(0).getChip());
 
         // Input handlers
         //uiStage.addListener(new InputListener(){});
@@ -186,6 +204,10 @@ class GameScreen implements Screen {
 
     private void update(float dt) {
         // Update UI
+
+        // Update players state
+        currentPlayer.doTurn();
+        // TODO: unlocking dice
 
         // Update camera position
         Camera mainCamera = mainStage.getCamera();

@@ -40,6 +40,7 @@ public class DiceImage extends Image {
     private int lastRollResult;
     private Label rollResultLabel;
     private boolean rolled;
+    private boolean locked;
 
     public DiceImage() {
         // Base initialization
@@ -48,6 +49,7 @@ public class DiceImage extends Image {
         rollingTimer = 0;
         lastRollResult = 6;
         rolled = false;
+        locked = false;
 
         /*
          * Create animation
@@ -92,11 +94,17 @@ public class DiceImage extends Image {
         rollResultLabel = l;
     }
 
+    public void lock() { locked = true; }
+
+    public void unlock() { locked = false; }
+
     public int getLastRollResult() {
         return lastRollResult;
     }
 
     public boolean isRolled() { return rolled; }
+
+    public boolean isLocked() { return locked; }
 
     /**
      * Method set upper (visible) side of dice to lastRollResult.
