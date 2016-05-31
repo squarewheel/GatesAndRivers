@@ -62,6 +62,7 @@ class GameScreen implements Screen {
     //int viewHeight = 600;
 
     GameScreen(BoardGame bg) {
+        // General
         game = bg;
         worldWidth = 64 * 32;
         worldHeight = 64 * 32;
@@ -70,7 +71,7 @@ class GameScreen implements Screen {
         uiTable = new Table(bg.skin);
         uiStage.addActor(uiTable);
 
-        // user interface
+        // User interface
         final Label customLabel = new Label("I'm Love my Wife", bg.skin, "labelStyle");
         customLabel.setAlignment(Align.topLeft);
         final TextButton moveForwardButton = new TextButton("Move Forward", bg.skin, "textButtonStyle");
@@ -130,7 +131,11 @@ class GameScreen implements Screen {
         uiTable.add(moveForwardButton).expandX().right().bottom().pad(5);
         uiTable.row();
         uiTable.add(moveBackwardButton).expandX().right().bottom().pad(5);
+        uiTable.row();
+        uiTable.add(new DiceImage()).expandX().right().pad(5);
         //uiTable.setDebug(true);
+
+
 
         // tmx map and renderer
         TiledMap tiledMap = new TmxMapLoader().load("main_screen2.tmx");
