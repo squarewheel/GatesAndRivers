@@ -78,7 +78,7 @@ public class DiceImage extends Image {
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                if (!isRolled() && x > 0 && x < 64 && y > 0 && y < 64) {
+                if (x > 0 && x < 64 && y > 0 && y < 64) {
                     roll();
                 }
             }
@@ -110,10 +110,12 @@ public class DiceImage extends Image {
     }
 
     public void roll() {
-        lastRollResult = MathUtils.random(1, 6);
-        rollingTimer = MathUtils.random(3f, 10f);
-        setSide();
-        rolled = true;
+        if (!isRolled()) {
+            lastRollResult = MathUtils.random(1, 6);
+            rollingTimer = MathUtils.random(2f, 6f);
+            //setSide();
+            rolled = true;
+        }
     }
 
     @Override
