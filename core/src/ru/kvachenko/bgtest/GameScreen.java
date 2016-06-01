@@ -102,6 +102,7 @@ class GameScreen implements Screen {
 
         // Players and Round initialization
         new Player();
+        new Player();
         for (Player p: Player.getPlayersList()) { mainStage.addActor(p.getChip()); }
         currentRound = new Round(Player.getPlayersList());
 
