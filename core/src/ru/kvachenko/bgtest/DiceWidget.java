@@ -31,25 +31,35 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
  *         <p>
  *         Dice image. Represent d6 .
  */
-public class DiceImage extends Image {
+public class DiceWidget extends Image {
+
+    /** Possible dice states */
+    public enum State {
+        NOT_ROLLED,
+        ROLLING,
+        ROLLED
+    }
+
     private TextureRegionDrawable currentImage;
     private TextureRegion[] rollFrames;
     private Animation diceRoll;
     private float stateTime;
     private float rollingTimer;
     private int lastRollResult;
+    private int previousRollResult;
     private Label rollResultLabel;
-    private boolean rolled;
-    private boolean locked;
+    //private boolean rolled;
+    private State state;
 
-    public DiceImage() {
+    public DiceWidget() {
         // Base initialization
         currentImage = new TextureRegionDrawable();
         stateTime = 0;
         rollingTimer = 0;
         lastRollResult = 6;
-        rolled = false;
-        locked = false;
+        previousRollResult = 5;
+        //rolled = false;
+        state = State.NOT_ROLLED;
 
         /*
          * Create animation
@@ -94,17 +104,16 @@ public class DiceImage extends Image {
         rollResultLabel = l;
     }
 
-    public void lock() { locked = true; }
+    public void setState(State newState) { state = newState; }
 
-    public void unlock() { locked = false; }
-
-    public int getLastRollResult() {
-        return lastRollResult;
+    public int getRollResult() {
+        if (state == State.ROLLED) return lastRollResult;
+        else return previousRollResult;
     }
 
-    public boolean isRolled() { return rolled; }
+    //public boolean isRolled() { return rolled; }
 
-    public boolean isLocked() { return locked; }
+    public State getState() { return state; }
 
     /**
      * Method set upper (visible) side of dice to lastRollResult.
@@ -118,11 +127,14 @@ public class DiceImage extends Image {
     }
 
     public void roll() {
-        if (!isRolled()) {
+        if (state == State.NOT_ROLLED) {
+            System.out.println("debug");
+            previousRollResult = lastRollResult;
             lastRollResult = MathUtils.random(1, 6);
             rollingTimer = MathUtils.random(2f, 6f);
+            state = State.ROLLING;
             //setSide();
-            rolled = true;
+            //rolled = true;
         }
     }
 
@@ -130,10 +142,14 @@ public class DiceImage extends Image {
     public void act(float delta) {
         super.act(delta);
         stateTime += delta;
-        if (isRolled() && rollingTimer > 0) {
+        if (state == State.ROLLING && rollingTimer > 0) {
             rollingTimer -= delta;
+
+            // If animation time is over, set image equal lastRollResult.
+            // Otherwise set random dice side image
             if (rollingTimer <= 0) {
-                rolled = false;
+                //rolled = false;
+                state = State.ROLLED;
                 setSide();
                 if (rollResultLabel != null) rollResultLabel.setText(toString());
             }

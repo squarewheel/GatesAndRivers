@@ -33,8 +33,6 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
-import java.util.ArrayList;
-
 /**
  * @author Sasha Kvachenko
  *         Created on 20.05.2016.
@@ -43,6 +41,7 @@ import java.util.ArrayList;
  */
 class GameScreen implements Screen {
     private BoardGame game;
+    private Round currentRound;
     private Stage mainStage;
     private Stage uiStage;
     private Table uiTable;
@@ -52,7 +51,7 @@ class GameScreen implements Screen {
     private int worldWidth;
     private int worldHeight;
     //private ArrayList<ChipActor> players;
-    private DiceImage dice;
+    private DiceWidget dice;
 
     // Temp variables
     Player currentPlayer;
@@ -68,16 +67,13 @@ class GameScreen implements Screen {
         uiStage = new Stage(new ScreenViewport());
         uiTable = new Table(bg.skin);
         uiStage.addActor(uiTable);
-        dice = new DiceImage();
-
+        dice = new DiceWidget();
         dice.addListener(new InputListener(){
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                System.out.println("123");
-                if (!dice.isLocked()) {
+                if (dice.getState() == DiceWidget.State.NOT_ROLLED) {
                     dice.roll();
-                    dice.lock();
-                    currentPlayer.setMoves(dice.getLastRollResult());
+                    currentRound.setTurnPhase(Round.TurnPhase.DICE_ROLLING);
                 }
             }
 
@@ -174,6 +170,7 @@ class GameScreen implements Screen {
         // Players
         currentPlayer = new Player();
         mainStage.addActor(currentPlayer.getChip());
+        currentRound = new Round(Player.getPlayersList());
         //mainStage.addActor(Player.getPlayersList().get(0).getChip());
 
         // Input handlers
@@ -206,8 +203,32 @@ class GameScreen implements Screen {
         // Update UI
 
         // Update players state
-        currentPlayer.doTurn();
-        // TODO: unlocking dice
+        if (currentRound.getTurnPhase() == Round.TurnPhase.START) {
+            System.out.println("TurnPhase.START");
+            if (dice.getState() == DiceWidget.State.ROLLED) dice.setState(DiceWidget.State.NOT_ROLLED);
+            else if (dice.getState() == DiceWidget.State.ROLLING) currentRound.setTurnPhase(Round.TurnPhase.DICE_ROLLING);
+        }
+        else if (currentRound.getTurnPhase() == Round.TurnPhase.DICE_ROLLING) {
+            System.out.println("TurnPhase.DICE_ROLLING");
+            if (dice.getState() == DiceWidget.State.ROLLED) {
+                currentRound.setTurnPhase(Round.TurnPhase.DICE_ROLLED);
+            }
+        }
+        else if (currentRound.getTurnPhase() == Round.TurnPhase.DICE_ROLLED) {
+            System.out.println("TurnPhase.DICE_ROLLED");
+            currentRound.getCurrentPlayer().setMoves(dice.getRollResult());
+            currentRound.setTurnPhase(Round.TurnPhase.MOVEMENT);
+        }
+        else if (currentRound.getTurnPhase() == Round.TurnPhase.MOVEMENT) {
+            System.out.println("TurnPhase.MOVEMENT");
+            currentRound.getCurrentPlayer().move();
+            if (currentRound.getCurrentPlayer().isMoved()) currentRound.setTurnPhase(Round.TurnPhase.END);
+        }
+        else if (currentRound.getTurnPhase() == Round.TurnPhase.END) {
+            System.out.println("TurnPhase.END");
+            // change currentPlayer to next player;
+            // if all players moved, start new round
+        }
 
         // Update camera position
         Camera mainCamera = mainStage.getCamera();

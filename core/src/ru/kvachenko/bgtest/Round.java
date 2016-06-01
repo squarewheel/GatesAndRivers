@@ -22,24 +22,47 @@ import java.util.ArrayList;
  * @author Sasha Kvachenko
  *         Created on 31.05.2016.
  *         <p>
- *         Round of game iformation.
+ *         The game is divided into rounds.
+ *         Round ends when all players have complete their turns (made their move). In round end checks win conditions,
+ *         if mo one player resolve win conditions, starts new round.
+ *         Turn of each player divided into several phases.
  */
 public class Round {
-    private ArrayList<Player> players; // list of players
+
+    /** Possible turn phases */
+    public enum TurnPhase {
+        START,
+        DICE_ROLLING,
+        DICE_ROLLED,
+        MOVEMENT,
+        END
+    }
+
+    private ArrayList<Player> players;  // list of players
+    private Player currentPlayer;       // indicates whose turn now
+    private TurnPhase turnPhase;
     private int roundCounter;
+    private Label roundCounterLabel;
     //private int turnsInRound;
     //private int turnCounter;
-    private Player currentPlayer;       // indicates whose turn now
-    private Label roundCounterLabel;
 
     public Round(ArrayList<Player> p) {
         // Basic initialization
         players = p;
         roundCounter = 1;
         currentPlayer = p.get(0);
+        turnPhase = TurnPhase.START;
     }
 
     public void setRoundCounterLabel(Label l) { roundCounterLabel = l; }
+
+    public void setTurnPhase(TurnPhase phase) { turnPhase = phase; }
+
+    public Player getCurrentPlayer() { return currentPlayer; }
+
+    public TurnPhase getTurnPhase() {
+        return turnPhase;
+    }
 
     public void update() {
         // if current player made his turn, change currentPlayer to next Player

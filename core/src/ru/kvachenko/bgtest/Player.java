@@ -63,11 +63,13 @@ public class Player {
 
     public ChipActor getChip() { return chip; }
 
-    public void doTurn() {
-        if (!isMoved() && moves > 0 && !chip.isBusy()) {
-            getChip().moveForward();
-            moves--;
-            if (moves <= 0) moved = true;
+    public void move() {
+        if (!isMoved() && !chip.isBusy()) {
+            if (moves > 0) {
+                moves--;
+                getChip().moveForward();
+            }
+            else moved = true;
         }
     }
 
@@ -79,8 +81,11 @@ public class Player {
         if (!isMoved()) this.moves = moves;
     }
 
-    public int getMoves() {
-        return moves;
+    //public int getMoves() { return moves; }
+
+    public boolean hasMoves() {
+        if (moves > 0) return true;
+        else return false;
     }
 
     public boolean isMoved() { return moved; }
