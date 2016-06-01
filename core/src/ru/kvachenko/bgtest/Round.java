@@ -15,6 +15,7 @@
 package ru.kvachenko.bgtest;
 
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 import java.util.ArrayList;
 
@@ -28,6 +29,23 @@ import java.util.ArrayList;
  *         Turn of each player divided into several phases.
  */
 public class Round {
+
+    public class RoundCounterLabel extends Label {
+
+        public RoundCounterLabel(CharSequence text, Skin skin, String styleName) {
+            super(text, skin, styleName);
+            updateCounter();
+            setRoundCounterLabel(this);
+        }
+
+        private void updateCounter() { setText("Round: " + roundCounter); }
+
+        @Override
+        public void act(float delta) {
+            super.act(delta);
+            updateCounter();
+        }
+    }
 
     /** Possible turn phases */
     public enum TurnPhase {

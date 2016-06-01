@@ -108,9 +108,7 @@ class GameScreen implements Screen {
         // User interface
         //List<Label> statsList = new List<Label>(bg.skin);
         Label customLabel = new Label("I'm Love my Wife ", bg.skin, "labelStyle");
-        Label RoundCounterLabel = new Label("Round: ", bg.skin, "labelStyle");
-        Label RoundCounter = new Label("-", bg.skin, "labelStyle");
-        currentRound.setRoundCounterLabel(RoundCounter);
+        //Round.RoundCounterLabel roundCounterLabel = currentRound.new RoundCounterLabel("-", bg.skin, "labelStyle");
         Label rollResultLabel = new Label("Roll Result: ", bg.skin, "labelStyle");
         Label rollResult = new Label("-", bg.skin, "labelStyle");
         dice.setRollResultLabel(rollResult);
@@ -120,8 +118,8 @@ class GameScreen implements Screen {
         statsList.add(rollResultLabel).right().top().pad(5, 5, 0, 0);
         statsList.add(rollResult).left().top().padTop(5);
         statsList.row();
-        statsList.add(RoundCounterLabel).right().top().pad(5, 5, 0, 0);
-        statsList.add(RoundCounter).left().top().padTop(5);
+        statsList.add(currentRound.new RoundCounterLabel("", bg.skin, "labelStyle")).right().top().padTop(5);
+        //statsList.add(RoundCounter).left().top().padTop(5);
         //statsList.debug();
         final TextButton moveForwardButton = new TextButton("Move Forward", bg.skin, "textButtonStyle");
         moveForwardButton.addListener(new InputListener() {
