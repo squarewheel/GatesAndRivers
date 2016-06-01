@@ -15,6 +15,7 @@
 package ru.kvachenko.bgtest;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -48,7 +49,7 @@ public class DiceWidget extends Image {
     private int lastRollResult;
     private int previousRollResult;
     private Label rollResultLabel;
-    //private boolean rolled;
+    private boolean inactive;
     private State state;
 
     public DiceWidget() {
@@ -58,7 +59,7 @@ public class DiceWidget extends Image {
         rollingTimer = 0;
         lastRollResult = 6;
         previousRollResult = 5;
-        //rolled = false;
+        inactive = false;
         state = State.NOT_ROLLED;
 
         /*
@@ -155,8 +156,18 @@ public class DiceWidget extends Image {
             }
             else currentImage.setRegion(diceRoll.getKeyFrame(stateTime, true));
         }
+        if (inactive) {
+            // TODO: add transparency
+            setColor(Color.LIGHT_GRAY);
+        }
         setDrawable(currentImage);
     }
+
+    public void activate() { inactive = false; }
+
+    public void unActivate() { inactive = true; }
+
+    public boolean isActive() { return !inactive; }
 
     @Override
     public String toString() {

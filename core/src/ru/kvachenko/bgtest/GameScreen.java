@@ -71,7 +71,7 @@ class GameScreen implements Screen {
         dice.addListener(new InputListener(){
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                if (dice.getState() == DiceWidget.State.NOT_ROLLED) {
+                if (dice.isActive() && dice.getState() == DiceWidget.State.NOT_ROLLED) {
                     dice.roll();
                     currentRound.setTurnPhase(Round.TurnPhase.DICE_ROLLING);
                 }
@@ -109,7 +109,6 @@ class GameScreen implements Screen {
         // User interface
         //List<Label> statsList = new List<Label>(bg.skin);
         Label customLabel = new Label("I'm Love my Wife ", bg.skin, "labelStyle");
-        //Round.RoundCounterLabel roundCounterLabel = currentRound.new RoundCounterLabel("-", bg.skin, "labelStyle");
         Label rollResultLabel = new Label("Roll Result: ", bg.skin, "labelStyle");
         Label rollResult = new Label("-", bg.skin, "labelStyle");
         dice.setRollResultLabel(rollResult);
@@ -120,7 +119,6 @@ class GameScreen implements Screen {
         statsList.add(rollResult).left().top().padTop(5);
         statsList.row();
         statsList.add(currentRound.new RoundCounterLabel("", bg.skin, "labelStyle")).right().top().padTop(5);
-        //statsList.add(RoundCounter).left().top().padTop(5);
         //statsList.debug();
         final TextButton moveForwardButton = new TextButton("Move Forward", bg.skin, "textButtonStyle");
         moveForwardButton.addListener(new InputListener() {
@@ -211,10 +209,15 @@ class GameScreen implements Screen {
         // Update players state
         if (currentRound.getTurnPhase() == Round.TurnPhase.START) {
             //System.out.println("TurnPhase.START");
-            if (dice.getState() == DiceWidget.State.ROLLED) dice.setState(DiceWidget.State.NOT_ROLLED);
-            else if (dice.getState() == DiceWidget.State.ROLLING) currentRound.setTurnPhase(Round.TurnPhase.DICE_ROLLING);
+            if (!currentRound.getCurrentPlayer().isPlayable()) {
+                dice.unActivate();
+                dice.roll();
+            }
+            else dice.activate();
+            if (dice.getState() == DiceWidget.State.ROLLING) currentRound.setTurnPhase(Round.TurnPhase.DICE_ROLLING);
         }
         else if (currentRound.getTurnPhase() == Round.TurnPhase.DICE_ROLLING) {
+            // TODO: looks like this phase is not necessary
             //System.out.println("TurnPhase.DICE_ROLLING");
             if (dice.getState() == DiceWidget.State.ROLLED) {
                 currentRound.setTurnPhase(Round.TurnPhase.DICE_ROLLED);
@@ -232,6 +235,7 @@ class GameScreen implements Screen {
         }
         else if (currentRound.getTurnPhase() == Round.TurnPhase.END) {
             //System.out.println("TurnPhase.END");
+            dice.setState(DiceWidget.State.NOT_ROLLED);
             currentRound.endTurn();
             currentRound.setTurnPhase(Round.TurnPhase.START);
         }
