@@ -54,7 +54,7 @@ class GameScreen implements Screen {
     private DiceWidget dice;
 
     // Temp variables
-    Player currentPlayer;
+    //private Player currentPlayer;
     //int viewWidth = 1200;
     //int viewHeight = 600;
 
@@ -83,9 +83,34 @@ class GameScreen implements Screen {
             }
         });
 
+        // tmx map and renderer
+        TiledMap tiledMap = new TmxMapLoader().load("main_screen2.tmx");
+        mapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
+        tiledCamera = new OrthographicCamera();
+        tiledViewport = new ScreenViewport(tiledCamera);
+        //tiledCamera.setToOrtho(false, viewWidth, viewHeight);
+
+        // Gameboard fields
+        MapObjects fieldObjects = tiledMap.getLayers().get("fields").getObjects();
+        for (MapObject mo: fieldObjects) {
+            Rectangle fieldRectangle = ((RectangleMapObject) mo).getRectangle();
+            FieldActor field = new FieldActor();
+            field.setSize(fieldRectangle.width, fieldRectangle.height);
+            field.setPosition(fieldRectangle.x, fieldRectangle.y);
+            mainStage.addActor(field);
+        }
+
+        // Players and Round initialization
+        new Player();
+        for (Player p: Player.getPlayersList()) { mainStage.addActor(p.getChip()); }
+        currentRound = new Round(Player.getPlayersList());
+
         // User interface
         //List<Label> statsList = new List<Label>(bg.skin);
         Label customLabel = new Label("I'm Love my Wife ", bg.skin, "labelStyle");
+        Label RoundCounterLabel = new Label("Round: ", bg.skin, "labelStyle");
+        Label RoundCounter = new Label("-", bg.skin, "labelStyle");
+        currentRound.setRoundCounterLabel(RoundCounter);
         Label rollResultLabel = new Label("Roll Result: ", bg.skin, "labelStyle");
         Label rollResult = new Label("-", bg.skin, "labelStyle");
         dice.setRollResultLabel(rollResult);
@@ -94,6 +119,9 @@ class GameScreen implements Screen {
         statsList.row();
         statsList.add(rollResultLabel).right().top().pad(5, 5, 0, 0);
         statsList.add(rollResult).left().top().padTop(5);
+        statsList.row();
+        statsList.add(RoundCounterLabel).right().top().pad(5, 5, 0, 0);
+        statsList.add(RoundCounter).left().top().padTop(5);
         //statsList.debug();
         final TextButton moveForwardButton = new TextButton("Move Forward", bg.skin, "textButtonStyle");
         moveForwardButton.addListener(new InputListener() {
@@ -149,29 +177,6 @@ class GameScreen implements Screen {
         uiTable.row();
         uiTable.add(dice).expandX().right().bottom().pad(1, 0, 5, 5);
         //uiTable.setDebug(true);
-
-        // tmx map and renderer
-        TiledMap tiledMap = new TmxMapLoader().load("main_screen2.tmx");
-        mapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
-        tiledCamera = new OrthographicCamera();
-        tiledViewport = new ScreenViewport(tiledCamera);
-        //tiledCamera.setToOrtho(false, viewWidth, viewHeight);
-
-        // Gameboard fields
-        MapObjects fieldObjects = tiledMap.getLayers().get("fields").getObjects();
-        for (MapObject mo: fieldObjects) {
-            Rectangle fieldRectangle = ((RectangleMapObject) mo).getRectangle();
-            FieldActor field = new FieldActor();
-            field.setSize(fieldRectangle.width, fieldRectangle.height);
-            field.setPosition(fieldRectangle.x, fieldRectangle.y);
-            mainStage.addActor(field);
-        }
-
-        // Players
-        currentPlayer = new Player();
-        mainStage.addActor(currentPlayer.getChip());
-        currentRound = new Round(Player.getPlayersList());
-        //mainStage.addActor(Player.getPlayersList().get(0).getChip());
 
         // Input handlers
         //uiStage.addListener(new InputListener(){});

@@ -64,21 +64,21 @@ public class Round {
         return turnPhase;
     }
 
-    public void update() {
-        // if current player made his turn, change currentPlayer to next Player
-        if (currentPlayer.isMoved()) currentPlayer = players.get(players.indexOf(currentPlayer) + 1);
-
-        // if all players made his turns, start new round
-        int movedPlayers = 0;
-        for (Player p: players) if (p.isMoved()) movedPlayers++;
-        if (movedPlayers >= players.size()) {
-            roundCounter++;
-            for (Player p: players) p.setMovedState(false);
-        }
-
-        // if label presents, update him
-        if (roundCounterLabel != null) roundCounterLabel.setText(toString());
-    }
+//    public void update() {
+//        // if current player made his turn, change currentPlayer to next Player
+//        if (currentPlayer.isMoved()) currentPlayer = players.get(players.indexOf(currentPlayer) + 1);
+//
+//        // if all players made his turns, start new round
+//        int movedPlayers = 0;
+//        for (Player p: players) if (p.isMoved()) movedPlayers++;
+//        if (movedPlayers >= players.size()) {
+//            roundCounter++;
+//            for (Player p: players) p.setMovedState(false);
+//        }
+//
+//        // if label presents, update him
+//        if (roundCounterLabel != null) roundCounterLabel.setText(toString());
+//    }
 
     @Override
     public String toString() {
