@@ -229,8 +229,8 @@ class GameScreen implements Screen {
         }
         else if (currentRound.getTurnPhase() == Round.TurnPhase.END) {
             System.out.println("TurnPhase.END");
-            // change currentPlayer to next player;
-            // if all players moved, start new round
+            currentRound.endTurn();
+            currentRound.setTurnPhase(Round.TurnPhase.START);
         }
 
         // Update camera position

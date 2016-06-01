@@ -18,6 +18,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * @author Sasha Kvachenko
@@ -31,7 +32,6 @@ import java.util.ArrayList;
 public class Round {
 
     public class RoundCounterLabel extends Label {
-
         public RoundCounterLabel(CharSequence text, Skin skin, String styleName) {
             super(text, skin, styleName);
             updateCounter();
@@ -80,6 +80,20 @@ public class Round {
 
     public TurnPhase getTurnPhase() {
         return turnPhase;
+    }
+
+    public void endTurn() {
+        // if all players made his turns, start new round
+        Iterator<Player> playersItr = players.listIterator(players.indexOf(currentPlayer)+1);
+        if (playersItr.hasNext()) {
+            currentPlayer = playersItr.next();
+        }
+        else {
+            for (Player p: players) p.setMovedState(false);
+            roundCounter++;
+            currentPlayer = players.get(0);
+        }
+        //setTurnPhase(TurnPhase.START);
     }
 
 //    public void update() {
