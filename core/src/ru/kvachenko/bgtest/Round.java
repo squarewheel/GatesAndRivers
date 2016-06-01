@@ -28,6 +28,7 @@ import java.util.Iterator;
  *         Round ends when all players have complete their turns (made their move). In round end checks win conditions,
  *         if mo one player resolve win conditions, starts new round.
  *         Turn of each player divided into several phases.
+ *         TODO: update description
  */
 public class Round {
 

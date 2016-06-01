@@ -50,16 +50,16 @@ class GameScreen implements Screen {
     private OrthogonalTiledMapRenderer mapRenderer;
     private int worldWidth;
     private int worldHeight;
-    //private ArrayList<ChipActor> players;
     private DiceWidget dice;
 
     // Temp variables
+    boolean debug = false;
     //private Player currentPlayer;
     //int viewWidth = 1200;
     //int viewHeight = 600;
 
     GameScreen(BoardGame bg) {
-        // General
+        // Base initialization
         game = bg;
         worldWidth = 64 * 32;
         worldHeight = 64 * 32;
@@ -169,10 +169,12 @@ class GameScreen implements Screen {
         uiTable.top();
         uiTable.add(statsList).left().top();
         uiTable.row().expandY();
-        uiTable.add(moveForwardButton).expandX().right().bottom().padRight(5);
-        uiTable.row();
-        uiTable.add(moveBackwardButton).expandX().right().bottom().padRight(5);
-        uiTable.row();
+        if (debug) {
+            uiTable.add(moveForwardButton).expandX().right().bottom().padRight(5);
+            uiTable.row();
+            uiTable.add(moveBackwardButton).expandX().right().bottom().padRight(5);
+            uiTable.row();
+        }
         uiTable.add(dice).expandX().right().bottom().pad(1, 0, 5, 5);
         //uiTable.setDebug(true);
 
@@ -207,28 +209,28 @@ class GameScreen implements Screen {
 
         // Update players state
         if (currentRound.getTurnPhase() == Round.TurnPhase.START) {
-            System.out.println("TurnPhase.START");
+            //System.out.println("TurnPhase.START");
             if (dice.getState() == DiceWidget.State.ROLLED) dice.setState(DiceWidget.State.NOT_ROLLED);
             else if (dice.getState() == DiceWidget.State.ROLLING) currentRound.setTurnPhase(Round.TurnPhase.DICE_ROLLING);
         }
         else if (currentRound.getTurnPhase() == Round.TurnPhase.DICE_ROLLING) {
-            System.out.println("TurnPhase.DICE_ROLLING");
+            //System.out.println("TurnPhase.DICE_ROLLING");
             if (dice.getState() == DiceWidget.State.ROLLED) {
                 currentRound.setTurnPhase(Round.TurnPhase.DICE_ROLLED);
             }
         }
         else if (currentRound.getTurnPhase() == Round.TurnPhase.DICE_ROLLED) {
-            System.out.println("TurnPhase.DICE_ROLLED");
+            //System.out.println("TurnPhase.DICE_ROLLED");
             currentRound.getCurrentPlayer().setMoves(dice.getRollResult());
             currentRound.setTurnPhase(Round.TurnPhase.MOVEMENT);
         }
         else if (currentRound.getTurnPhase() == Round.TurnPhase.MOVEMENT) {
-            System.out.println("TurnPhase.MOVEMENT");
+            //System.out.println("TurnPhase.MOVEMENT");
             currentRound.getCurrentPlayer().move();
             if (currentRound.getCurrentPlayer().isMoved()) currentRound.setTurnPhase(Round.TurnPhase.END);
         }
         else if (currentRound.getTurnPhase() == Round.TurnPhase.END) {
-            System.out.println("TurnPhase.END");
+            //System.out.println("TurnPhase.END");
             currentRound.endTurn();
             currentRound.setTurnPhase(Round.TurnPhase.START);
         }
