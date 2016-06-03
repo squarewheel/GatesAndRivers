@@ -15,13 +15,13 @@
 package ru.kvachenko.bgtest;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
@@ -36,20 +36,20 @@ public class DiceWidget extends Image {
 
     /** Possible dice states */
     public enum State {
-        NOT_ROLLED,
+        READY,
         ROLLING,
         ROLLED
     }
 
-    private TextureRegionDrawable currentImage;
-    private TextureRegion[] rollFrames;
-    private Animation diceRoll;
-    private float stateTime;
-    private float rollingTimer;
+    private TextureRegionDrawable currentImage; // image to display
+    private TextureRegion[] rollFrames;         // each array cell contains image of one dice side
+    private Animation diceRoll;                 // use to emulate dice rolling
+    private float stateTime;                    // need to calculate animation
+    private float rollingTimer;                 // indicate time to show rolling animation
     private int lastRollResult;
     private int previousRollResult;
-    private Label rollResultLabel;
-    private boolean inactive;
+    private Label rollResultLabel;              // label for display last roll result
+    private boolean inactive;                   // if dice inactive do image transparency (just visual effect)
     private State state;
 
     public DiceWidget() {
@@ -60,12 +60,9 @@ public class DiceWidget extends Image {
         lastRollResult = 6;
         previousRollResult = 5;
         inactive = false;
-        state = State.NOT_ROLLED;
+        state = State.READY;
 
-        /*
-         * Create animation
-         * @SEE https://github.com/libgdx/libgdx/wiki/2D-Animation
-         */
+        // Create animation, see https://github.com/libgdx/libgdx/wiki/2D-Animation
         int frameCols = 3;
         int frameRows = 2;
         Texture diceSheet = new Texture(Gdx.files.internal("diceWhite.png"));
@@ -82,20 +79,20 @@ public class DiceWidget extends Image {
         diceRoll = new Animation(0.1f, rollFrames);
         diceRoll.setPlayMode(Animation.PlayMode.LOOP_RANDOM);
 
-        // Input listener
-        addListener(new InputListener(){
-            @Override
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                return true;
-            }
-
-            @Override
-            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                if (x > 0 && x < 64 && y > 0 && y < 64) {
-                    roll();
-                }
-            }
-        });
+//        // Input listener
+//        addListener(new InputListener(){
+//            @Override
+//            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+//                return true;
+//            }
+//
+//            @Override
+//            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+//                if (x > 0 && x < 64 && y > 0 && y < 64) {
+//                    roll();
+//                }
+//            }
+//        });
 
         // set start image
         setSide();
@@ -128,8 +125,7 @@ public class DiceWidget extends Image {
     }
 
     public void roll() {
-        if (state == State.NOT_ROLLED) {
-            System.out.println("debug");
+        if (state == State.READY) {
             previousRollResult = lastRollResult;
             lastRollResult = MathUtils.random(1, 6);
             rollingTimer = MathUtils.random(2f, 6f);
@@ -150,22 +146,24 @@ public class DiceWidget extends Image {
             // Otherwise set random dice side image
             if (rollingTimer <= 0) {
                 //rolled = false;
+                System.out.println(rollingTimer);
                 state = State.ROLLED;
                 setSide();
                 if (rollResultLabel != null) rollResultLabel.setText(toString());
             }
             else currentImage.setRegion(diceRoll.getKeyFrame(stateTime, true));
         }
-        if (inactive) {
-            // TODO: add transparency
-            setColor(Color.LIGHT_GRAY);
-        }
         setDrawable(currentImage);
     }
 
-    public void activate() { inactive = false; }
+    public void activate() {
+        addAction(Actions.alpha(1f));
+        inactive = false; }
 
-    public void unActivate() { inactive = true; }
+    public void unActivate() {
+        addAction(Actions.alpha(0.6f));
+        inactive = true;
+    }
 
     public boolean isActive() { return !inactive; }
 

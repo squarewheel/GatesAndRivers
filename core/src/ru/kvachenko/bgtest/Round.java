@@ -50,6 +50,7 @@ public class Round {
 
     /** Possible turn phases */
     public enum TurnPhase {
+        PREPARATION,
         START,
         DICE_ROLLING,
         DICE_ROLLED,
@@ -70,7 +71,7 @@ public class Round {
         players = p;
         roundCounter = 1;
         currentPlayer = p.get(0);
-        turnPhase = TurnPhase.START;
+        turnPhase = TurnPhase.PREPARATION;
     }
 
     public void setRoundCounterLabel(Label l) { roundCounterLabel = l; }

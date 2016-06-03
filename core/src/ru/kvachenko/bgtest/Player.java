@@ -75,6 +75,8 @@ public class Player {
 
     public void switchMovementState() { moved = !moved; }
 
+    public void makePlayeble() { playable = true; }
+
     public void setMovedState(boolean b) { moved = b; }
 
     public void setMoves(int moves) {

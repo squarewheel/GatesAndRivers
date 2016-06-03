@@ -30,6 +30,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
@@ -51,6 +52,7 @@ class GameScreen implements Screen {
     private int worldWidth;
     private int worldHeight;
     private DiceWidget dice;
+    private Label infoLabel;
 
     // Temp variables
     boolean debug = false;
@@ -71,7 +73,7 @@ class GameScreen implements Screen {
         dice.addListener(new InputListener(){
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                if (dice.isActive() && dice.getState() == DiceWidget.State.NOT_ROLLED) {
+                if (dice.isActive() && dice.getState() == DiceWidget.State.READY) {
                     dice.roll();
                     currentRound.setTurnPhase(Round.TurnPhase.DICE_ROLLING);
                 }
@@ -103,23 +105,22 @@ class GameScreen implements Screen {
         // Players and Round initialization
         new Player();
         new Player();
+        Player.getPlayersList().get(0).makePlayeble();
         for (Player p: Player.getPlayersList()) { mainStage.addActor(p.getChip()); }
         currentRound = new Round(Player.getPlayersList());
 
         // User interface
-        //List<Label> statsList = new List<Label>(bg.skin);
-        Label customLabel = new Label("I'm Love my Wife ", bg.skin, "labelStyle");
+        infoLabel = new Label("I'm Love my Wife ", bg.skin, "labelStyle");
         Label rollResultLabel = new Label("Roll Result: ", bg.skin, "labelStyle");
         Label rollResult = new Label("-", bg.skin, "labelStyle");
         dice.setRollResultLabel(rollResult);
         Table statsList = new Table();
-        statsList.add(customLabel).left().top().pad(5, 5, 0, 0);
-        statsList.row();
+        //statsList.add(customLabel).left().top().pad(5, 5, 0, 0);
+        //statsList.row();
         statsList.add(rollResultLabel).right().top().pad(5, 5, 0, 0);
         statsList.add(rollResult).left().top().padTop(5);
         statsList.row();
         statsList.add(currentRound.new RoundCounterLabel("", bg.skin, "labelStyle")).right().top().padTop(5);
-        //statsList.debug();
         final TextButton moveForwardButton = new TextButton("Move Forward", bg.skin, "textButtonStyle");
         moveForwardButton.addListener(new InputListener() {
             @Override
@@ -168,14 +169,15 @@ class GameScreen implements Screen {
         uiTable.top();
         uiTable.add(statsList).left().top();
         uiTable.row().expandY();
+        uiTable.add(infoLabel);
         if (debug) {
             uiTable.add(moveForwardButton).expandX().right().bottom().padRight(5);
             uiTable.row();
             uiTable.add(moveBackwardButton).expandX().right().bottom().padRight(5);
             uiTable.row();
         }
+        uiTable.row();
         uiTable.add(dice).expandX().right().bottom().pad(1, 0, 5, 5);
-        //uiTable.setDebug(true);
 
         // Input handlers
         //uiStage.addListener(new InputListener(){});
@@ -201,43 +203,76 @@ class GameScreen implements Screen {
             }
 
         });
+
+        // Temp and debug section
+        uiTable.setDebug(true);
+        //statsList.debug();
+        //uiStage.addActor(customLabel);
+        System.out.println(uiTable.getCell(infoLabel).getMaxWidth());
+        System.out.println(uiTable.getCell(infoLabel).getMaxHeight());
+        //uiTable.getCell(customLabel).getMaxHeight();
+        //infoLabel.setOrigin(infoLabel.getWidth()/2, infoLabel.getHeight()/2);
+        //infoLabel.addAction(Actions.moveTo(uiStage.getWidth()/2, uiStage.getHeight()/2));
+        infoLabel.addAction(Actions.fadeOut(2));
     }
 
     private void update(float dt) {
         // Update UI
 
         // Update players state
-        if (currentRound.getTurnPhase() == Round.TurnPhase.START) {
-            //System.out.println("TurnPhase.START");
-            if (!currentRound.getCurrentPlayer().isPlayable()) {
-                dice.unActivate();
-                dice.roll();
-            }
-            else dice.activate();
-            if (dice.getState() == DiceWidget.State.ROLLING) currentRound.setTurnPhase(Round.TurnPhase.DICE_ROLLING);
-        }
-        else if (currentRound.getTurnPhase() == Round.TurnPhase.DICE_ROLLING) {
-            // TODO: looks like this phase is not necessary
-            //System.out.println("TurnPhase.DICE_ROLLING");
-            if (dice.getState() == DiceWidget.State.ROLLED) {
-                currentRound.setTurnPhase(Round.TurnPhase.DICE_ROLLED);
-            }
-        }
-        else if (currentRound.getTurnPhase() == Round.TurnPhase.DICE_ROLLED) {
-            //System.out.println("TurnPhase.DICE_ROLLED");
-            currentRound.getCurrentPlayer().setMoves(dice.getRollResult());
-            currentRound.setTurnPhase(Round.TurnPhase.MOVEMENT);
-        }
-        else if (currentRound.getTurnPhase() == Round.TurnPhase.MOVEMENT) {
-            //System.out.println("TurnPhase.MOVEMENT");
-            currentRound.getCurrentPlayer().move();
-            if (currentRound.getCurrentPlayer().isMoved()) currentRound.setTurnPhase(Round.TurnPhase.END);
-        }
-        else if (currentRound.getTurnPhase() == Round.TurnPhase.END) {
-            //System.out.println("TurnPhase.END");
-            dice.setState(DiceWidget.State.NOT_ROLLED);
-            currentRound.endTurn();
-            currentRound.setTurnPhase(Round.TurnPhase.START);
+        switch (currentRound.getTurnPhase()) {
+            case PREPARATION:   // Prepare game state to new turn
+                if (!infoLabel.hasActions()) {
+                    if (currentRound.getCurrentPlayer().isPlayable()) dice.activate();
+                    dice.setState(DiceWidget.State.READY);
+                    currentRound.setTurnPhase(Round.TurnPhase.START);
+                }
+                break;
+
+            case START: // Start of current player turn. Phase end when user or ai roll dice
+                //System.out.println("TurnPhase.START");
+                if (!currentRound.getCurrentPlayer().isPlayable()) {
+                    System.out.println(dice.getState());
+                    dice.roll();
+                }
+                if (dice.getState() == DiceWidget.State.ROLLING)
+                    currentRound.setTurnPhase(Round.TurnPhase.DICE_ROLLING);
+                break;
+
+            case DICE_ROLLING:  // Wait when dice roll animation finish
+                // TODO: looks like this phase is not necessary
+                //System.out.println("TurnPhase.DICE_ROLLING");
+                if (dice.getState() == DiceWidget.State.ROLLED) {
+                    currentRound.setTurnPhase(Round.TurnPhase.DICE_ROLLED);
+                }
+                break;
+
+            case DICE_ROLLED:   // Determines number of fields what current player must go
+                //System.out.println("TurnPhase.DICE_ROLLED");
+                currentRound.getCurrentPlayer().setMoves(dice.getRollResult());
+                currentRound.setTurnPhase(Round.TurnPhase.MOVEMENT);
+                break;
+
+            case MOVEMENT:  // Move current player chip
+                //System.out.println("TurnPhase.MOVEMENT");
+                currentRound.getCurrentPlayer().move();
+                if (currentRound.getCurrentPlayer().isMoved()) {
+                    infoLabel.setText("TURN COMPLETE");
+                    infoLabel.addAction(Actions.sequence(Actions.fadeIn(0.5f), Actions.delay(1.5f), Actions.fadeOut(0.5f)));
+                    currentRound.setTurnPhase(Round.TurnPhase.END);
+                }
+                break;
+
+            case END:   // End current turn
+                //System.out.println("TurnPhase.END");
+                if (!infoLabel.hasActions()) {
+                    infoLabel.setText("NEW TURN");
+                    infoLabel.addAction(Actions.sequence(Actions.fadeIn(0.5f), Actions.delay(1.5f), Actions.fadeOut(0.5f)));
+                    dice.unActivate();
+                    currentRound.endTurn();
+                    currentRound.setTurnPhase(Round.TurnPhase.PREPARATION);
+                }
+                break;
         }
 
         // Update camera position
