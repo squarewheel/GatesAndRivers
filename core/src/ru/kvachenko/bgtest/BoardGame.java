@@ -40,6 +40,8 @@ public class BoardGame extends Game {
         BitmapFont defaultFont = new BitmapFont(Gdx.files.local("pixelfont16.fnt"));
         //defaultFont.setColor(Color.DARK_GRAY);
         skin.add("defaultFont", defaultFont);
+        skin.add("infoLabelFont", new BitmapFont(Gdx.files.local("8bit64.fnt")));
+        skin.add("infoLabelStyle", new Label.LabelStyle(skin.getFont("infoLabelFont"), Color.PURPLE));
         skin.add("labelStyle", new Label.LabelStyle(skin.getFont("defaultFont"), Color.LIME));
         skin.add("buttonUpImg", new NinePatch(new Texture("grey_button12.png"), 10, 10, 10, 10));
         skin.add("buttonDownImg", new NinePatch(new Texture("grey_button13.png"), 10, 10, 10, 10));

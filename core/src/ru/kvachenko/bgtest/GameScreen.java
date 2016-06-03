@@ -110,7 +110,7 @@ class GameScreen implements Screen {
         currentRound = new Round(Player.getPlayersList());
 
         // User interface
-        infoLabel = new Label("I'm Love my Wife ", bg.skin, "labelStyle");
+        infoLabel = new Label("Im Love my Wife", bg.skin, "infoLabelStyle");
         Label rollResultLabel = new Label("Roll Result: ", bg.skin, "labelStyle");
         Label rollResult = new Label("-", bg.skin, "labelStyle");
         dice.setRollResultLabel(rollResult);
