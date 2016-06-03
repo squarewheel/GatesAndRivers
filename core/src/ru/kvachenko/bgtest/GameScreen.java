@@ -242,9 +242,7 @@ class GameScreen implements Screen {
             case DICE_ROLLING:  // Wait when dice roll animation finish
                 // TODO: looks like this phase is not necessary
                 //System.out.println("TurnPhase.DICE_ROLLING");
-                if (dice.getState() == DiceWidget.State.ROLLED) {
-                    currentRound.setTurnPhase(Round.TurnPhase.DICE_ROLLED);
-                }
+                if (dice.getState() == DiceWidget.State.ROLLED) currentRound.setTurnPhase(Round.TurnPhase.DICE_ROLLED);
                 break;
 
             case DICE_ROLLED:   // Determines number of fields what current player must go
