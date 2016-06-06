@@ -40,6 +40,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
  *         <p>
  *         Class for main game screen.
  */
+// TODO: add dot in center of screen and bind camera position ti that dot
 class GameScreen implements Screen {
     private BoardGame game;
     private Round currentRound;

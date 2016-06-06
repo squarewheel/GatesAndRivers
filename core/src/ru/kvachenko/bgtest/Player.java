@@ -56,7 +56,7 @@ public class Player {
         // Create actor chip
         Texture playerTexture = new Texture("chip_white.png");
         playerTexture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
-        chip = new ChipActor(new TextureRegion(playerTexture, 64, 64), FieldActor.getFieldsList().get(0));
+        chip = new ChipActor();
         chip.setColor(colors.remove(0));
         chip.setSize(32, 32);
     }
@@ -73,7 +73,7 @@ public class Player {
         }
     }
 
-    public void switchMovementState() { moved = !moved; }
+    //public void switchMovementState() { moved = !moved; }
 
     public void makePlayeble() { playable = true; }
 

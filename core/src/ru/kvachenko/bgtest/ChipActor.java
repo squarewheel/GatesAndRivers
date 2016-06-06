@@ -14,6 +14,7 @@
 
 package ru.kvachenko.bgtest;
 
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -31,6 +32,18 @@ public class ChipActor extends AbstractActor {
     private Vector2 offset;
     private boolean busy;
 
+    public ChipActor() {
+        super();
+        Texture playerTexture = (new Texture("chip_white.png"));
+        playerTexture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        setTexture(new TextureRegion(playerTexture, 64, 64));
+        currentField = FieldActor.getFieldsList().get(0);
+        busy = false;
+        offset = new Vector2();
+        setPosition(currentField.getX() + 32, currentField.getY() + 32*3);
+    }
+
+/*
     public ChipActor(TextureRegion r, FieldActor startingField) {
         super(r);
         currentField = startingField;
@@ -38,6 +51,7 @@ public class ChipActor extends AbstractActor {
         offset = new Vector2();
         setPosition(currentField.getX() + 32, currentField.getY() + 32*3);
     }
+*/
 
     public boolean isBusy() { return busy; }
 
@@ -70,9 +84,7 @@ public class ChipActor extends AbstractActor {
         super.act(delta);
 
         // If chip has not actions, but still busy, need to release him
-        if (!hasActions() && isBusy()) {
-            busy = false;
-        }
+        if (!hasActions() && isBusy()) busy = false;
     }
 
 }
