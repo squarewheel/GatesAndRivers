@@ -74,9 +74,12 @@ class GameScreen implements Screen {
         dice.addListener(new InputListener(){
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                if (dice.isActive() && dice.getState() == DiceWidget.State.READY) {
-                    dice.roll();
-                    currentRound.setTurnPhase(Round.TurnPhase.DICE_ROLLING);
+                // Dice can be rolled only in START phase
+                if (currentRound.getTurnPhase() == Round.TurnPhase.START) {
+                    if (dice.isActive() && dice.getState() == DiceWidget.State.READY) {
+                        dice.roll();
+                        currentRound.setTurnPhase(Round.TurnPhase.DICE_ROLLING);
+                    }
                 }
             }
 
@@ -108,7 +111,7 @@ class GameScreen implements Screen {
         new Player();
         new Player();
         new Player();
-        Player.getPlayersList().get(0).makePlayeble();
+        Player.getPlayersList().get(0).makePlayable();
         for (Player p: Player.getPlayersList()) { mainStage.addActor(p.getChip()); }
         currentRound = new Round(Player.getPlayersList());
 
@@ -243,12 +246,15 @@ class GameScreen implements Screen {
                 break;
 
             case DICE_ROLLING:  // Wait when dice roll animation finish
-                // TODO: looks like this phase is not necessary
                 //System.out.println("TurnPhase.DICE_ROLLING");
-                if (dice.getState() == DiceWidget.State.ROLLED) currentRound.setTurnPhase(Round.TurnPhase.DICE_ROLLED);
+                if (dice.getState() == DiceWidget.State.ROLLED) {
+                    dice.unActivate();
+                    currentRound.setTurnPhase(Round.TurnPhase.DICE_ROLLED);
+                }
                 break;
 
             case DICE_ROLLED:   // Determines number of fields what current player must go
+                // TODO: looks like this phase is not necessary
                 //System.out.println("TurnPhase.DICE_ROLLED");
                 currentRound.getCurrentPlayer().setMoves(dice.getRollResult());
                 currentRound.setTurnPhase(Round.TurnPhase.MOVEMENT);
@@ -269,7 +275,7 @@ class GameScreen implements Screen {
                 if (!infoLabel.hasActions()) {
                     infoLabel.setText("NEW TURN");
                     infoLabel.addAction(Actions.sequence(Actions.fadeIn(0.5f), Actions.delay(1.5f), Actions.fadeOut(0.5f)));
-                    dice.unActivate();
+                    //dice.unActivate();
                     currentRound.endTurn();
                     currentRound.setTurnPhase(Round.TurnPhase.PREPARATION);
                 }
@@ -278,6 +284,7 @@ class GameScreen implements Screen {
 
         // Update camera position
         Camera mainCamera = mainStage.getCamera();
+        // TODO: track only current player chip
         for (Player p: Player.getPlayersList()) {    // if player chip movement centralize camera on chip
             ChipActor chip = p.getChip();
             if (chip.isBusy()) {

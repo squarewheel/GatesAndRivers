@@ -73,14 +73,14 @@ public class Player {
             else {
                 moved = true;
                 // TODO: refactor moved state conditions
-                //chip.takePosition();
+                chip.takePosition();
             }
         }
     }
 
     //public void switchMovementState() { moved = !moved; }
 
-    public void makePlayeble() { playable = true; }
+    public void makePlayable() { playable = true; }
 
     public void setMovedState(boolean b) { moved = b; }
 

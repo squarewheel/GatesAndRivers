@@ -81,23 +81,14 @@ public class FieldActor extends Actor{
     /** Determines chips location on the field */
     private class FieldLayoutPosition {
         private ChipActor owner;            // Current owner of this position
-        //private boolean availability;     // True if position is free
         private float x, y;                 // Current position (relative to field)
 
         FieldLayoutPosition() {
             owner = null;
-            //availability = true;
             // Initial position is center of field 5x5
             x = 2 * (getWidth()/5);
             y = 2 * (getHeight()/5);
         }
-
-//        FieldLayoutPosition(float initX, float initY) {
-//            owner = null;
-//            setPosition(initX, initY);
-//        }
-
-        //void setAvailability(boolean newState) { availability = newState; }
 
         void setOwner(ChipActor chip) {
             owner = chip;
@@ -111,8 +102,6 @@ public class FieldActor extends Actor{
             x = newX;
             y = newY;
         }
-
-        //boolean isAvailable() { return availability; }
 
         boolean isFree() {
             if (owner == null) return true;
@@ -156,31 +145,21 @@ public class FieldActor extends Actor{
             return positions;
         }
 
-        //void addPosition(FieldLayoutPosition position) { positions.add(position); }
-
     }
 
     /** Field have four possible chip positions.
      *  Positions arranged in rows, each field divided on two rows, by two positions in row. */
     class PositionsLayout {
-        public final static int FIRST_POS = 0;
-        public final static int SECOND_POS = 1;
-        public final static int THIRD_POS = 2;
-        public final static int FOURTH_POS = 3;
+        final static int FIRST_POS = 0;
+        final static int SECOND_POS = 1;
+        final static int THIRD_POS = 2;
+        final static int FOURTH_POS = 3;
 
         private ArrayList<FieldLayoutPosition> positionsList;
-        //private ArrayList<ChipActor> chips; // Chips on the current field
-        //private LinkedHashMap<FieldLayoutPosition, ChipActor> positionsMap;
-        /*  Indent from left edge of field; determines X position of chip */
-        //private float position1, position2, position3, position4;
         private float positionWidth;            // By default, 1/5 of field width
         private float positionHeight;           // By default, 1/5 of field height
         private float fieldCenterX;             // Indent from left edge to center of field
         private float fieldCenterY;             // Indent from bottom edge to center of field
-        //private float rowOneIndent;               /* First row indent from bottom edge of field;
-        //                                         determines Y position of each chip in row */
-        //private float rowTwoIndent;               /* Second row indent from bottom edge of field;
-        //                                         determines Y position of each chip in row */
         private FieldLayoutRow firstRow;
         private FieldLayoutRow secondRow;
 
@@ -188,8 +167,8 @@ public class FieldActor extends Actor{
             positionsList = new ArrayList<FieldLayoutPosition>(4);
             firstRow = new FieldLayoutRow();
             secondRow = new FieldLayoutRow();
-            for (FieldLayoutPosition p: firstRow.getPositions()) positionsList.add(p);
-            for (FieldLayoutPosition p: secondRow.getPositions()) positionsList.add(p);
+            Collections.addAll(positionsList, firstRow.getPositions());
+            Collections.addAll(positionsList, secondRow.getPositions());
             setSize();
             //for (int i = 0; i < 4; i++) positionsList.add(new FieldLayoutPosition());
         }
@@ -201,8 +180,6 @@ public class FieldActor extends Actor{
             fieldCenterY = 2 * positionHeight;
             firstRow.setIndent(2 * positionHeight);
             secondRow.setIndent(positionHeight);
-            //rowOneIndent = 2 * positionHeight;
-            //rowTwoIndent = positionHeight;
 
             if (!positionsList.isEmpty()) {
                 positionsList.get(FIRST_POS).setPosition(fieldCenterX, firstRow.getIndent());
@@ -216,7 +193,6 @@ public class FieldActor extends Actor{
             FieldLayoutPosition p = nextFreePosition();
             switch (p.getIndex()) {
                 case FIRST_POS:
-                    //chip.addAction(Actions.moveBy());
                     p.setOwner(chip);
                     break;
                 case SECOND_POS:
@@ -232,6 +208,10 @@ public class FieldActor extends Actor{
                     p.setOwner(chip);
                     break;
             }
+        }
+
+        void removeChip(ChipActor chip) {
+
         }
 
         //void addPosition(FieldLayoutPosition p) { positionsList.add(p); }

@@ -59,8 +59,9 @@ public class DiceWidget extends Image {
         rollingTimer = 0;
         lastRollResult = 6;
         previousRollResult = 5;
-        inactive = false;
+        //inactive = true;
         state = State.READY;
+        unActivate();
 
         // Create animation, see https://github.com/libgdx/libgdx/wiki/2D-Animation
         int frameCols = 3;
@@ -157,11 +158,11 @@ public class DiceWidget extends Image {
     }
 
     public void activate() {
-        addAction(Actions.alpha(1f));
+        addAction(Actions.alpha(1f, 0.5f));
         inactive = false; }
 
     public void unActivate() {
-        addAction(Actions.alpha(0.6f));
+        addAction(Actions.alpha(0.6f, 0.1f));
         inactive = true;
     }
 

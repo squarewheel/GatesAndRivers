@@ -28,17 +28,17 @@ import ru.kvachenko.basegame.AbstractActor;
  */
 public class ChipActor extends AbstractActor {
 
-    /** Possible chip states */
-    public enum State {
-        READY,
-        MOVEMENT,
-        POSITIONING,
-        MOVED
-    }
+//    /** Possible chip states */
+//    public enum State {
+//        READY,
+//        MOVEMENT,
+//        POSITIONING,
+//        MOVED
+//    }
 
     private FieldActor currentField;    // Current location of chip
     private Vector2 offset;
-    private State state;
+    //private State state;
     private boolean busy;               // While chip moves she is busy
 
     public ChipActor() {
@@ -49,7 +49,7 @@ public class ChipActor extends AbstractActor {
         currentField = FieldActor.getFieldsList().get(0);
         busy = false;
         offset = new Vector2();
-        state = State.READY;
+        //state = State.READY;
         setPosition(currentField.getX() + 64, currentField.getY() + 64);
         //takePosition();
     }
@@ -84,19 +84,25 @@ public class ChipActor extends AbstractActor {
         }
     }
 
+    /** Move chip to center of target field. By default chip takes center of target field.
+     *  @param targetField field, which should be occupied by chip */
     private void moveToField(FieldActor targetField) {
-        state = State.MOVEMENT;
+        //state = State.MOVEMENT;
         // TODO: remove chip from current field layout
         busy = true;
-        offset.set(targetField.getX() + targetField.getWidth()/2 - getX(),
-                   targetField.getY() + targetField.getHeight()/2 - getY());
-        addAction(Actions.sequence(Actions.moveBy(offset.x, offset.y, 2), Actions.delay(0.2f)));
+//        offset.set(targetField.getX() + targetField.getLayout().getFieldCenterX() - getX(),
+//                   targetField.getY() + targetField.getLayout().getFieldCenterY() - getY());
+//        addAction(Actions.after(Actions.sequence(Actions.moveBy(offset.x, offset.y, 1.5f), Actions.delay(0.1f))));
+        addAction(Actions.after(Actions.sequence(
+                Actions.moveBy(targetField.getX() + targetField.getLayout().getFieldCenterX() - getX(),
+                               targetField.getY() + targetField.getLayout().getFieldCenterY() - getY(), 1.5f), Actions.delay(0.1f))));
         currentField = targetField;
     }
 
     /** Sets the position of the chip relative to other chips on the current field */
     public void takePosition() {
-        state = State.POSITIONING;
+        //state = State.POSITIONING;
+        busy = true;
         currentField.getLayout().addChip(this);
     }
 
