@@ -17,7 +17,6 @@ package ru.kvachenko.bgtest;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import ru.kvachenko.basegame.AbstractActor;
 
@@ -28,9 +27,19 @@ import ru.kvachenko.basegame.AbstractActor;
  *         Provides player chip code.
  */
 public class ChipActor extends AbstractActor {
-    private FieldActor currentField;
+
+    /** Possible chip states */
+    public enum State {
+        READY,
+        MOVEMENT,
+        POSITIONING,
+        MOVED
+    }
+
+    private FieldActor currentField;    // Current location of chip
     private Vector2 offset;
-    private boolean busy;
+    private State state;
+    private boolean busy;               // While chip moves she is busy
 
     public ChipActor() {
         super();
@@ -40,7 +49,9 @@ public class ChipActor extends AbstractActor {
         currentField = FieldActor.getFieldsList().get(0);
         busy = false;
         offset = new Vector2();
-        setPosition(currentField.getX() + 32, currentField.getY() + 32*3);
+        state = State.READY;
+        setPosition(currentField.getX() + 64, currentField.getY() + 64);
+        //takePosition();
     }
 
 /*
@@ -55,8 +66,9 @@ public class ChipActor extends AbstractActor {
 
     public boolean isBusy() { return busy; }
 
-    public Actor getCurrentField() { return currentField; }
+    //public Actor getCurrentField() { return currentField; }
 
+    /** Move chip to next Field */
     public void moveForward() {
         if (isBusy()) return;
         if (currentField.hasNextField()) { // TODO: Chip must change movement direction if false
@@ -64,6 +76,7 @@ public class ChipActor extends AbstractActor {
         }
     }
 
+    /** Move chip to previous Field */
     public void moveBackward() {
         if (isBusy()) return;
         if (currentField.hasPreviousField()) { // TODO: Chip must change movement direction if false
@@ -72,6 +85,8 @@ public class ChipActor extends AbstractActor {
     }
 
     private void moveToField(FieldActor targetField) {
+        state = State.MOVEMENT;
+        // TODO: remove chip from current field layout
         busy = true;
         offset.set(targetField.getX() + targetField.getWidth()/2 - getX(),
                    targetField.getY() + targetField.getHeight()/2 - getY());
@@ -79,11 +94,17 @@ public class ChipActor extends AbstractActor {
         currentField = targetField;
     }
 
+    /** Sets the position of the chip relative to other chips on the current field */
+    public void takePosition() {
+        state = State.POSITIONING;
+        currentField.getLayout().addChip(this);
+    }
+
     @Override
     public void act(float delta) {
         super.act(delta);
 
-        // If chip has not actions, but still busy, need to release him
+        // If chip has not actions, but still busy, need to release she
         if (!hasActions() && isBusy()) busy = false;
     }
 

@@ -54,11 +54,12 @@ public class Player {
         playable = false;
 
         // Create actor chip
-        Texture playerTexture = new Texture("chip_white.png");
-        playerTexture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        //Texture playerTexture = new Texture("chip_white.png");
+        //playerTexture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
         chip = new ChipActor();
         chip.setColor(colors.remove(0));
         chip.setSize(32, 32);
+        chip.takePosition();
     }
 
     public ChipActor getChip() { return chip; }
@@ -67,9 +68,13 @@ public class Player {
         if (!isMoved() && !chip.isBusy()) {
             if (moves > 0) {
                 moves--;
-                getChip().moveForward();
+                chip.moveForward();
             }
-            else moved = true;
+            else {
+                moved = true;
+                // TODO: refactor moved state conditions
+                //chip.takePosition();
+            }
         }
     }
 
