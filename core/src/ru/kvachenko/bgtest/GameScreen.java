@@ -111,7 +111,7 @@ class GameScreen implements Screen {
         new Player();
         new Player();
         new Player();
-        Player.getPlayersList().get(0).makePlayable();
+        //Player.getPlayersList().get(0).makePlayable();
         for (Player p: Player.getPlayersList()) { mainStage.addActor(p.getChip()); }
         currentRound = new Round(Player.getPlayersList());
 
@@ -294,7 +294,7 @@ class GameScreen implements Screen {
 
                 // debug
                 //System.out.println("cam pos: " + mainCamera.position);
-                //System.out.println("chip pos: " + p.getX() / 2 + " " + p.getY() / 2);
+                //System.out.println("chip pos: " + p.getPositionX() / 2 + " " + p.getPositionY() / 2);
                 //System.out.println();
             }
         }

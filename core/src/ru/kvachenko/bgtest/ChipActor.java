@@ -60,7 +60,7 @@ public class ChipActor extends AbstractActor {
         currentField = startingField;
         busy = false;
         offset = new Vector2();
-        setPosition(currentField.getX() + 32, currentField.getY() + 32*3);
+        setPosition(currentField.getPositionX() + 32, currentField.getPositionY() + 32*3);
     }
 */
 
@@ -70,28 +70,30 @@ public class ChipActor extends AbstractActor {
 
     /** Move chip to next Field */
     public void moveForward() {
-        if (isBusy()) return;
+        //if (isBusy()) return;
         if (currentField.hasNextField()) { // TODO: Chip must change movement direction if false
             moveToField(currentField.getNextField());
         }
+        else moveBackward();
     }
 
     /** Move chip to previous Field */
     public void moveBackward() {
-        if (isBusy()) return;
+        //if (isBusy()) return;
         if (currentField.hasPreviousField()) { // TODO: Chip must change movement direction if false
             moveToField(currentField.getPreviousField());
         }
+        else moveForward();
     }
 
     /** Move chip to center of target field. By default chip takes center of target field.
      *  @param targetField field, which should be occupied by chip */
     private void moveToField(FieldActor targetField) {
         //state = State.MOVEMENT;
-        // TODO: remove chip from current field layout
+        currentField.getLayout().removeChip(this);
         busy = true;
-//        offset.set(targetField.getX() + targetField.getLayout().getFieldCenterX() - getX(),
-//                   targetField.getY() + targetField.getLayout().getFieldCenterY() - getY());
+//        offset.set(targetField.getPositionX() + targetField.getLayout().getFieldCenterX() - getPositionX(),
+//                   targetField.getPositionY() + targetField.getLayout().getFieldCenterY() - getPositionY());
 //        addAction(Actions.after(Actions.sequence(Actions.moveBy(offset.x, offset.y, 1.5f), Actions.delay(0.1f))));
         addAction(Actions.after(Actions.sequence(
                 Actions.moveBy(targetField.getX() + targetField.getLayout().getFieldCenterX() - getX(),
