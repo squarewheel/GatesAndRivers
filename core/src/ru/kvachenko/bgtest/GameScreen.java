@@ -177,6 +177,7 @@ class GameScreen implements Screen {
         uiTable.row().expandY();
         uiTable.add(infoLabel);
         if (debug) {
+            uiTable.setDebug(true);
             uiTable.add(moveForwardButton).expandX().right().bottom().padRight(5);
             uiTable.row();
             uiTable.add(moveBackwardButton).expandX().right().bottom().padRight(5);
@@ -211,15 +212,12 @@ class GameScreen implements Screen {
         });
 
         // Temp and debug section
-        uiTable.setDebug(true);
         //statsList.debug();
         //uiStage.addActor(customLabel);
-        System.out.println(uiTable.getCell(infoLabel).getMaxWidth());
-        System.out.println(uiTable.getCell(infoLabel).getMaxHeight());
         //uiTable.getCell(customLabel).getMaxHeight();
         //infoLabel.setOrigin(infoLabel.getWidth()/2, infoLabel.getHeight()/2);
         //infoLabel.addAction(Actions.moveTo(uiStage.getWidth()/2, uiStage.getHeight()/2));
-        infoLabel.addAction(Actions.fadeOut(2));
+        //infoLabel.addAction(Actions.fadeOut(2));
     }
 
     private void update(float dt) {
@@ -229,6 +227,9 @@ class GameScreen implements Screen {
         switch (currentRound.getTurnPhase()) {
             case PREPARATION:   // Prepare game state to new turn
                 if (!infoLabel.hasActions()) {
+                    infoLabel.setText(currentRound.getCurrentPlayer().getName() + " TURN");
+                    infoLabel.setColor(currentRound.getCurrentPlayer().getChip().getColor());
+                    infoLabel.addAction(Actions.sequence(Actions.fadeIn(0.5f), Actions.delay(1.5f), Actions.fadeOut(0.5f)));
                     if (currentRound.getCurrentPlayer().isPlayable()) dice.activate();
                     dice.setState(DiceWidget.State.READY);
                     currentRound.setTurnPhase(Round.TurnPhase.START);
@@ -237,12 +238,14 @@ class GameScreen implements Screen {
 
             case START: // Start of current player turn. Phase end when user or ai roll dice
                 //System.out.println("TurnPhase.START");
-                if (!currentRound.getCurrentPlayer().isPlayable()) {
-                    System.out.println(dice.getState());
-                    dice.roll();
+                if (!infoLabel.hasActions()) {
+                    if (!currentRound.getCurrentPlayer().isPlayable()) {
+                        // TODO: method calls many times what it need; possible solution it add players state
+                        dice.roll();
+                    }
+                    if (dice.getState() == DiceWidget.State.ROLLING)
+                        currentRound.setTurnPhase(Round.TurnPhase.DICE_ROLLING);
                 }
-                if (dice.getState() == DiceWidget.State.ROLLING)
-                    currentRound.setTurnPhase(Round.TurnPhase.DICE_ROLLING);
                 break;
 
             case DICE_ROLLING:  // Wait when dice roll animation finish
@@ -264,8 +267,8 @@ class GameScreen implements Screen {
                 //System.out.println("TurnPhase.MOVEMENT");
                 currentRound.getCurrentPlayer().move();
                 if (currentRound.getCurrentPlayer().isMoved()) {
-                    infoLabel.setText("TURN COMPLETE");
-                    infoLabel.addAction(Actions.sequence(Actions.fadeIn(0.5f), Actions.delay(1.5f), Actions.fadeOut(0.5f)));
+//                    infoLabel.setText("TURN COMPLETE");
+//                    infoLabel.addAction(Actions.sequence(Actions.fadeIn(0.5f), Actions.delay(1.5f), Actions.fadeOut(0.5f)));
                     currentRound.setTurnPhase(Round.TurnPhase.END);
                 }
                 break;
@@ -273,8 +276,8 @@ class GameScreen implements Screen {
             case END:   // End current turn
                 //System.out.println("TurnPhase.END");
                 if (!infoLabel.hasActions()) {
-                    infoLabel.setText("NEW TURN");
-                    infoLabel.addAction(Actions.sequence(Actions.fadeIn(0.5f), Actions.delay(1.5f), Actions.fadeOut(0.5f)));
+                    //infoLabel.setText("NEW TURN");
+                    //infoLabel.addAction(Actions.sequence(Actions.fadeIn(0.5f), Actions.delay(1.5f), Actions.fadeOut(0.5f)));
                     //dice.unActivate();
                     currentRound.endTurn();
                     currentRound.setTurnPhase(Round.TurnPhase.PREPARATION);

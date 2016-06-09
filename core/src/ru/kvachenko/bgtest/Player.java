@@ -15,9 +15,8 @@
 package ru.kvachenko.bgtest;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
+import javax.print.attribute.standard.MediaSize;
 import java.util.ArrayList;
 
 /**
@@ -29,10 +28,12 @@ import java.util.ArrayList;
  */
 public class Player {
     private static ArrayList<Color> colors = new ArrayList<Color>();
+    private static ArrayList<String> names = new ArrayList<String>();
     private static ArrayList<Player> playersList = new ArrayList<Player>();
     private static final int MAX_PLAYERS = 4;
 
     private ChipActor chip;
+    private String name;
     private int moves;              // num of fields what player must move in this turn
     private boolean moved;          // indicates whether or not the player has made his move
     private boolean playable;       // indicates who control this player: human or ai
@@ -42,20 +43,22 @@ public class Player {
         colors.add(Color.BLUE);
         colors.add(Color.GREEN);
         colors.add(Color.YELLOW);
+
+        names.add("RED");
+        names.add("BLUE");
+        names.add("GREEN");
+        names.add("YELLOW");
     }
 
     public Player() {
-        // Do not create a player if already created 4
-        if (playersList.size() > MAX_PLAYERS) return;
+        if (playersList.size() > MAX_PLAYERS) return;   // Do not create a player if already created 4
+        playersList.add(this);
 
         // Basic initialization
-        playersList.add(this);
+        name = "Mr " + names.remove(0);
         moved = false;
         playable = false;
 
-        // Create actor chip
-        //Texture playerTexture = new Texture("chip_white.png");
-        //playerTexture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
         chip = new ChipActor();
         chip.setColor(colors.remove(0));
         chip.setSize(32, 32);
@@ -64,6 +67,7 @@ public class Player {
 
     public ChipActor getChip() { return chip; }
 
+    /** Moves player chip to num of fields stored in moves var. */
     public void move() {
         if (!isMoved() && !chip.isBusy()) {
             if (moves > 0) {
@@ -72,6 +76,7 @@ public class Player {
             }
             else {
                 moved = true;
+                if (chip.getDirection() == ChipActor.Direction.BACKWARD) chip.changeDirection();
                 // TODO: refactor moved state conditions
                 chip.takePosition();
             }
@@ -84,16 +89,16 @@ public class Player {
 
     public void setMovedState(boolean b) { moved = b; }
 
+    /** Set num of fields what player must move in this turn. */
     public void setMoves(int moves) {
         if (!isMoved()) this.moves = moves;
     }
 
+    public String getName() { return name; }
+
     //public int getMoves() { return moves; }
 
-    public boolean hasMoves() {
-        if (moves > 0) return true;
-        else return false;
-    }
+//    public boolean hasMoves() { return moves > 0; }
 
     public boolean isMoved() { return moved; }
 

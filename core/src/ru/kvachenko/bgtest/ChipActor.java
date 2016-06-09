@@ -16,7 +16,6 @@ package ru.kvachenko.bgtest;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import ru.kvachenko.basegame.AbstractActor;
 
@@ -36,10 +35,16 @@ public class ChipActor extends AbstractActor {
 //        MOVED
 //    }
 
+    public enum Direction {
+        FORWARD,
+        BACKWARD
+    }
+
     private FieldActor currentField;    // Current location of chip
-    private Vector2 offset;
+    //private Vector2 offset;
     //private State state;
     private boolean busy;               // While chip moves she is busy
+    private Direction direction;
 
     public ChipActor() {
         super();
@@ -48,10 +53,11 @@ public class ChipActor extends AbstractActor {
         setTexture(new TextureRegion(playerTexture, 64, 64));
         currentField = FieldActor.getFieldsList().get(0);
         busy = false;
-        offset = new Vector2();
+        direction = Direction.FORWARD;
+
         //state = State.READY;
-        setPosition(currentField.getX() + 64, currentField.getY() + 64);
-        //takePosition();
+        setPosition(currentField.getX() + currentField.getLayout().getFieldCenterX(),
+                    currentField.getY() + currentField.getLayout().getFieldCenterY());
     }
 
 /*
@@ -70,20 +76,20 @@ public class ChipActor extends AbstractActor {
 
     /** Move chip to next Field */
     public void moveForward() {
-        //if (isBusy()) return;
-        if (currentField.hasNextField()) { // TODO: Chip must change movement direction if false
-            moveToField(currentField.getNextField());
+        if (direction == Direction.FORWARD && currentField.hasNextField()) moveToField(currentField.getNextField());
+        else {
+            direction = Direction.BACKWARD;
+            moveBackward();
         }
-        else moveBackward();
     }
 
     /** Move chip to previous Field */
     public void moveBackward() {
-        //if (isBusy()) return;
-        if (currentField.hasPreviousField()) { // TODO: Chip must change movement direction if false
-            moveToField(currentField.getPreviousField());
+        if (direction == Direction.BACKWARD && currentField.hasPreviousField()) moveToField(currentField.getPreviousField());
+        else {
+            direction = Direction.FORWARD;
+            moveForward();
         }
-        else moveForward();
     }
 
     /** Move chip to center of target field. By default chip takes center of target field.
@@ -92,9 +98,6 @@ public class ChipActor extends AbstractActor {
         //state = State.MOVEMENT;
         currentField.getLayout().removeChip(this);
         busy = true;
-//        offset.set(targetField.getPositionX() + targetField.getLayout().getFieldCenterX() - getPositionX(),
-//                   targetField.getPositionY() + targetField.getLayout().getFieldCenterY() - getPositionY());
-//        addAction(Actions.after(Actions.sequence(Actions.moveBy(offset.x, offset.y, 1.5f), Actions.delay(0.1f))));
         addAction(Actions.after(Actions.sequence(
                 Actions.moveBy(targetField.getX() + targetField.getLayout().getFieldCenterX() - getX(),
                                targetField.getY() + targetField.getLayout().getFieldCenterY() - getY(), 1.5f), Actions.delay(0.1f))));
@@ -108,11 +111,20 @@ public class ChipActor extends AbstractActor {
         currentField.getLayout().addChip(this);
     }
 
+    public Direction getDirection() {
+        return direction;
+    }
+
+    /** Switch chip movement direction. */
+    public void changeDirection() {
+        if (direction == Direction.FORWARD) direction = Direction.BACKWARD;
+        else direction = Direction.FORWARD;
+    }
+
     @Override
     public void act(float delta) {
         super.act(delta);
-
-        // If chip has not actions, but still busy, need to release she
+        // If chip has not actions, but still busy, need to release it
         if (!hasActions() && isBusy()) busy = false;
     }
 
