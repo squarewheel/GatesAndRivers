@@ -91,17 +91,16 @@ public class FieldActor extends Actor{
         void setOwner(ChipActor chip) {
             owner = chip;
             owner.addAction(Actions.after(Actions.moveBy(
-                    // TODO: must be relative current chip position
                     getPositionX() - (chip.getX() - getX()),
                     getPositionY() - (chip.getY() - getY()), 0.3f)));
 //                    getPositionX() - layout.getFieldCenterX(),
 //                    getPositionY() - layout.getFieldCenterY(), 0.3f)));
         }
 
-        ChipActor removeOwner() {
-            ChipActor chip = owner;
+        void removeOwner() {
+            //ChipActor chip = owner;
             owner = null;
-            return chip;
+            //return chip;
         }
 
         void setPosition(float newX, float newY) {
@@ -224,10 +223,10 @@ public class FieldActor extends Actor{
         }
 
         void removeChip(ChipActor chip) {
-            //Queue<ChipActor> shiftQueue = new Queue<ChipActor>();
             for (LayoutPosition p: positionsList) {
                 if (p.getOwner() == chip) {
                     p.removeOwner();
+                    //update();
                     int index = positionsList.indexOf(p);
                     if (index < positionsList.size() - 1) { // if p has next
                         LayoutPosition nextPosition = positionsList.get(index + 1);
@@ -240,7 +239,7 @@ public class FieldActor extends Actor{
                     //update();
                 }
             }
-            //update();
+            update();
             while (shiftQueue.size() > 0) shiftQueue.remove().takePosition();
         }
 
