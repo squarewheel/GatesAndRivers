@@ -17,12 +17,15 @@ package ru.kvachenko.bgtest;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapObjects;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import com.badlogic.gdx.maps.tiled.AtlasTmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
@@ -32,6 +35,7 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 /**
@@ -47,9 +51,10 @@ class GameScreen implements Screen {
     private Stage mainStage;
     private Stage uiStage;
     private Table uiTable;
-    private ScreenViewport tiledViewport;
-    private OrthographicCamera tiledCamera;
-    private OrthogonalTiledMapRenderer mapRenderer;
+    private Image background;
+    //private ScreenViewport tiledViewport;
+    //private OrthographicCamera tiledCamera;
+    //private OrthogonalTiledMapRenderer mapRenderer;
     private int worldWidth;
     private int worldHeight;
     private DiceWidget dice;
@@ -67,6 +72,8 @@ class GameScreen implements Screen {
         worldWidth = 64 * 32;
         worldHeight = 64 * 32;
         mainStage = new Stage(new ScreenViewport());
+        background = new Image(new TextureRegion(new Texture("main_screen2.png")));
+        mainStage.addActor(background);
         uiStage = new Stage(new ScreenViewport());
         uiTable = new Table(bg.skin);
         uiStage.addActor(uiTable);
@@ -90,11 +97,16 @@ class GameScreen implements Screen {
         });
 
         // tmx map and renderer
-        TiledMap tiledMap = new TmxMapLoader().load("main_screen2.tmx");
-        mapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
-        tiledCamera = new OrthographicCamera();
-        tiledViewport = new ScreenViewport(tiledCamera);
-        //tiledCamera.setToOrtho(false, viewWidth, viewHeight);
+        //tiledAtlas = new TextureAtlas(Gdx.files.internal("tileset/main_screen2.atlas"));
+        //TmxMapLoader.Parameters tmxParams = new TmxMapLoader.Parameters();
+        //TiledMap tiledMap = new TmxMapLoader().load("main_screen2.tmx");
+        //AtlasTmxMapLoader.Parameters tmxParams = new AtlasTmxMapLoader.AtlasTiledMapLoaderParameters();
+        TiledMap tiledMap = new AtlasTmxMapLoader().load("main_screen3.tmx");
+        //mapRenderer = new OrthogonalTiledMapRenderer(tiledMap, 1 / 32f);
+        //mapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
+
+        //tiledCamera = new OrthographicCamera();
+        //tiledViewport = new ScreenViewport(tiledCamera);
 
         // Gameboard fields
         MapObjects fieldObjects = tiledMap.getLayers().get("fields").getObjects();
@@ -287,12 +299,11 @@ class GameScreen implements Screen {
 
         // Update camera position
         Camera mainCamera = mainStage.getCamera();
-        // TODO: track only current player chip
-        for (Player p: Player.getPlayersList()) {    // if player chip movement centralize camera on chip
-            ChipActor chip = p.getChip();
-            if (chip.isBusy()) {
-                mainCamera.position.x = chip.getX() - chip.getWidth()/2;
-                mainCamera.position.y = chip.getY() - chip.getHeight()/2;
+        //for (Player p: Player.getPlayersList()) {    // if player chip movement centralize camera on chip
+            ChipActor currentPlayerChip = currentRound.getCurrentPlayer().getChip();
+            if (currentPlayerChip.isBusy()) {
+                mainCamera.position.x = currentPlayerChip.getX() - currentPlayerChip.getWidth()/2;
+                mainCamera.position.y = currentPlayerChip.getY() - currentPlayerChip.getHeight()/2;
                 //mainCamera.update();
 
                 // debug
@@ -300,16 +311,16 @@ class GameScreen implements Screen {
                 //System.out.println("chip pos: " + p.getPositionX() / 2 + " " + p.getPositionY() / 2);
                 //System.out.println();
             }
-        }
+        //}
         mainCamera.position.x = MathUtils.clamp(mainCamera.position.x,
                 mainCamera.viewportWidth/2,
                 worldWidth - mainCamera.viewportWidth/2);
         mainCamera.position.y = MathUtils.clamp(mainCamera.position.y,
                 mainCamera.viewportHeight/2,
                 worldHeight - mainCamera.viewportHeight/2);
-        tiledCamera.position.set(mainStage.getCamera().position);
-        tiledCamera.update();
-        mapRenderer.setView(tiledCamera);
+        //tiledCamera.position.set(mainStage.getCamera().position);
+        //tiledCamera.update();
+        //mapRenderer.setView(tiledCamera);
     }
 
     @Override
@@ -324,7 +335,7 @@ class GameScreen implements Screen {
         /*-----------------------------------OUTPUT SECTION-------------------------------------------------*/
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        mapRenderer.render();
+        //mapRenderer.render();
         mainStage.draw();
         uiStage.draw();
     }
@@ -338,7 +349,7 @@ class GameScreen implements Screen {
     public void resize(int width, int height) {
         mainStage.getViewport().update(width, height);
         uiStage.getViewport().update(width, height, true);
-        tiledViewport.update(width, height);
+        //tiledViewport.update(width, height);
     }
 
     @Override

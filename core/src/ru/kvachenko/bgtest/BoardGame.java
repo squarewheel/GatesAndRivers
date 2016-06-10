@@ -19,10 +19,8 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.NinePatch;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 
 public class BoardGame extends Game {
     InputMultiplexer im;
@@ -39,6 +37,7 @@ public class BoardGame extends Game {
         skin = new Skin();
         BitmapFont defaultFont = new BitmapFont(Gdx.files.local("pixelfont16.fnt"));
         //defaultFont.setColor(Color.DARK_GRAY);
+        //skin.add("backgroundImage", new Image(new TextureRegion(new Texture("main_screen2.png"))));
         skin.add("defaultFont", defaultFont);
         skin.add("infoLabelFont", new BitmapFont(Gdx.files.local("8bit64.fnt")));
         skin.add("infoLabelStyle", new Label.LabelStyle(skin.getFont("infoLabelFont"), Color.WHITE));
