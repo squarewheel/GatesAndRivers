@@ -17,25 +17,22 @@ package ru.kvachenko.bgtest;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.graphics.*;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapObjects;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.AtlasTmxMapLoader;
-import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 /**
@@ -57,6 +54,8 @@ class GameScreen implements Screen {
     //private OrthogonalTiledMapRenderer mapRenderer;
     private int worldWidth;
     private int worldHeight;
+    private Camera camera;
+    private Vector2 camTarget;
     private DiceWidget dice;
     private Label infoLabel;
 
@@ -72,6 +71,8 @@ class GameScreen implements Screen {
         worldWidth = 64 * 32;
         worldHeight = 64 * 32;
         mainStage = new Stage(new ScreenViewport());
+        camera = mainStage.getCamera();
+//        camTarget = new Vector2();
         background = new Image(new TextureRegion(new Texture("main_screen2.png")));
         mainStage.addActor(background);
         uiStage = new Stage(new ScreenViewport());
@@ -96,19 +97,8 @@ class GameScreen implements Screen {
             }
         });
 
-        // tmx map and renderer
-        //tiledAtlas = new TextureAtlas(Gdx.files.internal("tileset/main_screen2.atlas"));
-        //TmxMapLoader.Parameters tmxParams = new TmxMapLoader.Parameters();
-        //TiledMap tiledMap = new TmxMapLoader().load("main_screen2.tmx");
-        //AtlasTmxMapLoader.Parameters tmxParams = new AtlasTmxMapLoader.AtlasTiledMapLoaderParameters();
-        TiledMap tiledMap = new AtlasTmxMapLoader().load("main_screen3.tmx");
-        //mapRenderer = new OrthogonalTiledMapRenderer(tiledMap, 1 / 32f);
-        //mapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
-
-        //tiledCamera = new OrthographicCamera();
-        //tiledViewport = new ScreenViewport(tiledCamera);
-
         // Gameboard fields
+        TiledMap tiledMap = new AtlasTmxMapLoader().load("main_screen3.tmx");
         MapObjects fieldObjects = tiledMap.getLayers().get("fields").getObjects();
         for (MapObject mo: fieldObjects) {
             Rectangle fieldRectangle = ((RectangleMapObject) mo).getRectangle();
@@ -129,71 +119,23 @@ class GameScreen implements Screen {
 
         // User interface
         infoLabel = new Label("Im Love my Wife", bg.skin, "infoLabelStyle");
-        Label rollResultLabel = new Label("Roll Result: ", bg.skin, "labelStyle");
-        Label rollResult = new Label("-", bg.skin, "labelStyle");
-        dice.setRollResultLabel(rollResult);
+        //Label rollResultLabel = new Label("Roll Result: ", bg.skin, "labelStyle");
+        //Label rollResult = new Label("-", bg.skin, "labelStyle");
+        //dice.setRollResultLabel(rollResult);
         Table statsList = new Table();
         //statsList.add(customLabel).left().top().pad(5, 5, 0, 0);
         //statsList.row();
-        statsList.add(rollResultLabel).right().top().pad(5, 5, 0, 0);
-        statsList.add(rollResult).left().top().padTop(5);
-        statsList.row();
+        //statsList.add(rollResultLabel).right().top().pad(5, 5, 0, 0);
+        //statsList.add(rollResult).left().top().padTop(5);
+        //statsList.row();
         statsList.add(currentRound.new RoundCounterLabel("", bg.skin, "labelStyle")).right().top().padTop(5);
-        final TextButton moveForwardButton = new TextButton("Move Forward", bg.skin, "textButtonStyle");
-        moveForwardButton.addListener(new InputListener() {
-            @Override
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                // debug
-                //System.out.println("touch down: " + x + " " + y);
-                //System.out.println();
-                return true;
-            }
-
-            @Override
-            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                //debug
-                //System.out.println("touch up: " + x + " " + y);
-                //System.out.println();
-
-                if (x > 0 && x < moveForwardButton.getWidth() && y > 0 && y < moveForwardButton.getHeight()) {
-                    ChipActor chip = Player.getPlayersList().get(0).getChip();
-                    chip.moveForward();
-                }
-            }
-        });
-        final TextButton moveBackwardButton = new TextButton("Move Backward", bg.skin, "textButtonStyle");
-        moveBackwardButton.addListener(new InputListener() {
-            @Override
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                // debug
-                //System.out.println("touch down: " + x + " " + y);
-                //System.out.println();
-                return true;
-            }
-
-            @Override
-            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                //debug
-                //System.out.println("touch up: " + x + " " + y);
-                //System.out.println();
-
-                if (x > 0 && x < moveBackwardButton.getWidth() && y > 0 && y < moveBackwardButton.getHeight()) {
-                    ChipActor chip = Player.getPlayersList().get(0).getChip();
-                    chip.moveBackward();
-                }
-            }
-        });
         uiTable.setFillParent(true);
         uiTable.top();
         uiTable.add(statsList).left().top();
         uiTable.row().expandY();
-        uiTable.add(infoLabel);
+        uiTable.add(infoLabel);//.spaceBottom(10);
         if (debug) {
             uiTable.setDebug(true);
-            uiTable.add(moveForwardButton).expandX().right().bottom().padRight(5);
-            uiTable.row();
-            uiTable.add(moveBackwardButton).expandX().right().bottom().padRight(5);
-            uiTable.row();
         }
         uiTable.row();
         uiTable.add(dice).expandX().right().bottom().pad(1, 0, 5, 5);
@@ -235,10 +177,15 @@ class GameScreen implements Screen {
     private void update(float dt) {
         // Update UI
 
-        // Update players state
+        // Update game state
         switch (currentRound.getTurnPhase()) {
+            // TODO: encapsulate game progress into Round class
             case PREPARATION:   // Prepare game state to new turn
                 if (!infoLabel.hasActions()) {
+                    //camera.translate(currentRound.getCurrentPlayer().getChip().getX() - camera.position.x,
+                    //                 currentRound.getCurrentPlayer().getChip().getY() - camera.position.y, camera.position.z);
+                    //camTarget.add(currentRound.getCurrentPlayer().getChip().getX() - camera.position.x,
+                    //              currentRound.getCurrentPlayer().getChip().getY() - camera.position.y);
                     infoLabel.setText(currentRound.getCurrentPlayer().getName() + " TURN");
                     infoLabel.setColor(currentRound.getCurrentPlayer().getChip().getColor());
                     infoLabel.addAction(Actions.sequence(Actions.fadeIn(0.5f), Actions.delay(1.5f), Actions.fadeOut(0.5f)));
@@ -298,26 +245,27 @@ class GameScreen implements Screen {
         }
 
         // Update camera position
-        Camera mainCamera = mainStage.getCamera();
+        //Camera mainCamera = mainStage.getCamera();
         //for (Player p: Player.getPlayersList()) {    // if player chip movement centralize camera on chip
-            ChipActor currentPlayerChip = currentRound.getCurrentPlayer().getChip();
-            if (currentPlayerChip.isBusy()) {
-                mainCamera.position.x = currentPlayerChip.getX() - currentPlayerChip.getWidth()/2;
-                mainCamera.position.y = currentPlayerChip.getY() - currentPlayerChip.getHeight()/2;
-                //mainCamera.update();
+        ChipActor currentPlayerChip = currentRound.getCurrentPlayer().getChip();
+        if (currentPlayerChip.isBusy()) {
+            camera.position.x = currentPlayerChip.getX() - currentPlayerChip.getWidth() / 2;
+            camera.position.y = currentPlayerChip.getY() - currentPlayerChip.getHeight() / 2;
+            //mainCamera.update();
 
-                // debug
-                //System.out.println("cam pos: " + mainCamera.position);
-                //System.out.println("chip pos: " + p.getPositionX() / 2 + " " + p.getPositionY() / 2);
-                //System.out.println();
-            }
+            // debug
+            //System.out.println("cam pos: " + mainCamera.position);
+            //System.out.println("chip pos: " + p.getPositionX() / 2 + " " + p.getPositionY() / 2);
+            //System.out.println();
+        }
+
         //}
-        mainCamera.position.x = MathUtils.clamp(mainCamera.position.x,
-                mainCamera.viewportWidth/2,
-                worldWidth - mainCamera.viewportWidth/2);
-        mainCamera.position.y = MathUtils.clamp(mainCamera.position.y,
-                mainCamera.viewportHeight/2,
-                worldHeight - mainCamera.viewportHeight/2);
+        camera.position.x = MathUtils.clamp(camera.position.x,
+                camera.viewportWidth/2,
+                worldWidth - camera.viewportWidth/2);
+        camera.position.y = MathUtils.clamp(camera.position.y,
+                camera.viewportHeight/2,
+                worldHeight - camera.viewportHeight/2);
         //tiledCamera.position.set(mainStage.getCamera().position);
         //tiledCamera.update();
         //mapRenderer.setView(tiledCamera);
