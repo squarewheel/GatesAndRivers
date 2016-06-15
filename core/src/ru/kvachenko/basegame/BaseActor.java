@@ -15,6 +15,7 @@
 package ru.kvachenko.basegame;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -25,18 +26,21 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
  *         <p>
  *         Abstaract libGDX actor with texture.
  */
-public abstract class AbstractActor extends Actor {
+public class BaseActor extends Actor {
     private TextureRegion texture;
 
-    public AbstractActor(TextureRegion r) {
-        texture = r;
+    public BaseActor(TextureRegion r) {
+        super();
+        setTexture(r);
+        setSize(r.getRegionWidth(), r.getRegionHeight());
     }
 
-    public AbstractActor(){
+    public BaseActor(){
         super();
     }
 
     protected void setTexture(TextureRegion r) {
+        r.getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
         texture = r;
     }
 

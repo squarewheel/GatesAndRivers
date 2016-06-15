@@ -1,63 +1,72 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><map height="64" nextobjectid="83" orientation="orthogonal" renderorder="left-down" tileheight="32" tilewidth="32" version="1.0" width="64"><properties><property name="atlas" value="tileset/main_screen3.atlas"/></properties>
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="left-down" width="64" height="64" tilewidth="32" tileheight="32" nextobjectid="83">
  <imagelayer name="background">
-  <image height="2048" source="main_screen2.png" width="2048"/>
+  <image source="main_screen2.png" width="2048" height="2048"/>
  </imagelayer>
  <objectgroup name="fields">
-  <object height="160" id="30" width="160" x="224" y="1632"/>
-  <object height="160" id="31" width="160" x="384" y="1632"/>
-  <object height="160" id="32" width="160" x="544" y="1632"/>
-  <object height="160" id="33" width="160" x="704" y="1632"/>
-  <object height="160" id="34" width="160" x="864" y="1632"/>
-  <object height="160" id="35" width="160" x="1024" y="1632"/>
-  <object height="160" id="36" width="160" x="1184" y="1632"/>
-  <object height="160" id="37" width="160" x="1344" y="1632"/>
-  <object height="160" id="38" width="160" x="1504" y="1632"/>
-  <object height="160" id="39" width="160" x="1664" y="1632"/>
-  <object height="160" id="40" width="160" x="1664" y="1344"/>
-  <object height="160" id="42" width="160" x="1504" y="1344"/>
-  <object height="160" id="43" width="160" x="1344" y="1344"/>
-  <object height="160" id="44" width="160" x="1184" y="1344"/>
-  <object height="160" id="45" width="160" x="1024" y="1344"/>
-  <object height="160" id="46" width="160" x="864" y="1344"/>
-  <object height="160" id="47" width="160" x="704" y="1344"/>
-  <object height="160" id="48" width="160" x="544" y="1344"/>
-  <object height="160" id="49" width="160" x="384" y="1344"/>
-  <object height="160" id="50" width="160" x="224" y="1344"/>
-  <object height="160" id="51" width="160" x="224" y="1056"/>
-  <object height="160" id="52" width="160" x="384" y="1056"/>
-  <object height="160" id="53" width="160" x="544" y="1056"/>
-  <object height="160" id="54" width="160" x="704" y="1056"/>
-  <object height="160" id="55" width="160" x="864" y="1056"/>
-  <object height="160" id="56" width="160" x="1024" y="1056"/>
-  <object height="160" id="57" width="160" x="1184" y="1056"/>
-  <object height="160" id="58" width="160" x="1344" y="1056"/>
-  <object height="160" id="59" width="160" x="1504" y="1056"/>
-  <object height="160" id="60" width="160" x="1664" y="1056"/>
-  <object height="160" id="62" width="160" x="1664" y="768"/>
-  <object height="160" id="63" width="160" x="1504" y="768"/>
-  <object height="160" id="64" width="160" x="1344" y="768"/>
-  <object height="160" id="65" width="160" x="1184" y="768"/>
-  <object height="160" id="66" width="160" x="1024" y="768"/>
-  <object height="160" id="67" width="160" x="864" y="768"/>
-  <object height="160" id="69" width="160" x="704" y="768"/>
-  <object height="160" id="70" width="160" x="544" y="768"/>
-  <object height="160" id="71" width="160" x="384" y="768"/>
-  <object height="160" id="72" width="160" x="224" y="768"/>
-  <object height="160" id="73" width="160" x="224" y="480"/>
-  <object height="160" id="74" width="160" x="384" y="480"/>
-  <object height="160" id="75" width="160" x="544" y="480"/>
-  <object height="160" id="76" width="160" x="704" y="480"/>
-  <object height="160" id="77" width="160" x="864" y="480"/>
-  <object height="160" id="78" width="160" x="1024" y="480"/>
-  <object height="160" id="79" width="160" x="1184" y="480"/>
-  <object height="160" id="80" width="160" x="1344" y="480"/>
-  <object height="160" id="81" width="160" x="1504" y="480"/>
-  <object height="160" id="82" width="160" x="1664" y="480"/>
+  <object id="30" x="224" y="1632" width="160" height="160"/>
+  <object id="31" name="portal 1" x="384" y="1632" width="160" height="160">
+   <properties>
+    <property name="portal" type="int" value="19"/>
+   </properties>
+  </object>
+  <object id="32" x="544" y="1632" width="160" height="160"/>
+  <object id="33" x="704" y="1632" width="160" height="160"/>
+  <object id="34" x="864" y="1632" width="160" height="160"/>
+  <object id="35" x="1024" y="1632" width="160" height="160"/>
+  <object id="36" x="1184" y="1632" width="160" height="160"/>
+  <object id="37" x="1344" y="1632" width="160" height="160"/>
+  <object id="38" x="1504" y="1632" width="160" height="160"/>
+  <object id="39" x="1664" y="1632" width="160" height="160"/>
+  <object id="40" x="1664" y="1344" width="160" height="160"/>
+  <object id="42" x="1504" y="1344" width="160" height="160"/>
+  <object id="43" x="1344" y="1344" width="160" height="160"/>
+  <object id="44" x="1184" y="1344" width="160" height="160"/>
+  <object id="45" x="1024" y="1344" width="160" height="160"/>
+  <object id="46" x="864" y="1344" width="160" height="160"/>
+  <object id="47" x="704" y="1344" width="160" height="160"/>
+  <object id="48" x="544" y="1344" width="160" height="160"/>
+  <object id="49" name="portal 1 endpoint" x="384" y="1344" width="160" height="160">
+   <properties>
+    <property name="portalEndpoint" type="int" value="2"/>
+   </properties>
+  </object>
+  <object id="50" x="224" y="1344" width="160" height="160"/>
+  <object id="51" x="224" y="1056" width="160" height="160"/>
+  <object id="52" x="384" y="1056" width="160" height="160"/>
+  <object id="53" x="544" y="1056" width="160" height="160"/>
+  <object id="54" x="704" y="1056" width="160" height="160"/>
+  <object id="55" x="864" y="1056" width="160" height="160"/>
+  <object id="56" x="1024" y="1056" width="160" height="160"/>
+  <object id="57" x="1184" y="1056" width="160" height="160"/>
+  <object id="58" x="1344" y="1056" width="160" height="160"/>
+  <object id="59" x="1504" y="1056" width="160" height="160"/>
+  <object id="60" x="1664" y="1056" width="160" height="160"/>
+  <object id="62" x="1664" y="768" width="160" height="160"/>
+  <object id="63" x="1504" y="768" width="160" height="160"/>
+  <object id="64" x="1344" y="768" width="160" height="160"/>
+  <object id="65" x="1184" y="768" width="160" height="160"/>
+  <object id="66" x="1024" y="768" width="160" height="160"/>
+  <object id="67" x="864" y="768" width="160" height="160"/>
+  <object id="69" x="704" y="768" width="160" height="160"/>
+  <object id="70" x="544" y="768" width="160" height="160"/>
+  <object id="71" x="384" y="768" width="160" height="160"/>
+  <object id="72" x="224" y="768" width="160" height="160"/>
+  <object id="73" x="224" y="480" width="160" height="160"/>
+  <object id="74" x="384" y="480" width="160" height="160"/>
+  <object id="75" x="544" y="480" width="160" height="160"/>
+  <object id="76" x="704" y="480" width="160" height="160"/>
+  <object id="77" x="864" y="480" width="160" height="160"/>
+  <object id="78" x="1024" y="480" width="160" height="160"/>
+  <object id="79" x="1184" y="480" width="160" height="160"/>
+  <object id="80" x="1344" y="480" width="160" height="160"/>
+  <object id="81" x="1504" y="480" width="160" height="160"/>
+  <object id="82" x="1664" y="480" width="160" height="160"/>
  </objectgroup>
  <objectgroup name="players" visible="0">
-  <object height="32" id="25" name="player3" width="32" x="320.667" y="1664"/>
-  <object height="32" id="26" name="player2" width="32" x="256.667" y="1728"/>
-  <object height="32" id="27" name="player1" width="32" x="256.667" y="1664"/>
-  <object height="32" id="28" name="player4" width="32" x="320.667" y="1728"/>
+  <object id="25" name="player3" x="320.667" y="1664" width="32" height="32"/>
+  <object id="26" name="player2" x="256.667" y="1728" width="32" height="32"/>
+  <object id="27" name="player1" x="256.667" y="1664" width="32" height="32"/>
+  <object id="28" name="player4" x="320.667" y="1728" width="32" height="32"/>
  </objectgroup>
 </map>

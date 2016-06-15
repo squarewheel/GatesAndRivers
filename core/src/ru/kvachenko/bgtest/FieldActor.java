@@ -15,6 +15,7 @@
 package ru.kvachenko.bgtest;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 
 import java.util.*;
@@ -26,11 +27,12 @@ import java.util.*;
  *         Provides gameboard field.
  *         Field must be created before players;
  */
-public class FieldActor extends Actor{
+public class FieldActor extends Group{
     private static ArrayList<FieldActor> fieldsList = new ArrayList<FieldActor>();
     private FieldActor nextField;
     private FieldActor previousField;
     private Layout layout;
+    private Mover mover;
 
     //static { fieldsList = new ArrayList<FieldActor>(); }
 
@@ -40,6 +42,7 @@ public class FieldActor extends Actor{
         previousField = fieldsItr.hasPrevious() ? fieldsItr.previous() : null;
         if (hasPreviousField()) getPreviousField().setNextField(this);
         layout = new Layout();
+        mover = null;
     }
 
     public FieldActor getNextField() {
@@ -62,8 +65,14 @@ public class FieldActor extends Actor{
         return previousField != null;
     }
 
+    public boolean hasMover() { return mover != null; }
+
     public static ArrayList<FieldActor> getFieldsList() {
         return fieldsList;
+    }
+
+    public void setMover(Mover m) {
+        mover = m;
     }
 
     private void setNextField(FieldActor field) {

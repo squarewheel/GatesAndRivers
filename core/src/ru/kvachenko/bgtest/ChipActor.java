@@ -17,7 +17,7 @@ package ru.kvachenko.bgtest;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
-import ru.kvachenko.basegame.AbstractActor;
+import ru.kvachenko.basegame.BaseActor;
 
 /**
  * @author Sasha Kvachenko
@@ -25,7 +25,7 @@ import ru.kvachenko.basegame.AbstractActor;
  *         <p>
  *         Provides player chip code.
  */
-public class ChipActor extends AbstractActor {
+public class ChipActor extends BaseActor {
 
 //    /** Possible chip states */
 //    public enum State {

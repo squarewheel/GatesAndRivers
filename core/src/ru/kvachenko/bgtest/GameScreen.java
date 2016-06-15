@@ -21,9 +21,10 @@ import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.MapObjects;
+import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.AtlasTmxMapLoader;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -98,22 +99,44 @@ class GameScreen implements Screen {
         });
 
         // Gameboard fields
-        TiledMap tiledMap = new AtlasTmxMapLoader().load("main_screen3.tmx");
+        //TiledMap tiledMap = new AtlasTmxMapLoader().load("main_screen3.tmx");
+        TiledMap tiledMap = new TmxMapLoader().load("main_screen3.tmx");
         MapObjects fieldObjects = tiledMap.getLayers().get("fields").getObjects();
         for (MapObject mo: fieldObjects) {
             Rectangle fieldRectangle = ((RectangleMapObject) mo).getRectangle();
             FieldActor field = new FieldActor();
             field.setSize(fieldRectangle.width, fieldRectangle.height);
             field.setPosition(fieldRectangle.x, fieldRectangle.y);
+            MapProperties properties = mo.getProperties();
+            if (properties.containsKey("portalEndpoint")) {
+                Gate g = new Gate(field); g.debug();
+                FieldActor gateField = FieldActor.getFieldsList().get(Integer.valueOf((String) properties.get("portalEndpoint")) - 1);
+                gateField.addActor(g);
+                gateField.setMover(g);
+                g.setPosition(gateField.getWidth()/2 - g.getWidth()/2, gateField.getHeight()/2 - g.getHeight()/2);
+                gateField.debug();
+                //g.setPosition(field.getX(), field.getY());
+                //field.addActor(g);
+                //field.setMover(g);
+            }
             mainStage.addActor(field);
         }
+
+//        for (MapObject mo: fieldObjects) {
+//            MapProperties properties = mo.getProperties();
+//            if (properties.containsKey("portal")) {
+//                System.out.println(properties.get("portal"));
+//                //int targetId = Integer.valueOf((String) p.get("portal"));
+//                new Gate(FieldActor.getFieldsList().get(Integer.valueOf((String) properties.get("portal"))));
+//            }
+//        }
 
         // Players and Round initialization
         new Player();
         new Player();
         new Player();
         new Player();
-        //Player.getPlayersList().get(0).makePlayable();
+        Player.getPlayersList().get(0).makePlayable();
         for (Player p: Player.getPlayersList()) { mainStage.addActor(p.getChip()); }
         currentRound = new Round(Player.getPlayersList());
 

@@ -16,7 +16,6 @@ package ru.kvachenko.bgtest;
 
 import com.badlogic.gdx.graphics.Color;
 
-import javax.print.attribute.standard.MediaSize;
 import java.util.ArrayList;
 
 /**
@@ -40,7 +39,7 @@ public class Player {
 
     static {
         colors.add(Color.RED);
-        colors.add(Color.BLUE);
+        colors.add(Color.SKY);
         colors.add(Color.GREEN);
         colors.add(Color.YELLOW);
 
