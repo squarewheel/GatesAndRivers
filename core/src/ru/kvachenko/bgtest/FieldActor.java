@@ -14,7 +14,6 @@
 
 package ru.kvachenko.bgtest;
 
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 
@@ -56,6 +55,8 @@ public class FieldActor extends Group{
     public Layout getLayout() {
         return layout;
     }
+
+    public Mover getMover() { return mover; }
 
     public boolean hasNextField() {
         return nextField != null;

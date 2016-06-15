@@ -17,6 +17,7 @@ package ru.kvachenko.bgtest;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import ru.kvachenko.basegame.BaseActor;
 
 import java.util.ArrayList;
@@ -56,6 +57,10 @@ public class Gate extends BaseActor implements Mover {
 
     @Override
     public void move(ChipActor chip) {
-
+        chip.addAction(Actions.parallel(Actions.scaleBy(-1, -1, 1f), Actions.fadeOut(1f)));
+        chip.moveToField(targetField);
+        chip.addAction(Actions.after(Actions.parallel(Actions.scaleBy(1, 1, 0.5f), Actions.fadeIn(0.5f))));
+        //chip.takePosition();
+        //chip.addAction();
     }
 }

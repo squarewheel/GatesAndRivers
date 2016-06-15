@@ -94,7 +94,7 @@ public class ChipActor extends BaseActor {
 
     /** Move chip to center of target field. By default chip takes center of target field.
      *  @param targetField field, which should be occupied by chip */
-    private void moveToField(FieldActor targetField) {
+    public void moveToField(FieldActor targetField) {
         //state = State.MOVEMENT;
         currentField.getLayout().removeChip(this);
         busy = true;
@@ -108,7 +108,8 @@ public class ChipActor extends BaseActor {
     public void takePosition() {
         //state = State.POSITIONING;
         busy = true;
-        currentField.getLayout().addChip(this);
+        if (currentField.hasMover()) currentField.getMover().move(this);
+        else currentField.getLayout().addChip(this);
     }
 
     public Direction getDirection() {
@@ -125,7 +126,9 @@ public class ChipActor extends BaseActor {
     public void act(float delta) {
         super.act(delta);
         // If chip has not actions, but still busy, need to release it
-        if (!hasActions() && isBusy()) busy = false;
+        if (!hasActions() && isBusy()) {
+            busy = false;
+        }
     }
 
 }
