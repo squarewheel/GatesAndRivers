@@ -31,7 +31,6 @@ import java.util.ArrayList;
 public class Gate extends BaseActor implements Mover {
     private static ArrayList<Color> colorsList = new ArrayList<Color>();// List of possible portals colors
     private static ArrayList<Gate> gatesList = new ArrayList<Gate>();   // List of all created gates
-    //private Color color;                                              // Color of portal and endpoint
     private FieldActor targetField;                                     // Endpoint of this gate
 
     static {
@@ -39,6 +38,7 @@ public class Gate extends BaseActor implements Mover {
         colorsList.add(Color.SKY);
         colorsList.add(Color.LIME);
         colorsList.add(Color.GOLD);
+        colorsList.add(Color.PINK);
     }
 
     public Gate(FieldActor target) {
@@ -57,9 +57,9 @@ public class Gate extends BaseActor implements Mover {
 
     @Override
     public void move(ChipActor chip) {
-        chip.addAction(Actions.parallel(Actions.scaleBy(-1, -1, 1f), Actions.fadeOut(1f)));
+        chip.addAction(Actions.parallel(Actions.scaleBy(-1, -1, 0.5f), Actions.fadeOut(1f)));
         chip.moveToField(targetField);
-        chip.addAction(Actions.after(Actions.parallel(Actions.scaleBy(1, 1, 0.5f), Actions.fadeIn(0.5f))));
+        chip.addAction(Actions.after(Actions.parallel(Actions.scaleBy(1, 1, 0.5f), Actions.fadeIn(1f))));
         //chip.takePosition();
         //chip.addAction();
     }

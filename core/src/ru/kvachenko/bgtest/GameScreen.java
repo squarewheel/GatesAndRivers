@@ -61,7 +61,7 @@ class GameScreen implements Screen {
     private Label infoLabel;
 
     // Temp variables
-    boolean debug = false;
+    private boolean debug = false;
     //private Player currentPlayer;
     //int viewWidth = 1200;
     //int viewHeight = 600;
@@ -105,16 +105,17 @@ class GameScreen implements Screen {
         for (MapObject mo: fieldObjects) {
             Rectangle fieldRectangle = ((RectangleMapObject) mo).getRectangle();
             FieldActor field = new FieldActor();
+//            field.setDebugLabel("0", bg.skin, "labelStyle");
             field.setSize(fieldRectangle.width, fieldRectangle.height);
             field.setPosition(fieldRectangle.x, fieldRectangle.y);
             MapProperties properties = mo.getProperties();
             if (properties.containsKey("portalEndpoint")) {
-                Gate g = new Gate(field); g.debug();
+                Gate g = new Gate(field); //g.debug();
                 FieldActor gateField = FieldActor.getFieldsList().get(Integer.valueOf((String) properties.get("portalEndpoint")) - 1);
                 gateField.addActor(g);
                 gateField.setMover(g);
                 g.setPosition(gateField.getWidth()/2 - g.getWidth()/2, gateField.getHeight()/2 - g.getHeight()/2);
-                gateField.debug();
+                //gateField.debug();
                 //g.setPosition(field.getX(), field.getY());
                 //field.addActor(g);
                 //field.setMover(g);
@@ -204,6 +205,7 @@ class GameScreen implements Screen {
         switch (currentRound.getTurnPhase()) {
             // TODO: encapsulate game progress into Round class
             case PREPARATION:   // Prepare game state to new turn
+                if (debug) System.out.println("TurnPhase.PREPARATION");
                 if (!infoLabel.hasActions()) {
                     //camera.translate(currentRound.getCurrentPlayer().getChip().getX() - camera.position.x,
                     //                 currentRound.getCurrentPlayer().getChip().getY() - camera.position.y, camera.position.z);
@@ -219,23 +221,24 @@ class GameScreen implements Screen {
                 break;
 
             case START: // Start of current player turn. Phase end when user or ai roll dice
-                //System.out.println("TurnPhase.START");
+                if (debug) System.out.println("TurnPhase.START");
                 if (!infoLabel.hasActions()) {
                     if (!currentRound.getCurrentPlayer().isPlayable()) {
                         // TODO: method calls many times what it need; possible solution it add players state
                         dice.roll();
                     }
-                    else { // TODO: only for debug! Delete else block after debuging
-                        dice.setRollResult(1);
-                        currentRound.setTurnPhase(Round.TurnPhase.DICE_ROLLED);
-                    }
+//                    else {
+//                        // Only for debug! Delete else block after debug
+//                        dice.setRollResult(1);
+//                        currentRound.setTurnPhase(Round.TurnPhase.DICE_ROLLED);
+//                    }
                     if (dice.getState() == DiceWidget.State.ROLLING)
                         currentRound.setTurnPhase(Round.TurnPhase.DICE_ROLLING);
                 }
                 break;
 
             case DICE_ROLLING:  // Wait when dice roll animation finish
-                //System.out.println("TurnPhase.DICE_ROLLING");
+                if (debug) System.out.println("TurnPhase.DICE_ROLLING");
                 if (dice.getState() == DiceWidget.State.ROLLED) {
                     dice.unActivate();
                     currentRound.setTurnPhase(Round.TurnPhase.DICE_ROLLED);
@@ -244,14 +247,14 @@ class GameScreen implements Screen {
 
             case DICE_ROLLED:   // Determines number of fields what current player must go
                 // TODO: looks like this phase is not necessary
-                //System.out.println("TurnPhase.DICE_ROLLED");
-                currentRound.getCurrentPlayer().setMoves(dice.getRollResult());
+                if (debug) System.out.println("TurnPhase.DICE_ROLLED");
+                currentRound.getCurrentPlayer().getChip().moveOn(dice.getRollResult());
                 currentRound.setTurnPhase(Round.TurnPhase.MOVEMENT);
                 break;
 
             case MOVEMENT:  // Move current player chip
-                //System.out.println("TurnPhase.MOVEMENT");
-                currentRound.getCurrentPlayer().move();
+                if (debug) System.out.println("TurnPhase.MOVEMENT");
+                //currentRound.getCurrentPlayer().move();
                 if (currentRound.getCurrentPlayer().isMoved()) {
 //                    infoLabel.setText("TURN COMPLETE");
 //                    infoLabel.addAction(Actions.sequence(Actions.fadeIn(0.5f), Actions.delay(1.5f), Actions.fadeOut(0.5f)));
@@ -260,7 +263,7 @@ class GameScreen implements Screen {
                 break;
 
             case END:   // End current turn
-                //System.out.println("TurnPhase.END");
+                if (debug) System.out.println("TurnPhase.END");
                 if (!infoLabel.hasActions()) {
                     //infoLabel.setText("NEW TURN");
                     //infoLabel.addAction(Actions.sequence(Actions.fadeIn(0.5f), Actions.delay(1.5f), Actions.fadeOut(0.5f)));
@@ -275,7 +278,7 @@ class GameScreen implements Screen {
         //Camera mainCamera = mainStage.getCamera();
         //for (Player p: Player.getPlayersList()) {    // if player chip movement centralize camera on chip
         ChipActor currentPlayerChip = currentRound.getCurrentPlayer().getChip();
-        if (currentPlayerChip.isBusy()) {
+        if (currentPlayerChip.getState() != ChipActor.State.WAIT) {
             camera.position.x = currentPlayerChip.getX() - currentPlayerChip.getWidth() / 2;
             camera.position.y = currentPlayerChip.getY() - currentPlayerChip.getHeight() / 2;
             //mainCamera.update();

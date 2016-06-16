@@ -22,5 +22,7 @@ package ru.kvachenko.bgtest;
  *         mover move chip on another field.
  */
 public interface Mover {
+
+    /** Special move rule. */
     public void move(ChipActor chip);
 }

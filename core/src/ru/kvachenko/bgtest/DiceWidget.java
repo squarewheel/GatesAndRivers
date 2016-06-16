@@ -150,7 +150,7 @@ public class DiceWidget extends Image {
             // Otherwise set random dice side image
             if (rollingTimer <= 0) {
                 //rolled = false;
-                System.out.println(rollingTimer);
+                //System.out.println(rollingTimer);
                 state = State.ROLLED;
                 setSide();
                 if (rollResultLabel != null) rollResultLabel.setText(toString());

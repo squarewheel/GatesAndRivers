@@ -16,6 +16,8 @@ package ru.kvachenko.bgtest;
 
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 import java.util.*;
 
@@ -33,6 +35,9 @@ public class FieldActor extends Group{
     private Layout layout;
     private Mover mover;
 
+    // Debug variable
+    // private Label debugLabel;
+
     //static { fieldsList = new ArrayList<FieldActor>(); }
 
     public FieldActor() {
@@ -42,7 +47,17 @@ public class FieldActor extends Group{
         if (hasPreviousField()) getPreviousField().setNextField(this);
         layout = new Layout();
         mover = null;
+//        debug();
     }
+
+//    /* Only for debug*/
+//    public void setDebugLabel(String text, Skin skin, String style) {
+//        //this.debugLabel = debugLabel;
+//        debugLabel = new Label(text, skin, style);
+//        addActor(debugLabel);
+//        debugLabel.setPosition(0, 0);
+//    }
+//    /* delete after debug! */
 
     public FieldActor getNextField() {
         return nextField;
@@ -183,6 +198,8 @@ public class FieldActor extends Group{
         private LayoutRow firstRow;
         private LayoutRow secondRow;
 
+        private int counter; // TODO: delete after debug
+
         Layout() {
             positionsList = new ArrayList<LayoutPosition>(4);
             shiftQueue = new ArrayDeque<ChipActor>(4);
@@ -191,6 +208,7 @@ public class FieldActor extends Group{
             Collections.addAll(positionsList, firstRow.getPositions());
             Collections.addAll(positionsList, secondRow.getPositions());
             setSize();
+//            counter = 0;
             //for (int i = 0; i < 4; i++) positionsList.add(new FieldLayoutPosition());
         }
 
@@ -212,6 +230,7 @@ public class FieldActor extends Group{
         }
 
         void addChip(ChipActor chip) {
+
             LayoutPosition p = nextFreePosition();
             switch (positionsList.indexOf(p)) {
                 case FIRST_POS:
@@ -230,12 +249,21 @@ public class FieldActor extends Group{
                     p.setOwner(chip);
                     break;
             }
+//            counter++;
+//            if (debugLabel != null) {
+//                //int counter = 0;
+////                    for (LayoutPosition p: positionsList) {
+////                        if (!p.isFree()) counter++;
+////                    }
+//                debugLabel.setText("" + counter);
+//            }
         }
 
         void removeChip(ChipActor chip) {
             for (LayoutPosition p: positionsList) {
                 if (p.getOwner() == chip) {
                     p.removeOwner();
+                    counter--;
                     //update();
                     int index = positionsList.indexOf(p);
                     if (index < positionsList.size() - 1) { // if p has next
@@ -257,6 +285,15 @@ public class FieldActor extends Group{
 
         /** Moves freed positions to its default places. */
         void update() {
+//            if (getDebug()) {
+//                if (debugLabel != null) {
+//                    //int counter = 0;
+//                    for (LayoutPosition p: positionsList) {
+//                        if (!p.isFree()) counter++;
+//                    }
+//                    debugLabel.setText("" + counter);
+//                }
+//            }
             //int index = FOURTH_POS;
             if (positionsList.get(FOURTH_POS).isFree()) {
                 positionsList.get(THIRD_POS).setPosition(fieldCenterX, secondRow.getIndent());

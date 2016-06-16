@@ -69,9 +69,9 @@ public class Round {
     public Round(ArrayList<Player> p) {
         // Basic initialization
         players = p;
-        roundCounter = 1;
-        currentPlayer = p.get(0);
-        turnPhase = TurnPhase.PREPARATION;
+        roundCounter = 0;
+        currentPlayer = p.get(p.size()-1);
+        turnPhase = TurnPhase.END;
     }
 
     public void setRoundCounterLabel(Label l) { roundCounterLabel = l; }
@@ -91,7 +91,7 @@ public class Round {
             currentPlayer = playersItr.next();
         }
         else {
-            for (Player p: players) p.setMovedState(false);
+            for (Player p: players) p.getChip().setState(ChipActor.State.WAIT);
             roundCounter++;
             currentPlayer = players.get(0);
         }
