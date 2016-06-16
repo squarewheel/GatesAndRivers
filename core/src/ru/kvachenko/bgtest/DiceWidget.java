@@ -99,9 +99,7 @@ public class DiceWidget extends Image {
         setSide();
     }
 
-    public void setRollResultLabel(Label l) {
-        rollResultLabel = l;
-    }
+    //public void setRollResultLabel(Label l) { rollResultLabel = l; }
 
     public void setState(State newState) { state = newState; }
 
@@ -114,9 +112,7 @@ public class DiceWidget extends Image {
 
     public State getState() { return state; }
 
-    /**
-     * Method set upper (visible) side of dice to lastRollResult.
-     */
+    /** Method set upper (visible) side of dice to lastRollResult. */
     public void setSide() {
         setSide(lastRollResult);
     }
@@ -134,6 +130,13 @@ public class DiceWidget extends Image {
             //setSide();
             //rolled = true;
         }
+    }
+
+    /** Only for debug. */
+    public void setRollResult(int rollResult) {
+        state = State.ROLLED;
+        lastRollResult = rollResult;
+        setSide();
     }
 
     @Override

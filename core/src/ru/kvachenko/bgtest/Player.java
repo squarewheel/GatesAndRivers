@@ -61,6 +61,7 @@ public class Player {
         chip = new ChipActor();
         chip.setColor(colors.remove(0));
         chip.setSize(32, 32);
+        chip.setOrigin(16, 16);
         chip.takePosition();
     }
 

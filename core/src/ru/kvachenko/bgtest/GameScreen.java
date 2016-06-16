@@ -225,6 +225,10 @@ class GameScreen implements Screen {
                         // TODO: method calls many times what it need; possible solution it add players state
                         dice.roll();
                     }
+                    else { // TODO: only for debug! Delete else block after debuging
+                        dice.setRollResult(1);
+                        currentRound.setTurnPhase(Round.TurnPhase.DICE_ROLLED);
+                    }
                     if (dice.getState() == DiceWidget.State.ROLLING)
                         currentRound.setTurnPhase(Round.TurnPhase.DICE_ROLLING);
                 }
