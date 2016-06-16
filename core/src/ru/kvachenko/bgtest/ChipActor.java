@@ -112,7 +112,7 @@ public class ChipActor extends BaseActor {
 
     /** Sets the position of the chip relative to other chips on the current field. */
     protected void takePosition() {
-        if (state == State.READY || state == State.WAIT) {
+        if (state != State.MOVEMENT && state != State.POSITIONING) {
             previousState = state;
             state = State.POSITIONING;
             //busy = true;
@@ -167,10 +167,7 @@ public class ChipActor extends BaseActor {
                 break;
 
             case POSITIONING:       // When chip end positing, chip is moved
-                if (!hasActions()) {
-                    if (previousState == State.WAIT) state = previousState;
-                    else state = State.MOVED;
-                }
+                if (!hasActions()) state = (previousState != State.READY) ? previousState : State.MOVED;
                 break;
         }
 
