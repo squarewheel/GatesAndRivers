@@ -76,7 +76,7 @@ class GameScreen implements Screen {
         mainStage = new Stage(new ScreenViewport());
         camera = mainStage.getCamera();
 //        camTarget = new Vector2();
-        background = new Image(new TextureRegion(new Texture("main_screen2.png")));
+        background = new Image(new TextureRegion(new Texture("main_screen3.png")));
         mainStage.addActor(background);
         uiStage = new Stage(new ScreenViewport());
         uiTable = new Table(bg.skin);
@@ -147,7 +147,7 @@ class GameScreen implements Screen {
         new Player();
         new Player();
         new Player();
-        Player.getPlayersList().get(0).makePlayable();
+        //Player.getPlayersList().get(0).makePlayable();
         for (Player p: Player.getPlayersList()) { mainStage.addActor(p.getChip()); }
         currentRound = new Round(Player.getPlayersList());
 

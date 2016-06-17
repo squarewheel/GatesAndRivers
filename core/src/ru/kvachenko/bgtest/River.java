@@ -49,6 +49,9 @@ public class River implements Mover {
                 chip.addAction(Actions.after(Actions.moveTo(point.x, point.y, (float) 450/point.len())));
             }
         }
-        else if (currentChip.getState() == ChipActor.State.READY) chip.moveToField(targetField);
+        else if (currentChip.getState() == ChipActor.State.READY) {
+            currentChip = null;
+            chip.moveToField(targetField);
+        }
     }
 }
