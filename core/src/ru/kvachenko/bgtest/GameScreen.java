@@ -56,7 +56,7 @@ class GameScreen implements Screen {
     private int worldWidth;
     private int worldHeight;
     private Camera camera;
-    private Vector2 camTarget;
+//    private Vector2 camTarget;
     private DiceWidget dice;
     private Label infoLabel;
 
