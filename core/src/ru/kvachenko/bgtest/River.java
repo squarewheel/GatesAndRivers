@@ -15,6 +15,9 @@
 package ru.kvachenko.bgtest;
 
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+
+import java.util.ArrayList;
 
 /**
  * @author Sasha Kvachenko
@@ -23,9 +26,19 @@ import com.badlogic.gdx.math.Vector2;
  *         Move chip via a path composed of several points.
  */
 public class River implements Mover {
-    private Vector2[] path;         // All way-points which chip must go
-    private Vector2 currentPoint;   // Current way-point
-    private ChipActor currentChip;  // Chip which now movements
+    private ArrayList<Vector2> path;    // All waypoints which chip must go
+    //private Vector2 currentPoint;       // Current way-point
+    private ChipActor currentChip;      // Chip which now movements
+    private FieldActor targetField;     // Endpoint of this river
+
+    public River(FieldActor target) {
+        path = new ArrayList<Vector2>();
+        targetField = target;
+    }
+
+    public void addWaypoint(Vector2 point) {
+        path.add(point);
+    }
 
     @Override
     public void move(ChipActor chip) {
@@ -33,10 +46,9 @@ public class River implements Mover {
             currentChip = chip;
             for (Vector2 point : path) {
                 chip.setState(ChipActor.State.MOVEMENT);
-                // add action to move to current point
-                //
+                chip.addAction(Actions.after(Actions.moveTo(point.x, point.y, (float) 450/point.len())));
             }
         }
-        // chip.moveToField
+        else if (currentChip.getState() == ChipActor.State.READY) chip.moveToField(targetField);
     }
 }

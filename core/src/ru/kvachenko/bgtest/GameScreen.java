@@ -36,6 +36,8 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
+import java.util.ArrayList;
+
 /**
  * @author Sasha Kvachenko
  *         Created on 20.05.2016.
@@ -99,6 +101,7 @@ class GameScreen implements Screen {
         });
 
         // Gameboard fields
+        // TODO: may be need special class for creating gameboard
         //TiledMap tiledMap = new AtlasTmxMapLoader().load("main_screen3.tmx");
         TiledMap tiledMap = new TmxMapLoader().load("main_screen3.tmx");
         MapObjects fieldObjects = tiledMap.getLayers().get("fields").getObjects();
@@ -108,17 +111,24 @@ class GameScreen implements Screen {
 //            field.setDebugLabel("0", bg.skin, "labelStyle");
             field.setSize(fieldRectangle.width, fieldRectangle.height);
             field.setPosition(fieldRectangle.x, fieldRectangle.y);
-            MapProperties properties = mo.getProperties();
-            if (properties.containsKey("portalEndpoint")) {
+            MapProperties fieldProperties = mo.getProperties();
+            if (fieldProperties.containsKey("portalEndpoint")) {
                 Gate g = new Gate(field); //g.debug();
-                FieldActor gateField = FieldActor.getFieldsList().get(Integer.valueOf((String) properties.get("portalEndpoint")) - 1);
+                FieldActor gateField = FieldActor.getFieldsList().get(Integer.valueOf((String) fieldProperties.get("portalEndpoint")) - 1);
                 gateField.addActor(g);
                 gateField.setMover(g);
                 g.setPosition(gateField.getWidth()/2 - g.getWidth()/2, gateField.getHeight()/2 - g.getHeight()/2);
                 //gateField.debug();
-                //g.setPosition(field.getX(), field.getY());
-                //field.addActor(g);
-                //field.setMover(g);
+            }
+            else if (fieldProperties.containsKey("river")) {
+                River r = new River(FieldActor.getFieldsList().get(Integer.valueOf((String) fieldProperties.get("riverEndpoint")) - 1));
+                String riverName = "river" + fieldProperties.get("river");
+                MapObjects waypoints = tiledMap.getLayers().get(riverName).getObjects();
+                for (MapObject waypoint: waypoints) {
+                    Rectangle point = ((RectangleMapObject) waypoint).getRectangle();
+                    r.addWaypoint(new Vector2(point.x, point.y));
+                }
+                field.setMover(r);
             }
             mainStage.addActor(field);
         }

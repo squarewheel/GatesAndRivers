@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="left-down" width="64" height="64" tilewidth="32" tileheight="32" nextobjectid="83">
+<map version="1.0" orientation="orthogonal" renderorder="left-down" width="64" height="64" tilewidth="32" tileheight="32" nextobjectid="90">
  <imagelayer name="background">
   <image source="main_screen2.png" width="2048" height="2048"/>
  </imagelayer>
@@ -14,7 +14,7 @@
   <object id="33" x="704" y="1632" width="160" height="160"/>
   <object id="34" x="864" y="1632" width="160" height="160"/>
   <object id="35" x="1024" y="1632" width="160" height="160"/>
-  <object id="36" x="1184" y="1632" width="160" height="160"/>
+  <object id="36" name="river 1 endpoint" x="1184" y="1632" width="160" height="160"/>
   <object id="37" x="1344" y="1632" width="160" height="160"/>
   <object id="38" x="1504" y="1632" width="160" height="160"/>
   <object id="39" x="1664" y="1632" width="160" height="160"/>
@@ -25,9 +25,14 @@
    </properties>
   </object>
   <object id="43" x="1344" y="1344" width="160" height="160"/>
-  <object id="44" x="1184" y="1344" width="160" height="160"/>
+  <object id="44" name="river 1" x="1184" y="1344" width="160" height="160">
+   <properties>
+    <property name="river" type="int" value="1"/>
+    <property name="riverEndpoint" type="int" value="7"/>
+   </properties>
+  </object>
   <object id="45" x="1024" y="1344" width="160" height="160"/>
-  <object id="46" x="864" y="1344" width="160" height="160"/>
+  <object id="46" name="river 2 endpoint" x="864" y="1344" width="160" height="160"/>
   <object id="47" x="704" y="1344" width="160" height="160"/>
   <object id="48" x="544" y="1344" width="160" height="160"/>
   <object id="49" name="portal 1 endpoint" x="384" y="1344" width="160" height="160">
@@ -42,7 +47,12 @@
    </properties>
   </object>
   <object id="52" x="384" y="1056" width="160" height="160"/>
-  <object id="53" x="544" y="1056" width="160" height="160"/>
+  <object id="53" name="river 2" x="544" y="1056" width="160" height="160">
+   <properties>
+    <property name="river" type="int" value="2"/>
+    <property name="riverEndpoint" type="int" value="16"/>
+   </properties>
+  </object>
   <object id="54" x="704" y="1056" width="160" height="160"/>
   <object id="55" x="864" y="1056" width="160" height="160"/>
   <object id="56" name="portal 4" x="1024" y="1056" width="160" height="160">
@@ -100,5 +110,13 @@
   <object id="26" name="player2" x="256.667" y="1728" width="32" height="32"/>
   <object id="27" name="player1" x="256.667" y="1664" width="32" height="32"/>
   <object id="28" name="player4" x="320.667" y="1728" width="32" height="32"/>
+ </objectgroup>
+ <objectgroup color="#0055ff" name="river1">
+  <object id="84" x="1230.67" y="1518.67" width="32" height="32"/>
+  <object id="85" x="1262.67" y="1581.33" width="32" height="32"/>
+ </objectgroup>
+ <objectgroup color="#0000ff" name="river2">
+  <object id="88" x="608" y="1321.33" width="32" height="32"/>
+  <object id="89" x="914.667" y="1330.67" width="32" height="32"/>
  </objectgroup>
 </map>
