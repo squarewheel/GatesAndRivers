@@ -46,7 +46,6 @@ public class ChipActor extends BaseActor {
     private int moves;                  // Num of fields what chip must move to take MOVED state
     private State state;                // Current state
     private State previousState;        // Previous state
-    //private boolean busy;               // While chip moves she is busy
     private Direction direction;
 
     public ChipActor() {
@@ -74,8 +73,6 @@ public class ChipActor extends BaseActor {
     }
 */
 
-    //public boolean isBusy() { return state != State.READY; }
-
     public FieldActor getCurrentField() { return currentField; }
 
     /** Move chip to next Field. */
@@ -102,7 +99,6 @@ public class ChipActor extends BaseActor {
         if (state == State.READY) {
             state = State.MOVEMENT;
             currentField.getLayout().removeChip(this);
-            //busy = true;
             addAction(Actions.after(Actions.sequence(
                     Actions.moveBy(targetField.getX() + targetField.getLayout().getFieldCenterX() - getX(),
                                    targetField.getY() + targetField.getLayout().getFieldCenterY() - getY(), 1.5f), Actions.delay(0.1f))));
@@ -115,7 +111,6 @@ public class ChipActor extends BaseActor {
         if (state != State.MOVEMENT && state != State.POSITIONING) {
             previousState = state;
             state = State.POSITIONING;
-            //busy = true;
             if (currentField.hasMover()) {
                 state = State.READY;
                 currentField.getMover().move(this);
@@ -170,11 +165,5 @@ public class ChipActor extends BaseActor {
                 if (!hasActions()) state = (previousState != State.READY) ? previousState : State.MOVED;
                 break;
         }
-
-//        // If chip has not actions, but still busy, need to release it
-//        if (!hasActions() && isBusy()) {
-//            busy = false;
-//        }
     }
-
 }

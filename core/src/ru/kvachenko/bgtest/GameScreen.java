@@ -106,7 +106,6 @@ class GameScreen implements Screen {
         for (MapObject mo: fieldObjects) {
             Rectangle fieldRectangle = ((RectangleMapObject) mo).getRectangle();
             FieldActor field = new FieldActor();
-//            field.setDebugLabel("0", bg.skin, "labelStyle");
             field.setSize(fieldRectangle.width, fieldRectangle.height);
             field.setPosition(fieldRectangle.x, fieldRectangle.y);
             MapProperties fieldProperties = mo.getProperties();
@@ -131,15 +130,6 @@ class GameScreen implements Screen {
             mainStage.addActor(field);
         }
 
-//        for (MapObject mo: fieldObjects) {
-//            MapProperties properties = mo.getProperties();
-//            if (properties.containsKey("portal")) {
-//                System.out.println(properties.get("portal"));
-//                //int targetId = Integer.valueOf((String) p.get("portal"));
-//                new Gate(FieldActor.getFieldsList().get(Integer.valueOf((String) properties.get("portal"))));
-//            }
-//        }
-
         // Players and Round initialization
         new Player();
         new Player();
@@ -152,9 +142,6 @@ class GameScreen implements Screen {
         // User interface
         infoLabel = new Label("Im Love my Wife", bg.skin, "infoLabelStyle");
         gameController.setInfoLabel(infoLabel);
-        //Label rollResultLabel = new Label("Roll Result: ", bg.skin, "labelStyle");
-        //Label rollResult = new Label("-", bg.skin, "labelStyle");
-        //dice.setRollResultLabel(rollResult);
         Table statsList = new Table();
         //statsList.add(customLabel).left().top().pad(5, 5, 0, 0);
         //statsList.row();
@@ -263,8 +250,6 @@ class GameScreen implements Screen {
                 if (debug) System.out.println("TurnPhase.MOVEMENT");
                 //gameController.getCurrentPlayer().move();
                 if (gameController.getCurrentPlayer().isMoved()) {
-//                    infoLabel.setText("TURN COMPLETE");
-//                    infoLabel.addAction(Actions.sequence(Actions.fadeIn(0.5f), Actions.delay(1.5f), Actions.fadeOut(0.5f)));
                     gameController.setTurnPhase(GameplayController.TurnPhase.END);
                 }
                 break;
@@ -272,9 +257,6 @@ class GameScreen implements Screen {
             case END:   // End current turn
                 if (debug) System.out.println("TurnPhase.END");
                 if (!infoLabel.hasActions()) {
-                    //infoLabel.setText("NEW TURN");
-                    //infoLabel.addAction(Actions.sequence(Actions.fadeIn(0.5f), Actions.delay(1.5f), Actions.fadeOut(0.5f)));
-                    //dice.unActivate();
                     gameController.endTurn();
                     if (!gameController.gameOver()) gameController.setTurnPhase(GameplayController.TurnPhase.PREPARATION);
                 }

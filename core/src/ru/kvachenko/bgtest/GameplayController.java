@@ -27,10 +27,9 @@ import java.util.Iterator;
  *         Created on 31.05.2016.
  *         <p>
  *         The game is divided into rounds.
- *         Round ends when all players have complete their turns (made their move). In round end checks win conditions,
- *         if mo one player resolve win conditions, starts new round.
+ *         Round ends when all players have complete their turns (made their move).
+ *         In entTurn checks win conditions, if no one player resolve win conditions, starts new round.
  *         Turn of each player divided into several phases.
- *         TODO: update description
  *         TODO: totally refactor this class
  */
 public class GameplayController {

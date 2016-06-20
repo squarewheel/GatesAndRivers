@@ -5,25 +5,25 @@
  </imagelayer>
  <objectgroup name="fields">
   <object id="30" x="224" y="1632" width="160" height="160"/>
-  <object id="31" name="portal 1" x="384" y="1632" width="160" height="160">
-   <properties>
-    <property name="portal" type="int" value="19"/>
-   </properties>
-  </object>
+  <object id="31" x="384" y="1632" width="160" height="160"/>
   <object id="32" x="544" y="1632" width="160" height="160"/>
   <object id="33" name="river 9 endpoint" x="704" y="1632" width="160" height="160"/>
-  <object id="34" x="864" y="1632" width="160" height="160"/>
-  <object id="35" x="1024" y="1632" width="160" height="160"/>
-  <object id="36" name="river 1 endpoint" x="1184" y="1632" width="160" height="160"/>
-  <object id="37" x="1344" y="1632" width="160" height="160"/>
-  <object id="38" x="1504" y="1632" width="160" height="160"/>
-  <object id="39" x="1664" y="1632" width="160" height="160"/>
-  <object id="40" x="1664" y="1344" width="160" height="160"/>
-  <object id="42" name="portal 2" x="1504" y="1344" width="160" height="160">
+  <object id="34" name="portal 2" x="864" y="1632" width="160" height="160">
    <properties>
     <property name="portal" type="int" value="48"/>
    </properties>
   </object>
+  <object id="35" x="1024" y="1632" width="160" height="160"/>
+  <object id="36" name="river 1 endpoint" x="1184" y="1632" width="160" height="160"/>
+  <object id="37" x="1344" y="1632" width="160" height="160"/>
+  <object id="38" x="1504" y="1632" width="160" height="160"/>
+  <object id="39" name="portal 1" x="1664" y="1632" width="160" height="160">
+   <properties>
+    <property name="portal" type="int" value="19"/>
+   </properties>
+  </object>
+  <object id="40" x="1664" y="1344" width="160" height="160"/>
+  <object id="42" x="1504" y="1344" width="160" height="160"/>
   <object id="43" x="1344" y="1344" width="160" height="160"/>
   <object id="44" name="river 1" x="1184" y="1344" width="160" height="160">
    <properties>
@@ -37,7 +37,7 @@
   <object id="48" x="544" y="1344" width="160" height="160"/>
   <object id="49" name="portal 1 endpoint" x="384" y="1344" width="160" height="160">
    <properties>
-    <property name="portalEndpoint" type="int" value="2"/>
+    <property name="portalEndpoint" type="int" value="10"/>
    </properties>
   </object>
   <object id="50" x="224" y="1344" width="160" height="160"/>
@@ -69,7 +69,7 @@
    </properties>
   </object>
   <object id="62" x="1664" y="768" width="160" height="160"/>
-  <object id="63" name="river 9, endpoint 6, 7, 8" x="1504" y="768" width="160" height="160">
+  <object id="63" name="river 9, endpoint 8" x="1504" y="768" width="160" height="160">
    <properties>
     <property name="river" type="int" value="9"/>
     <property name="riverEndpoint" type="int" value="4"/>
@@ -90,7 +90,7 @@
   <object id="67" name="river 5 endpoint" x="864" y="768" width="160" height="160"/>
   <object id="69" x="704" y="768" width="160" height="160"/>
   <object id="70" x="544" y="768" width="160" height="160"/>
-  <object id="71" name="river 4 endpoint" x="384" y="768" width="160" height="160"/>
+  <object id="71" x="384" y="768" width="160" height="160"/>
   <object id="72" name="portal 4 enpoint" x="224" y="768" width="160" height="160">
    <properties>
     <property name="portalEndpoint" type="int" value="26"/>
@@ -101,12 +101,7 @@
     <property name="portalEndpoint" type="int" value="35"/>
    </properties>
   </object>
-  <object id="74" name="river 4" x="384" y="480" width="160" height="160">
-   <properties>
-    <property name="river" type="int" value="4"/>
-    <property name="riverEndpoint" type="int" value="39"/>
-   </properties>
-  </object>
+  <object id="74" x="384" y="480" width="160" height="160"/>
   <object id="75" name="river 5" x="544" y="480" width="160" height="160">
    <properties>
     <property name="river" type="int" value="5"/>
@@ -114,22 +109,12 @@
    </properties>
   </object>
   <object id="76" x="704" y="480" width="160" height="160"/>
-  <object id="77" name="river 6" x="864" y="480" width="160" height="160">
-   <properties>
-    <property name="river" type="int" value="6"/>
-    <property name="riverEndpoint" type="int" value="32"/>
-   </properties>
-  </object>
+  <object id="77" x="864" y="480" width="160" height="160"/>
   <object id="78" x="1024" y="480" width="160" height="160"/>
-  <object id="79" name="river 7" x="1184" y="480" width="160" height="160">
-   <properties>
-    <property name="river" type="int" value="7"/>
-    <property name="riverEndpoint" type="int" value="32"/>
-   </properties>
-  </object>
+  <object id="79" x="1184" y="480" width="160" height="160"/>
   <object id="80" name="portal 2 endpoint" x="1344" y="480" width="160" height="160">
    <properties>
-    <property name="portalEndpoint" type="int" value="12"/>
+    <property name="portalEndpoint" type="int" value="5"/>
    </properties>
   </object>
   <object id="81" name="river 8" x="1504" y="480" width="160" height="160">
@@ -140,49 +125,30 @@
   </object>
   <object id="82" x="1664" y="480" width="160" height="160"/>
  </objectgroup>
- <objectgroup name="players" visible="0">
-  <object id="25" name="player3" x="320.667" y="1664" width="32" height="32"/>
-  <object id="26" name="player2" x="256.667" y="1728" width="32" height="32"/>
-  <object id="27" name="player1" x="256.667" y="1664" width="32" height="32"/>
-  <object id="28" name="player4" x="320.667" y="1728" width="32" height="32"/>
- </objectgroup>
- <objectgroup color="#0055ff" name="river1">
+ <objectgroup color="#0055ff" name="river1" visible="0">
   <object id="84" x="1230.67" y="1518.67" width="32" height="32"/>
   <object id="85" x="1262.67" y="1581.33" width="32" height="32"/>
  </objectgroup>
- <objectgroup color="#0000ff" name="river2">
+ <objectgroup color="#0000ff" name="river2" visible="0">
   <object id="88" x="608" y="1321.33" width="32" height="32"/>
   <object id="89" x="914.667" y="1330.67" width="32" height="32"/>
  </objectgroup>
- <objectgroup color="#0000ff" name="river3">
+ <objectgroup color="#0000ff" name="river3" visible="0">
   <object id="140" x="1229.33" y="906.667" width="32" height="32"/>
   <object id="141" x="774.667" y="914.667" width="32" height="32"/>
   <object id="142" x="768" y="1022.67" width="32" height="32"/>
  </objectgroup>
- <objectgroup color="#0000ff" name="river4">
-  <object id="143" x="449.333" y="726.667" width="32" height="32"/>
- </objectgroup>
- <objectgroup color="#0000ff" name="river5">
+ <objectgroup color="#0000ff" name="river5" visible="0">
   <object id="144" x="617.333" y="728" width="32" height="32"/>
   <object id="145" x="896" y="741.333" width="32" height="32"/>
  </objectgroup>
- <objectgroup color="#00ff00" name="river6">
-  <object id="146" x="928" y="622.667" width="32" height="32"/>
-  <object id="147" x="1248" y="624" width="32" height="32"/>
-  <object id="148" x="1249.33" y="732" width="32" height="32"/>
-  <object id="149" x="1562.67" y="752" width="32" height="32"/>
- </objectgroup>
- <objectgroup color="#ffff00" name="river7">
-  <object id="151" x="1248" y="736" width="32" height="32"/>
-  <object id="152" x="1568" y="750.667" width="32" height="32"/>
- </objectgroup>
- <objectgroup color="#ff0000" name="river8">
+ <objectgroup color="#ff0000" name="river8" visible="0">
   <object id="154" x="1568" y="608" width="32" height="32"/>
   <object id="155" x="1248" y="624" width="32" height="32"/>
   <object id="156" x="1248" y="736" width="32" height="32"/>
   <object id="157" x="1561" y="758" width="32" height="32"/>
  </objectgroup>
- <objectgroup color="#0000ff" name="river9">
+ <objectgroup color="#0000ff" name="river9" visible="0">
   <properties>
    <property name="river" type="int" value="9"/>
    <property name="riverEndpoint" type="int" value="4"/>

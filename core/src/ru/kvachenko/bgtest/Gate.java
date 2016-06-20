@@ -34,7 +34,7 @@ public class Gate extends BaseActor implements Mover {
     private FieldActor targetField;                                     // Endpoint of this gate
 
     static {
-        colorsList.add(Color.ROYAL);
+        colorsList.add(Color.RED);
         colorsList.add(Color.SKY);
         colorsList.add(Color.LIME);
         colorsList.add(Color.GOLD);
