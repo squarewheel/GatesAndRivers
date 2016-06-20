@@ -36,8 +36,6 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
-import java.util.ArrayList;
-
 /**
  * @author Sasha Kvachenko
  *         Created on 20.05.2016.
@@ -47,7 +45,7 @@ import java.util.ArrayList;
 // TODO: add dot in center of screen and bind camera position ti that dot
 class GameScreen implements Screen {
     private BoardGame game;
-    private Round currentRound;
+    private GameplayController gameController;
     private Stage mainStage;
     private Stage uiStage;
     private Table uiTable;
@@ -86,10 +84,10 @@ class GameScreen implements Screen {
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                 // Dice can be rolled only in START phase
-                if (currentRound.getTurnPhase() == Round.TurnPhase.START) {
+                if (gameController.getTurnPhase() == GameplayController.TurnPhase.START) {
                     if (dice.isActive() && dice.getState() == DiceWidget.State.READY) {
                         dice.roll();
-                        currentRound.setTurnPhase(Round.TurnPhase.DICE_ROLLING);
+                        gameController.setTurnPhase(GameplayController.TurnPhase.DICE_ROLLING);
                     }
                 }
             }
@@ -149,10 +147,11 @@ class GameScreen implements Screen {
         new Player();
         //Player.getPlayersList().get(0).makePlayable();
         for (Player p: Player.getPlayersList()) { mainStage.addActor(p.getChip()); }
-        currentRound = new Round(Player.getPlayersList());
+        gameController = new GameplayController(Player.getPlayersList());
 
         // User interface
         infoLabel = new Label("Im Love my Wife", bg.skin, "infoLabelStyle");
+        gameController.setInfoLabel(infoLabel);
         //Label rollResultLabel = new Label("Roll Result: ", bg.skin, "labelStyle");
         //Label rollResult = new Label("-", bg.skin, "labelStyle");
         //dice.setRollResultLabel(rollResult);
@@ -162,15 +161,13 @@ class GameScreen implements Screen {
         //statsList.add(rollResultLabel).right().top().pad(5, 5, 0, 0);
         //statsList.add(rollResult).left().top().padTop(5);
         //statsList.row();
-        statsList.add(currentRound.new RoundCounterLabel("", bg.skin, "labelStyle")).right().top().padTop(5);
+        statsList.add(gameController.new RoundCounterLabel("", bg.skin, "labelStyle")).right().top().padTop(5);
         uiTable.setFillParent(true);
         uiTable.top();
-        uiTable.add(statsList).left().top();
+        uiTable.add(statsList).left().top().pad(5, 5, 0, 0);
         uiTable.row().expandY();
         uiTable.add(infoLabel);//.spaceBottom(10);
-        if (debug) {
-            uiTable.setDebug(true);
-        }
+        if (debug) uiTable.setDebug(true);
         uiTable.row();
         uiTable.add(dice).expandX().right().bottom().pad(1, 0, 5, 5);
 
@@ -212,38 +209,38 @@ class GameScreen implements Screen {
         // Update UI
 
         // Update game state
-        switch (currentRound.getTurnPhase()) {
+        switch (gameController.getTurnPhase()) {
             // TODO: encapsulate game progress into Round class
             case PREPARATION:   // Prepare game state to new turn
                 if (debug) System.out.println("TurnPhase.PREPARATION");
                 if (!infoLabel.hasActions()) {
-                    //camera.translate(currentRound.getCurrentPlayer().getChip().getX() - camera.position.x,
-                    //                 currentRound.getCurrentPlayer().getChip().getY() - camera.position.y, camera.position.z);
-                    //camTarget.add(currentRound.getCurrentPlayer().getChip().getX() - camera.position.x,
-                    //              currentRound.getCurrentPlayer().getChip().getY() - camera.position.y);
-                    infoLabel.setText(currentRound.getCurrentPlayer().getName() + " TURN");
-                    infoLabel.setColor(currentRound.getCurrentPlayer().getChip().getColor());
+                    //camera.translate(gameController.getCurrentPlayer().getChip().getX() - camera.position.x,
+                    //                 gameController.getCurrentPlayer().getChip().getY() - camera.position.y, camera.position.z);
+                    //camTarget.add(gameController.getCurrentPlayer().getChip().getX() - camera.position.x,
+                    //              gameController.getCurrentPlayer().getChip().getY() - camera.position.y);
+                    infoLabel.setText(gameController.getCurrentPlayer().getName() + " TURN");
+                    infoLabel.setColor(gameController.getCurrentPlayer().getChip().getColor());
                     infoLabel.addAction(Actions.sequence(Actions.fadeIn(0.5f), Actions.delay(1.5f), Actions.fadeOut(0.5f)));
-                    if (currentRound.getCurrentPlayer().isPlayable()) dice.activate();
+                    if (gameController.getCurrentPlayer().isPlayable()) dice.activate();
                     dice.setState(DiceWidget.State.READY);
-                    currentRound.setTurnPhase(Round.TurnPhase.START);
+                    gameController.setTurnPhase(GameplayController.TurnPhase.START);
                 }
                 break;
 
             case START: // Start of current player turn. Phase end when user or ai roll dice
                 if (debug) System.out.println("TurnPhase.START");
                 if (!infoLabel.hasActions()) {
-                    if (!currentRound.getCurrentPlayer().isPlayable()) {
+                    if (!gameController.getCurrentPlayer().isPlayable()) {
                         // TODO: method calls many times what it need; possible solution it add players state
                         dice.roll();
                     }
 //                    else {
 //                        // Only for debug! Delete else block after debug
 //                        dice.setRollResult(1);
-//                        currentRound.setTurnPhase(Round.TurnPhase.DICE_ROLLED);
+//                        gameController.setTurnPhase(Round.TurnPhase.DICE_ROLLED);
 //                    }
                     if (dice.getState() == DiceWidget.State.ROLLING)
-                        currentRound.setTurnPhase(Round.TurnPhase.DICE_ROLLING);
+                        gameController.setTurnPhase(GameplayController.TurnPhase.DICE_ROLLING);
                 }
                 break;
 
@@ -251,24 +248,24 @@ class GameScreen implements Screen {
                 if (debug) System.out.println("TurnPhase.DICE_ROLLING");
                 if (dice.getState() == DiceWidget.State.ROLLED) {
                     dice.unActivate();
-                    currentRound.setTurnPhase(Round.TurnPhase.DICE_ROLLED);
+                    gameController.setTurnPhase(GameplayController.TurnPhase.DICE_ROLLED);
                 }
                 break;
 
             case DICE_ROLLED:   // Determines number of fields what current player must go
                 // TODO: looks like this phase is not necessary
                 if (debug) System.out.println("TurnPhase.DICE_ROLLED");
-                currentRound.getCurrentPlayer().getChip().moveOn(dice.getRollResult());
-                currentRound.setTurnPhase(Round.TurnPhase.MOVEMENT);
+                gameController.getCurrentPlayer().getChip().moveOn(dice.getRollResult());
+                gameController.setTurnPhase(GameplayController.TurnPhase.MOVEMENT);
                 break;
 
             case MOVEMENT:  // Move current player chip
                 if (debug) System.out.println("TurnPhase.MOVEMENT");
-                //currentRound.getCurrentPlayer().move();
-                if (currentRound.getCurrentPlayer().isMoved()) {
+                //gameController.getCurrentPlayer().move();
+                if (gameController.getCurrentPlayer().isMoved()) {
 //                    infoLabel.setText("TURN COMPLETE");
 //                    infoLabel.addAction(Actions.sequence(Actions.fadeIn(0.5f), Actions.delay(1.5f), Actions.fadeOut(0.5f)));
-                    currentRound.setTurnPhase(Round.TurnPhase.END);
+                    gameController.setTurnPhase(GameplayController.TurnPhase.END);
                 }
                 break;
 
@@ -278,8 +275,8 @@ class GameScreen implements Screen {
                     //infoLabel.setText("NEW TURN");
                     //infoLabel.addAction(Actions.sequence(Actions.fadeIn(0.5f), Actions.delay(1.5f), Actions.fadeOut(0.5f)));
                     //dice.unActivate();
-                    currentRound.endTurn();
-                    currentRound.setTurnPhase(Round.TurnPhase.PREPARATION);
+                    gameController.endTurn();
+                    if (!gameController.gameOver()) gameController.setTurnPhase(GameplayController.TurnPhase.PREPARATION);
                 }
                 break;
         }
@@ -287,7 +284,7 @@ class GameScreen implements Screen {
         // Update camera position
         //Camera mainCamera = mainStage.getCamera();
         //for (Player p: Player.getPlayersList()) {    // if player chip movement centralize camera on chip
-        ChipActor currentPlayerChip = currentRound.getCurrentPlayer().getChip();
+        ChipActor currentPlayerChip = gameController.getCurrentPlayer().getChip();
         if (currentPlayerChip.getState() != ChipActor.State.WAIT) {
             camera.position.x = currentPlayerChip.getX() - currentPlayerChip.getWidth() / 2;
             camera.position.y = currentPlayerChip.getY() - currentPlayerChip.getHeight() / 2;

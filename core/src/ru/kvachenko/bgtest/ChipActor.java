@@ -76,7 +76,7 @@ public class ChipActor extends BaseActor {
 
     //public boolean isBusy() { return state != State.READY; }
 
-    //public Actor getCurrentField() { return currentField; }
+    public FieldActor getCurrentField() { return currentField; }
 
     /** Move chip to next Field. */
     private void moveForward() {
@@ -151,7 +151,7 @@ public class ChipActor extends BaseActor {
                 break;
 
             case READY:
-                if (moves > 0) {    // While has moves chip moves forward
+                if (moves > 0) {    // While has moves, chip moves forward
                     moves--;
                     moveForward();
                 }

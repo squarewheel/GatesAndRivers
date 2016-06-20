@@ -14,8 +14,10 @@
 
 package ru.kvachenko.bgtest;
 
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import ru.kvachenko.basegame.WinCondition;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -29,8 +31,9 @@ import java.util.Iterator;
  *         if mo one player resolve win conditions, starts new round.
  *         Turn of each player divided into several phases.
  *         TODO: update description
+ *         TODO: totally refactor this class
  */
-public class Round {
+public class GameplayController {
 
     public class RoundCounterLabel extends Label {
         public RoundCounterLabel(CharSequence text, Skin skin, String styleName) {
@@ -60,21 +63,26 @@ public class Round {
 
     private ArrayList<Player> players;  // list of players
     private Player currentPlayer;       // indicates whose turn now
-    private TurnPhase turnPhase;
+    private TurnPhase turnPhase;        // Current phase of turn
     private int roundCounter;
     private Label roundCounterLabel;
+    private Label infoLabel;
+    private Player winner;              // If win condition is done, game not ends
     //private int turnsInRound;
     //private int turnCounter;
 
-    public Round(ArrayList<Player> p) {
+    public GameplayController(ArrayList<Player> p) {
         // Basic initialization
         players = p;
         roundCounter = 0;
         currentPlayer = p.get(p.size()-1);
         turnPhase = TurnPhase.END;
+        //gameOver = false;
     }
 
     public void setRoundCounterLabel(Label l) { roundCounterLabel = l; }
+
+    public void setInfoLabel(Label l) { infoLabel = l; }
 
     public void setTurnPhase(TurnPhase phase) { turnPhase = phase; }
 
@@ -84,16 +92,39 @@ public class Round {
         return turnPhase;
     }
 
+    public boolean gameOver() {
+        return winner != null;
+    }
+
     public void endTurn() {
+        if (winner != null) return; // If game over, do nothing
+
         // if all players made his turns, start new round
         Iterator<Player> playersItr = players.listIterator(players.indexOf(currentPlayer)+1);
-        if (playersItr.hasNext()) {
-            currentPlayer = playersItr.next();
-        }
+        if (playersItr.hasNext()) currentPlayer = playersItr.next();
         else {
-            for (Player p: players) p.getChip().setState(ChipActor.State.WAIT);
-            roundCounter++;
-            currentPlayer = players.get(0);
+            int chipsFinished = 0;
+            Player possibleWinner = null;
+            for (Player p: players) {
+                if (FieldActor.getFieldsList().indexOf(p.getChip().getCurrentField()) ==
+                        (FieldActor.getFieldsList().size() - 1)) {
+                    chipsFinished++;
+                    possibleWinner = p;
+                }
+                p.getChip().setState(ChipActor.State.WAIT);
+            }
+            if (chipsFinished == 1) {
+                winner = possibleWinner;
+                if (infoLabel != null) {
+                    infoLabel.setText("Winner is " + winner.getName());
+                    infoLabel.setColor(winner.getChip().getColor());
+                    infoLabel.addAction(Actions.after(Actions.fadeIn(0.1f)));
+                }
+            }
+            else {
+                roundCounter++;
+                currentPlayer = players.get(0);
+            }
         }
         //setTurnPhase(TurnPhase.START);
     }
