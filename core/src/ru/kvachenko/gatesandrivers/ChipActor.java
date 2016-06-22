@@ -12,7 +12,7 @@
  *  GNU General Public License for more details.
  ******************************************************************************/
 
-package ru.kvachenko.bgtest;
+package ru.kvachenko.gatesandrivers;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;

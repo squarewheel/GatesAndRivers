@@ -12,7 +12,7 @@
  *  GNU General Public License for more details.
  ******************************************************************************/
 
-package ru.kvachenko.bgtest;
+package ru.kvachenko.gatesandrivers;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
@@ -49,15 +49,12 @@ class GameScreen implements Screen {
     private Stage mainStage;
     private Stage uiStage;
     private Table uiTable;
-    private Image background;
-    //private ScreenViewport tiledViewport;
-    //private OrthographicCamera tiledCamera;
-    //private OrthogonalTiledMapRenderer mapRenderer;
     private int worldWidth;
     private int worldHeight;
     private Camera camera;
 //    private Vector2 camTarget;
     private DiceWidget dice;
+    private CheckBox autoRollButton;
     private Label infoLabel;
 
     // Temp variables
@@ -67,6 +64,8 @@ class GameScreen implements Screen {
     //int viewHeight = 600;
 
     GameScreen(BoardGame bg) {
+        Image background = new Image(new TextureRegion(new Texture("main_screen3.png")));
+
         // Base initialization
         game = bg;
         worldWidth = 64 * 32;
@@ -74,7 +73,7 @@ class GameScreen implements Screen {
         mainStage = new Stage(new ScreenViewport());
         camera = mainStage.getCamera();
 //        camTarget = new Vector2();
-        background = new Image(new TextureRegion(new Texture("main_screen3.png")));
+
         mainStage.addActor(background);
         uiStage = new Stage(new ScreenViewport());
         uiTable = new Table(bg.skin);
@@ -100,7 +99,6 @@ class GameScreen implements Screen {
 
         // Gameboard fields
         // TODO: may be need special class for creating gameboard
-        //TiledMap tiledMap = new AtlasTmxMapLoader().load("main_screen3.tmx");
         TiledMap tiledMap = new TmxMapLoader().load("main_screen3.tmx");
         MapObjects fieldObjects = tiledMap.getLayers().get("fields").getObjects();
         for (MapObject mo: fieldObjects) {
@@ -135,20 +133,26 @@ class GameScreen implements Screen {
         new Player();
         new Player();
         new Player();
-        //Player.getPlayersList().get(0).makePlayable();
+        Player.getPlayersList().get(0).makePlayable();
         for (Player p: Player.getPlayersList()) { mainStage.addActor(p.getChip()); }
         gameController = new GameplayController(Player.getPlayersList());
 
         // User interface
+        autoRollButton = new CheckBox("", bg.skin, "checkBoxStyle");
+
+        Label autoRollLabel = new Label("AUTO ROLL", bg.skin, "labelStyle");
         infoLabel = new Label("Im Love my Wife", bg.skin, "infoLabelStyle");
         gameController.setInfoLabel(infoLabel);
+
+        Table diceBox = new Table().background(bg.skin.getDrawable("frameImg"));
+        diceBox.add(dice).colspan(2);
+        diceBox.row().uniformY();
+        diceBox.add(autoRollLabel).right();
+        diceBox.add(autoRollButton);
+
         Table statsList = new Table();
-        //statsList.add(customLabel).left().top().pad(5, 5, 0, 0);
-        //statsList.row();
-        //statsList.add(rollResultLabel).right().top().pad(5, 5, 0, 0);
-        //statsList.add(rollResult).left().top().padTop(5);
-        //statsList.row();
         statsList.add(gameController.new RoundCounterLabel("", bg.skin, "labelStyle")).right().top().padTop(5);
+
         uiTable.setFillParent(true);
         uiTable.top();
         uiTable.add(statsList).left().top().pad(5, 5, 0, 0);
@@ -156,10 +160,18 @@ class GameScreen implements Screen {
         uiTable.add(infoLabel);//.spaceBottom(10);
         if (debug) uiTable.setDebug(true);
         uiTable.row();
-        uiTable.add(dice).expandX().right().bottom().pad(1, 0, 5, 5);
+        uiTable.add(diceBox).expandX().right().bottom().pad(0, 0, 5, 5);
 
         // Input handlers
-        //uiStage.addListener(new InputListener(){});
+        autoRollButton.addListener(new InputListener(){
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                if (gameController.getCurrentPlayer().isPlayable() &&
+                        gameController.getTurnPhase() == GameplayController.TurnPhase.START)
+                    dice.unActivate();
+                return true;
+            }
+        });
         game.im.addProcessor(uiStage);
         game.im.addProcessor(new InputAdapter(){
             Vector3 lastTouchDown;
@@ -182,19 +194,9 @@ class GameScreen implements Screen {
             }
 
         });
-
-        // Temp and debug section
-        //statsList.debug();
-        //uiStage.addActor(customLabel);
-        //uiTable.getCell(customLabel).getMaxHeight();
-        //infoLabel.setOrigin(infoLabel.getWidth()/2, infoLabel.getHeight()/2);
-        //infoLabel.addAction(Actions.moveTo(uiStage.getWidth()/2, uiStage.getHeight()/2));
-        //infoLabel.addAction(Actions.fadeOut(2));
     }
 
     private void update(float dt) {
-        // Update UI
-
         // Update game state
         switch (gameController.getTurnPhase()) {
             // TODO: encapsulate game progress into Round class
@@ -208,7 +210,7 @@ class GameScreen implements Screen {
                     infoLabel.setText(gameController.getCurrentPlayer().getName() + " TURN");
                     infoLabel.setColor(gameController.getCurrentPlayer().getChip().getColor());
                     infoLabel.addAction(Actions.sequence(Actions.fadeIn(0.5f), Actions.delay(1.5f), Actions.fadeOut(0.5f)));
-                    if (gameController.getCurrentPlayer().isPlayable()) dice.activate();
+                    if (gameController.getCurrentPlayer().isPlayable() && !autoRollButton.isChecked()) dice.activate();
                     dice.setState(DiceWidget.State.READY);
                     gameController.setTurnPhase(GameplayController.TurnPhase.START);
                 }
@@ -217,17 +219,8 @@ class GameScreen implements Screen {
             case START: // Start of current player turn. Phase end when user or ai roll dice
                 if (debug) System.out.println("TurnPhase.START");
                 if (!infoLabel.hasActions()) {
-                    if (!gameController.getCurrentPlayer().isPlayable()) {
-                        // TODO: method calls many times what it need; possible solution it add players state
-                        dice.roll();
-                    }
-//                    else {
-//                        // Only for debug! Delete else block after debug
-//                        dice.setRollResult(1);
-//                        gameController.setTurnPhase(Round.TurnPhase.DICE_ROLLED);
-//                    }
-                    if (dice.getState() == DiceWidget.State.ROLLING)
-                        gameController.setTurnPhase(GameplayController.TurnPhase.DICE_ROLLING);
+                    if (!gameController.getCurrentPlayer().isPlayable() || autoRollButton.isChecked()) dice.roll();
+                    if (dice.getState() == DiceWidget.State.ROLLING) gameController.setTurnPhase(GameplayController.TurnPhase.DICE_ROLLING);
                 }
                 break;
 
@@ -249,9 +242,7 @@ class GameScreen implements Screen {
             case MOVEMENT:  // Move current player chip
                 if (debug) System.out.println("TurnPhase.MOVEMENT");
                 //gameController.getCurrentPlayer().move();
-                if (gameController.getCurrentPlayer().isMoved()) {
-                    gameController.setTurnPhase(GameplayController.TurnPhase.END);
-                }
+                if (gameController.getCurrentPlayer().isMoved()) gameController.setTurnPhase(GameplayController.TurnPhase.END);
                 break;
 
             case END:   // End current turn
@@ -264,8 +255,6 @@ class GameScreen implements Screen {
         }
 
         // Update camera position
-        //Camera mainCamera = mainStage.getCamera();
-        //for (Player p: Player.getPlayersList()) {    // if player chip movement centralize camera on chip
         ChipActor currentPlayerChip = gameController.getCurrentPlayer().getChip();
         if (currentPlayerChip.getState() != ChipActor.State.WAIT) {
             camera.position.x = currentPlayerChip.getX() - currentPlayerChip.getWidth() / 2;
@@ -278,16 +267,12 @@ class GameScreen implements Screen {
             //System.out.println();
         }
 
-        //}
         camera.position.x = MathUtils.clamp(camera.position.x,
                 camera.viewportWidth/2,
                 worldWidth - camera.viewportWidth/2);
         camera.position.y = MathUtils.clamp(camera.position.y,
                 camera.viewportHeight/2,
                 worldHeight - camera.viewportHeight/2);
-        //tiledCamera.position.set(mainStage.getCamera().position);
-        //tiledCamera.update();
-        //mapRenderer.setView(tiledCamera);
     }
 
     @Override
@@ -302,7 +287,6 @@ class GameScreen implements Screen {
         /*-----------------------------------OUTPUT SECTION-------------------------------------------------*/
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        //mapRenderer.render();
         mainStage.draw();
         uiStage.draw();
     }
@@ -316,7 +300,6 @@ class GameScreen implements Screen {
     public void resize(int width, int height) {
         mainStage.getViewport().update(width, height);
         uiStage.getViewport().update(width, height, true);
-        //tiledViewport.update(width, height);
     }
 
     @Override

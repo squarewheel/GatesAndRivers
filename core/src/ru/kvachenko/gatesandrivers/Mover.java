@@ -12,7 +12,7 @@
  *  GNU General Public License for more details.
  ******************************************************************************/
 
-package ru.kvachenko.bgtest;
+package ru.kvachenko.gatesandrivers;
 
 /**
  * @author Sasha Kvachenko

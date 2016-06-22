@@ -12,7 +12,7 @@
  *  GNU General Public License for more details.
  ******************************************************************************/
 
-package ru.kvachenko.bgtest;
+package ru.kvachenko.gatesandrivers;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;

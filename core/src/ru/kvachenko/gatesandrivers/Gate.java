@@ -12,7 +12,7 @@
  *  GNU General Public License for more details.
  ******************************************************************************/
 
-package ru.kvachenko.bgtest;
+package ru.kvachenko.gatesandrivers;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
@@ -30,7 +30,7 @@ import java.util.ArrayList;
  */
 public class Gate extends BaseActor implements Mover {
     private static ArrayList<Color> colorsList = new ArrayList<Color>();// List of possible portals colors
-    private static ArrayList<Gate> gatesList = new ArrayList<Gate>();   // List of all created gates
+//    private static ArrayList<Gate> gatesList = new ArrayList<Gate>();   // List of all created gates
     private FieldActor targetField;                                     // Endpoint of this gate
 
     static {
@@ -49,10 +49,10 @@ public class Gate extends BaseActor implements Mover {
         BaseActor endPoint = new BaseActor(new TextureRegion(new Texture("endpoint_portal.png")));
         endPoint.setColor(getColor());
         //endPoint.setOrigin(endPoint.getWidth()/2, endPoint.getHeight()/2);
-        endPoint.setPosition(targetField.getWidth()/5*2, targetField.getHeight()/5*2);
+        endPoint.setPosition(targetField.getWidth()/5*2, targetField.getHeight()/5*2);  // Hardcoding is bad!
         targetField.addActor(endPoint);
 
-        gatesList.add(this);
+//        gatesList.add(this);
     }
 
     @Override
@@ -60,7 +60,5 @@ public class Gate extends BaseActor implements Mover {
         chip.addAction(Actions.parallel(Actions.scaleBy(-1, -1, 0.5f), Actions.fadeOut(1f)));
         chip.moveToField(targetField);
         chip.addAction(Actions.after(Actions.parallel(Actions.scaleBy(1, 1, 0.5f), Actions.fadeIn(1f))));
-        //chip.takePosition();
-        //chip.addAction();
     }
 }

@@ -12,7 +12,7 @@
  *  GNU General Public License for more details.
  ******************************************************************************/
 
-package ru.kvachenko.bgtest;
+package ru.kvachenko.gatesandrivers;
 
 import com.badlogic.gdx.graphics.Color;
 
@@ -23,7 +23,7 @@ import java.util.ArrayList;
  *         Created on 31.05.2016.
  *         <p>
  *         Provides gameboard player.
- *         Players must be created after gameboard fields.
+ *         Players must be created after gameboard fields.  // TODO: unbind class from fields class
  */
 public class Player {
     private static ArrayList<Color> colors = new ArrayList<Color>();
@@ -33,8 +33,6 @@ public class Player {
 
     private ChipActor chip;
     private String name;
-    //private int moves;              // num of fields what player must move in this turn
-    //private boolean moved;          // indicates whether or not the player has made his move
     private boolean playable;       // indicates who control this player: human or ai
 
     /** Possible colors of Players */
@@ -57,47 +55,21 @@ public class Player {
 
         // Basic initialization
         name = "Mr " + names.remove(0);
-        //moved = false;
         playable = false;
 
         chip = new ChipActor();
         chip.setColor(colors.remove(0));
         chip.setSize(32, 32);
         chip.setOrigin(16, 16);
-        //chip.takePosition();
     }
-
-    public ChipActor getChip() { return chip; }
-
-//    /** Moves player chip to num of fields stored in moves var. */
-//    public void move() {
-//        if (!isMoved() && !chip.isBusy()) {
-//            if (moves > 0) {
-//                moves--;
-//                chip.moveForward();
-//            }
-//            else {
-//                moved = true;
-//                if (chip.getDirection() == ChipActor.Direction.BACKWARD) chip.changeDirection();
-//                chip.takePosition();
-//            }
-//        }
-//    }
-
-    //public void switchMovementState() { moved = !moved; }
 
     public void makePlayable() { playable = true; }
 
-    //public void setMovedState(boolean b) { moved = b; }
+//    public void setPlayable(boolean b) { playable = b; }
 
-    /** Set num of fields what player must move in this turn. */
-    //public void setMoves(int moves) { if (!isMoved()) this.moves = moves; }
+    public ChipActor getChip() { return chip; }
 
     public String getName() { return name; }
-
-    //public int getMoves() { return moves; }
-
-//    public boolean hasMoves() { return moves > 0; }
 
     public boolean isMoved() { return chip.getState() == ChipActor.State.MOVED; }
 

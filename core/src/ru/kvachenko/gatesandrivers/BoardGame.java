@@ -12,14 +12,13 @@
  *  GNU General Public License for more details.
  ******************************************************************************/
 
-package ru.kvachenko.bgtest;
+package ru.kvachenko.gatesandrivers;
 
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.NinePatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 
 public class BoardGame extends Game {
@@ -41,9 +40,12 @@ public class BoardGame extends Game {
         skin.add("defaultFont", defaultFont);
         skin.add("infoLabelFont", new BitmapFont(Gdx.files.local("8bit64.fnt")));
         skin.add("infoLabelStyle", new Label.LabelStyle(skin.getFont("infoLabelFont"), Color.WHITE));
-        skin.add("labelStyle", new Label.LabelStyle(skin.getFont("defaultFont"), Color.LIME));
+        skin.add("labelStyle", new Label.LabelStyle(skin.getFont("defaultFont"), Color.WHITE));
         skin.add("buttonUpImg", new NinePatch(new Texture("grey_button12.png"), 10, 10, 10, 10));
         skin.add("buttonDownImg", new NinePatch(new Texture("grey_button13.png"), 10, 10, 10, 10));
+        skin.add("checkBoxImg", new NinePatch(new Texture("grey_box.png"), 8, 8, 8, 8));
+        skin.add("checkBoxMarkImg", new NinePatch(new Texture("grey_boxCheckmark.png"), 8, 8, 8, 8));
+        skin.add("frameImg", new NinePatch(new Texture("grey_frame.png"), 8, 8, 8, 8));
         skin.add("defaultButtonStyle", new Button.ButtonStyle(skin.getDrawable("buttonUpImg"),
                                                               skin.getDrawable("buttonDownImg"),
                                                               skin.getDrawable("buttonUpImg")));
@@ -52,9 +54,14 @@ public class BoardGame extends Game {
                 skin.getDrawable("buttonDownImg"),
                 skin.getDrawable("buttonUpImg"),
                 skin.getFont("defaultFont"));
-        //tbs.fontColor = Color.DARK_GRAY;
+        CheckBox.CheckBoxStyle cbs = new CheckBox.CheckBoxStyle(
+                skin.getDrawable("checkBoxImg"),
+                skin.getDrawable("checkBoxMarkImg"),
+                skin.getFont("defaultFont"),
+                Color.WHITE);
         tbs.pressedOffsetY = -4;
         skin.add("textButtonStyle", tbs);
+        skin.add("checkBoxStyle", cbs);
         //skin.get("textButtonStyle", TextButton.TextButtonStyle.class).fontColor.set(Color.DARK_GRAY);
 
         // load star screen

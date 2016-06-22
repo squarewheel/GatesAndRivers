@@ -1,10 +1,9 @@
-package ru.kvachenko.bgtest;
+package ru.kvachenko.gatesandrivers;
 
 import android.os.Bundle;
 
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
-import ru.kvachenko.bgtest.BoardGame;
 
 public class AndroidLauncher extends AndroidApplication {
 	@Override

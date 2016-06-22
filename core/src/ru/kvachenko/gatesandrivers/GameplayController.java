@@ -12,12 +12,11 @@
  *  GNU General Public License for more details.
  ******************************************************************************/
 
-package ru.kvachenko.bgtest;
+package ru.kvachenko.gatesandrivers;
 
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import ru.kvachenko.basegame.WinCondition;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -76,7 +75,6 @@ public class GameplayController {
         roundCounter = 0;
         currentPlayer = p.get(p.size()-1);
         turnPhase = TurnPhase.END;
-        //gameOver = false;
     }
 
     public void setRoundCounterLabel(Label l) { roundCounterLabel = l; }

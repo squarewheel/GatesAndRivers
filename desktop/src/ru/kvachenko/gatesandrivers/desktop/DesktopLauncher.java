@@ -1,8 +1,8 @@
-package ru.kvachenko.bgtest.desktop;
+package ru.kvachenko.gatesandrivers.desktop;
 
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
-import ru.kvachenko.bgtest.BoardGame;
+import ru.kvachenko.gatesandrivers.BoardGame;
 
 public class DesktopLauncher {
 	public static void main (String[] arg) {
