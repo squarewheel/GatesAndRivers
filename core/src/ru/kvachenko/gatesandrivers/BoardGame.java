@@ -34,11 +34,11 @@ public class BoardGame extends Game {
 
         // skin
         skin = new Skin();
-        BitmapFont defaultFont = new BitmapFont(Gdx.files.local("pixelfont16.fnt"));
+        BitmapFont defaultFont = new BitmapFont(Gdx.files.local("sansman16.fnt"));
         //defaultFont.setColor(Color.DARK_GRAY);
         //skin.add("backgroundImage", new Image(new TextureRegion(new Texture("main_screen2.png"))));
         skin.add("defaultFont", defaultFont);
-        skin.add("infoLabelFont", new BitmapFont(Gdx.files.local("8bit64.fnt")));
+        skin.add("infoLabelFont", new BitmapFont(Gdx.files.local("sansman64.fnt")));
         skin.add("infoLabelStyle", new Label.LabelStyle(skin.getFont("infoLabelFont"), Color.WHITE));
         skin.add("labelStyle", new Label.LabelStyle(skin.getFont("defaultFont"), Color.WHITE));
         skin.add("buttonUpImg", new NinePatch(new Texture("grey_button12.png"), 10, 10, 10, 10));
@@ -46,9 +46,10 @@ public class BoardGame extends Game {
         skin.add("checkBoxImg", new NinePatch(new Texture("grey_box.png"), 8, 8, 8, 8));
         skin.add("checkBoxMarkImg", new NinePatch(new Texture("grey_boxCheckmark.png"), 8, 8, 8, 8));
         skin.add("frameImg", new NinePatch(new Texture("grey_frame.png"), 8, 8, 8, 8));
-        skin.add("defaultButtonStyle", new Button.ButtonStyle(skin.getDrawable("buttonUpImg"),
-                                                              skin.getDrawable("buttonDownImg"),
-                                                              skin.getDrawable("buttonUpImg")));
+        skin.add("defaultButtonStyle", new Button.ButtonStyle(
+                skin.getDrawable("buttonUpImg"),
+                skin.getDrawable("buttonDownImg"),
+                skin.getDrawable("buttonUpImg")));
         TextButton.TextButtonStyle tbs = new TextButton.TextButtonStyle(
                 skin.getDrawable("buttonUpImg"),
                 skin.getDrawable("buttonDownImg"),

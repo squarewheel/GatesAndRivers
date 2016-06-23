@@ -43,10 +43,10 @@ public class Player {
         colors.add(Color.YELLOW);
 
         // Default players names
-        names.add("RED");
-        names.add("BLUE");
-        names.add("GREEN");
-        names.add("YELLOW");
+        names.add("Red");
+        names.add("Blue");
+        names.add("Green");
+        names.add("Yellow");
     }
 
     public Player() {
@@ -54,7 +54,7 @@ public class Player {
         playersList.add(this);
 
         // Basic initialization
-        name = "Mr " + names.remove(0);
+        name = "Mr. " + names.remove(0);
         playable = false;
 
         chip = new ChipActor();
