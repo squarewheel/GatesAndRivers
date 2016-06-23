@@ -35,7 +35,6 @@ public class BoardGame extends Game {
         // skin
         skin = new Skin();
         BitmapFont defaultFont = new BitmapFont(Gdx.files.local("sansman16.fnt"));
-        //defaultFont.setColor(Color.DARK_GRAY);
         //skin.add("backgroundImage", new Image(new TextureRegion(new Texture("main_screen2.png"))));
         skin.add("defaultFont", defaultFont);
         skin.add("infoLabelFont", new BitmapFont(Gdx.files.local("sansman64.fnt")));

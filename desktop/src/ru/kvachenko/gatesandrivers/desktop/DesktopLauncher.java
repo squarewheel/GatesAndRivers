@@ -7,8 +7,9 @@ import ru.kvachenko.gatesandrivers.BoardGame;
 public class DesktopLauncher {
 	public static void main (String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-		config.width = 1200;
-		config.height = 600;
+		config.title = "Gates and Rivers";
+		config.width = 800;
+		config.height = 480;
 		new LwjglApplication(new BoardGame(), config);
 	}
 }

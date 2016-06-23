@@ -21,6 +21,7 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import ru.kvachenko.basegame.BaseScreen;
 
@@ -28,55 +29,58 @@ import ru.kvachenko.basegame.BaseScreen;
  * @author Sasha Kvachenko
  *         Created on 23.06.2016.
  *         <p>
- *         Title screen of game.
+ *         Game setup screen.
  */
-public class TitleScreen extends BaseScreen{
-    private Stage titleStage;
+public class SetupScreen extends BaseScreen {
+    private Stage setupStage;
 
-    public TitleScreen(final BoardGame game) {
+    public SetupScreen(final BoardGame game) {
         super();
-        Label title = new Label("Gates and Rivers", game.skin, "infoLabelStyle");
-        Label info = new Label("tap to continue", game.skin, "labelStyle");
-        titleStage = new Stage(new ScreenViewport());
+        Label title = new Label("New Game Setup", game.skin, "infoLabelStyle");
+//        Label info = new Label("tap to continue", game.skin, "labelStyle");
+        TextButton startButton = new TextButton("Start Game", game.skin, "textButtonStyle");
+        setupStage = new Stage(new ScreenViewport());
         Table layout = new Table(game.skin);
-        titleStage.addActor(layout);
+        setupStage.addActor(layout);
         layout.setFillParent(true);
-        layout.add(title);
-        layout.row();
-        layout.add(info);
+        layout.add(title).top().pad(5, 5, 0, 5);
+//        layout.row();
+//        layout.add(info);
+        layout.row().expandY();
+        layout.add(startButton).fillX().bottom().pad(0, 5, 5, 5);
 
-        titleStage.addListener(new InputListener(){
-            @Override
-            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                game.im.removeProcessor(titleStage);
-                game.setScreen(new SetupScreen(game));
-            }
-
+        startButton.addListener(new InputListener(){
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 return true;
             }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                game.im.removeProcessor(setupStage);
+                game.setScreen(new GameScreen(game));
+            }
         });
 
-        game.im.addProcessor(titleStage);
+        game.im.addProcessor(setupStage);
     }
 
     @Override
     public void render(float delta) {
-        titleStage.act();
+        setupStage.act();
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        titleStage.draw();
+        setupStage.draw();
     }
 
     @Override
     public void resize(int width, int height) {
-        titleStage.getViewport().update(width, height, true);
+        setupStage.getViewport().update(width, height, true);
     }
 
     @Override
     public void dispose() {
         //System.out.println("end of title");
-        titleStage.dispose();
+        setupStage.dispose();
     }
 }
