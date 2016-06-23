@@ -16,7 +16,6 @@ package ru.kvachenko.gatesandrivers;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapObject;
@@ -29,6 +28,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.Event;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -45,13 +45,13 @@ import ru.kvachenko.basegame.BaseScreen;
  */
 // TODO: add dot in center of screen and bind camera position ti that dot
 class GameScreen extends BaseScreen {
-    private BoardGame game;
+    //private BoardGame game;
     private int worldWidth;
     private int worldHeight;
     private Stage mainStage;
     private Stage uiStage;
     private Camera camera;
-//    private Vector2 camTarget;
+    //private Vector2 camTarget;
     private DiceWidget dice;
     private CheckBox autoRollButton;
     private Label infoLabel;
@@ -66,7 +66,7 @@ class GameScreen extends BaseScreen {
     public GameScreen(BoardGame bg) {
         super();
 
-        game = bg;
+        //game = bg;
         worldWidth = 64 * 32;
         worldHeight = 64 * 32;
         mainStage = new Stage(new ScreenViewport());
@@ -120,11 +120,8 @@ class GameScreen extends BaseScreen {
         gameController.setInfoLabel(infoLabel);
 
         // User interface
-        Table uiTable = new Table(bg.skin);
-        uiStage.addActor(uiTable);
-
-        Label autoRollLabel = new Label("AUTO ROLL", bg.skin, "labelStyle");
         Table diceBox = new Table().background(bg.skin.getDrawable("frameImg"));
+        Label autoRollLabel = new Label("AUTO ROLL", bg.skin, "labelStyle");
         diceBox.add(dice).colspan(2);
         diceBox.row().uniformY();
         diceBox.add(autoRollLabel).right();
@@ -133,14 +130,20 @@ class GameScreen extends BaseScreen {
         Table statsList = new Table();
         statsList.add(gameController.new RoundCounterLabel("", bg.skin, "labelStyle")).right().top().padTop(5);
 
+        final TextButton pauseButton = new TextButton("PAUSE", bg.skin, "textButtonStyle");
+
+        Table uiTable = new Table(bg.skin);
+        uiStage.addActor(uiTable);
         uiTable.setFillParent(true);
         uiTable.top();
-        uiTable.add(statsList).left().top().pad(5, 5, 0, 0);
+        uiTable.add(statsList).expandX().left().top().pad(5, 5, 0, 0);
+        uiTable.add(pauseButton).fill().right().top().pad(5, 0, 0, 5);
         uiTable.row().expandY();
-        uiTable.add(infoLabel);//.spaceBottom(10);
-        if (debug) uiTable.setDebug(true);
+        uiTable.add(infoLabel).colspan(2);
         uiTable.row();
-        uiTable.add(diceBox).expandX().right().bottom().pad(0, 0, 5, 5);
+        uiTable.add().expandX();
+        uiTable.add(diceBox).right().bottom().pad(0, 0, 5, 5);
+        if (debug) uiTable.setDebug(true);
 
         // Input handlers
         dice.addListener(new InputListener(){
@@ -157,20 +160,34 @@ class GameScreen extends BaseScreen {
 
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                return true;
+                return !paused;
             }
         });
         autoRollButton.addListener(new InputListener(){
             @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) { if (dice.isActive()) dice.unActivate(); }
+
+            @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                if (gameController.getCurrentPlayer().isPlayable() &&
-                        gameController.getTurnPhase() == GameplayController.TurnPhase.START)
-                    dice.unActivate();
-                return true;
+                return !paused;
             }
         });
-        game.im.addProcessor(uiStage);
-        game.im.addProcessor(new InputAdapter(){
+        pauseButton.addListener(new InputListener(){
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                if (x > 0 && x < pauseButton.getWidth() && y > 0 && y < pauseButton.getHeight()) {
+                    paused = !paused;
+                    pauseButton.setText((paused) ? "RESUME" : "PAUSE");
+                }
+            }
+        });
+        bg.im.addProcessor(uiStage);
+        bg.im.addProcessor(new InputAdapter(){
             Vector3 lastTouchDown;
 
             public boolean touchDown(int x, int y, int pointer, int button) {
@@ -189,7 +206,6 @@ class GameScreen extends BaseScreen {
                 lastTouchDown.add(offset);
                 return false;
             }
-
         });
     }
 
@@ -257,8 +273,8 @@ class GameScreen extends BaseScreen {
     @Override
     public void render(float dt) {
         /*-----------------------------------UPDATE SECTION-------------------------------------------------*/
-        uiStage.act(dt);
         if (!paused) {
+            uiStage.act(dt);
             mainStage.act(dt);
             update(dt);
         }

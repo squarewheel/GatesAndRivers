@@ -61,6 +61,9 @@ public class BoardGame extends Game {
                 skin.getFont("defaultFont"),
                 Color.WHITE);
         tbs.pressedOffsetY = -4;
+        tbs.fontColor = Color.LIGHT_GRAY;
+        tbs.disabled = skin.getDrawable("buttonDownImg");
+        //tbs.
         skin.add("textButtonStyle", tbs);
         skin.add("checkBoxStyle", cbs);
         //skin.get("textButtonStyle", TextButton.TextButtonStyle.class).fontColor.set(Color.DARK_GRAY);
