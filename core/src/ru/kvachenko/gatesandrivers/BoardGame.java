@@ -69,7 +69,7 @@ public class BoardGame extends Game {
         //skin.get("textButtonStyle", TextButton.TextButtonStyle.class).fontColor.set(Color.DARK_GRAY);
 
         // load star screen
-        setScreen(new GameScreen(this));
+        setScreen(new TitleScreen(this));
 	}
 
     @Override
