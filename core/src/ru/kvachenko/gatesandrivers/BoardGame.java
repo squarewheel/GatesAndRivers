@@ -62,9 +62,13 @@ public class BoardGame extends Game {
         tbs.pressedOffsetY = -4;
         tbs.fontColor = Color.LIGHT_GRAY;
         tbs.disabled = skin.getDrawable("buttonDownImg");
-        //tbs.
+        TextField.TextFieldStyle tfs = new TextField.TextFieldStyle();
+        tfs.font = skin.getFont("defaultFont");
+        tfs.fontColor = Color.LIGHT_GRAY;
+        tfs.background = skin.getDrawable("checkBoxImg");
         skin.add("textButtonStyle", tbs);
         skin.add("checkBoxStyle", cbs);
+        skin.add("textFieldStyle", tfs);
         //skin.get("textButtonStyle", TextButton.TextButtonStyle.class).fontColor.set(Color.DARK_GRAY);
 
         // load star screen
