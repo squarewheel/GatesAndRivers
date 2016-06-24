@@ -15,7 +15,7 @@ android {
         instrumentTest.setRoot('tests')
     }
     defaultConfig {
-        applicationId "ru.kvachenko.bgtest"
+        applicationId "ru.kvachenko.gatesandrivers"
         minSdkVersion 8
         targetSdkVersion 21
     }
