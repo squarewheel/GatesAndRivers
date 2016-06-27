@@ -123,7 +123,7 @@ public class DiceWidget extends Image {
         if (state == State.READY) {
             previousRollResult = lastRollResult;
             lastRollResult = MathUtils.random(1, 6);
-            rollingTimer = MathUtils.random(2f, 6f);
+            rollingTimer = MathUtils.random(2f, 5f);
             state = State.ROLLING;
             //setSide();
             //rolled = true;

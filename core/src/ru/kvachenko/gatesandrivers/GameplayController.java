@@ -14,7 +14,10 @@
 
 package ru.kvachenko.gatesandrivers;
 
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
@@ -59,6 +62,9 @@ public class GameplayController {
         END
     }
 
+    private DiceWidget dice;
+    private CheckBox autoRollSwitch;
+
     private ArrayList<Player> players;  // list of players
     private Player currentPlayer;       // indicates whose turn now
     private TurnPhase turnPhase;        // Current phase of turn
@@ -69,25 +75,68 @@ public class GameplayController {
     //private int turnsInRound;
     //private int turnCounter;
 
-    public GameplayController(ArrayList<Player> p) {
+    public GameplayController(ArrayList<Player> p, Skin skin) {
         // Basic initialization
+        dice = new DiceWidget();
+        autoRollSwitch = new CheckBox("", skin, "checkBoxStyle");
+        infoLabel = new Label("Im Love my Wife", skin, "infoLabelStyle");
+
         players = p;
         roundCounter = 0;
         currentPlayer = p.get(p.size()-1);
         turnPhase = TurnPhase.END;
+
+        dice.addListener(new InputListener(){
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                // Dice can be rolled only in START phase
+                if (turnPhase == TurnPhase.START) {
+                    if (dice.isActive() && dice.getState() == DiceWidget.State.READY) {
+                        dice.roll();
+                        setTurnPhase(TurnPhase.DICE_ROLLING);
+                    }
+                }
+            }
+
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                //return !paused;   // TODO: return paused check
+                return true;
+            }
+        });
+        autoRollSwitch.addListener(new InputListener(){
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                if (dice.isActive()) dice.unActivate();
+                else if (currentPlayer.isPlayable() && dice.getState() == DiceWidget.State.READY) dice.activate();
+            }
+
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
+        });
     }
 
     public void setRoundCounterLabel(Label l) { roundCounterLabel = l; }
 
-    public void setInfoLabel(Label l) { infoLabel = l; }
+    //public void setInfoLabel(Label l) { infoLabel = l; }
 
     public void setTurnPhase(TurnPhase phase) { turnPhase = phase; }
 
     public Player getCurrentPlayer() { return currentPlayer; }
 
-    public TurnPhase getTurnPhase() {
-        return turnPhase;
+    public Label getInfoLabel() {
+        return infoLabel;
     }
+
+    public DiceWidget getDice() { return dice; }
+
+    public CheckBox getAutoRollSwitch() {
+        return autoRollSwitch;
+    }
+
+//    public TurnPhase getTurnPhase() { return turnPhase; }
 
     public boolean gameOver() {
         return winner != null;
@@ -126,21 +175,60 @@ public class GameplayController {
         //setTurnPhase(TurnPhase.START);
     }
 
-//    public void update() {
-//        // if current player made his turn, change currentPlayer to next Player
-//        if (currentPlayer.isMoved()) currentPlayer = players.get(players.indexOf(currentPlayer) + 1);
-//
-//        // if all players made his turns, start new round
-//        int movedPlayers = 0;
-//        for (Player p: players) if (p.isMoved()) movedPlayers++;
-//        if (movedPlayers >= players.size()) {
-//            roundCounter++;
-//            for (Player p: players) p.setMovedState(false);
-//        }
-//
-//        // if label presents, update him
-//        if (roundCounterLabel != null) roundCounterLabel.setText(toString());
-//    }
+    public void update() {
+        // Update game state
+        switch (turnPhase) {
+            // TODO: encapsulate game progress into Round class
+            case PREPARATION:   // Prepare game state to new turn
+                //if (debug) System.out.println("TurnPhase.PREPARATION");
+                if (!infoLabel.hasActions()) {
+                    infoLabel.setText(currentPlayer.getName() + " Turn");
+                    infoLabel.setColor(currentPlayer.getChip().getColor());
+                    infoLabel.addAction(Actions.sequence(Actions.fadeIn(0.5f), Actions.delay(1.5f), Actions.fadeOut(0.5f)));
+                    if (currentPlayer.isPlayable() && !autoRollSwitch.isChecked()) dice.activate();
+                    dice.setState(DiceWidget.State.READY);
+                    setTurnPhase(TurnPhase.START);
+                }
+                break;
+
+            case START: // Start of current player turn. Phase end when user or ai roll dice
+                //if (debug) System.out.println("TurnPhase.START");
+                if (!infoLabel.hasActions()) {
+                    if (!currentPlayer.isPlayable() || autoRollSwitch.isChecked()) dice.roll();
+                    if (dice.getState() == DiceWidget.State.ROLLING) setTurnPhase(TurnPhase.DICE_ROLLING);
+                }
+                break;
+
+            case DICE_ROLLING:  // Wait when dice roll animation finish
+                //if (debug) System.out.println("TurnPhase.DICE_ROLLING");
+                if (dice.getState() == DiceWidget.State.ROLLED) {
+                    dice.unActivate();
+                    setTurnPhase(TurnPhase.DICE_ROLLED);
+                }
+                break;
+
+            case DICE_ROLLED:   // Determines number of fields what current player must go
+                // TODO: looks like this phase is not necessary
+                //if (debug) System.out.println("TurnPhase.DICE_ROLLED");
+                currentPlayer.getChip().moveOn(dice.getRollResult());
+                setTurnPhase(TurnPhase.MOVEMENT);
+                break;
+
+            case MOVEMENT:  // Move current player chip
+                //if (debug) System.out.println("TurnPhase.MOVEMENT");
+                //gameController.getCurrentPlayer().move();
+                if (currentPlayer.isMoved()) setTurnPhase(TurnPhase.END);
+                break;
+
+            case END:   // End current turn
+                //if (debug) System.out.println("TurnPhase.END");
+                if (!infoLabel.hasActions()) {
+                    endTurn();
+                    if (!gameOver()) setTurnPhase(TurnPhase.PREPARATION);
+                }
+                break;
+        }
+    }
 
     @Override
     public String toString() {

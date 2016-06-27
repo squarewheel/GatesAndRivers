@@ -51,9 +51,7 @@ class GameScreen extends BaseScreen {
     private Stage uiStage;
     private Camera camera;
     //private Vector2 camTarget;
-    private DiceWidget dice;
-    private CheckBox autoRollButton;
-    private Label infoLabel;
+
     private GameplayController gameController;
 
     // Temp variables
@@ -73,9 +71,6 @@ class GameScreen extends BaseScreen {
         uiStage = new Stage(new ScreenViewport());
         camera = mainStage.getCamera();
 //        camTarget = new Vector2();
-        dice = new DiceWidget();
-        autoRollButton = new CheckBox("", bg.skin, "checkBoxStyle");
-        infoLabel = new Label("Im Love my Wife", bg.skin, "infoLabelStyle");
 
         // Gameboard fields
         // TODO: may be need special class for creating gameboard
@@ -108,23 +103,24 @@ class GameScreen extends BaseScreen {
             mainStage.addActor(field);
         }
 
-        // Players and Round initialization
+        // Players and gameController initialization
+        // TODO: get players from Setup Screen
         new Player();
         new Player();
         new Player();
         new Player();
-        Player.getPlayersList().get(0).makePlayable();
+        //Player.getPlayersList().get(0).makePlayable();
         for (Player p: Player.getPlayersList()) { mainStage.addActor(p.getChip()); }
-        gameController = new GameplayController(Player.getPlayersList());
-        gameController.setInfoLabel(infoLabel);
+        gameController = new GameplayController(Player.getPlayersList(), bg.skin);
+        //gameController.setInfoLabel(infoLabel);
 
         // User interface
         Table diceBox = new Table().background(bg.skin.getDrawable("frameImg"));
         Label autoRollLabel = new Label("AUTO ROLL", bg.skin, "labelStyle");
-        diceBox.add(dice).colspan(2);
+        diceBox.add(gameController.getDice()).colspan(2);
         diceBox.row().uniformY();
         diceBox.add(autoRollLabel).right();
-        diceBox.add(autoRollButton);
+        diceBox.add(gameController.getAutoRollSwitch());
 
         Table statsList = new Table();
         statsList.add(gameController.new RoundCounterLabel("", bg.skin, "labelStyle")).right().top().padTop(5);
@@ -138,39 +134,13 @@ class GameScreen extends BaseScreen {
         uiTable.add(statsList).expandX().left().top().pad(5, 5, 0, 0);
         uiTable.add(pauseButton).fill().right().top().pad(5, 0, 0, 5);
         uiTable.row().expandY();
-        uiTable.add(infoLabel).colspan(2);
+        uiTable.add(gameController.getInfoLabel()).colspan(2);
         uiTable.row();
         uiTable.add().expandX();
         uiTable.add(diceBox).right().bottom().pad(0, 0, 5, 5);
         if (debug) uiTable.setDebug(true);
 
         // Input handlers
-        dice.addListener(new InputListener(){
-            @Override
-            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                // Dice can be rolled only in START phase
-                if (gameController.getTurnPhase() == GameplayController.TurnPhase.START) {
-                    if (dice.isActive() && dice.getState() == DiceWidget.State.READY) {
-                        dice.roll();
-                        gameController.setTurnPhase(GameplayController.TurnPhase.DICE_ROLLING);
-                    }
-                }
-            }
-
-            @Override
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                return !paused;
-            }
-        });
-        autoRollButton.addListener(new InputListener(){
-            @Override
-            public void touchUp(InputEvent event, float x, float y, int pointer, int button) { if (dice.isActive()) dice.unActivate(); }
-
-            @Override
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                return !paused;
-            }
-        });
         pauseButton.addListener(new InputListener(){
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -208,74 +178,14 @@ class GameScreen extends BaseScreen {
         });
     }
 
-    private void update(float dt) {
-        // Update game state
-        switch (gameController.getTurnPhase()) {
-            // TODO: encapsulate game progress into Round class
-            case PREPARATION:   // Prepare game state to new turn
-                if (debug) System.out.println("TurnPhase.PREPARATION");
-                if (!infoLabel.hasActions()) {
-                    //camera.translate(gameController.getCurrentPlayer().getChip().getX() - camera.position.x,
-                    //                 gameController.getCurrentPlayer().getChip().getY() - camera.position.y, camera.position.z);
-                    //camTarget.add(gameController.getCurrentPlayer().getChip().getX() - camera.position.x,
-                    //              gameController.getCurrentPlayer().getChip().getY() - camera.position.y);
-                    infoLabel.setText(gameController.getCurrentPlayer().getName() + " Turn");
-                    infoLabel.setColor(gameController.getCurrentPlayer().getChip().getColor());
-                    infoLabel.addAction(Actions.sequence(Actions.fadeIn(0.5f), Actions.delay(1.5f), Actions.fadeOut(0.5f)));
-                    if (gameController.getCurrentPlayer().isPlayable() && !autoRollButton.isChecked()) dice.activate();
-                    dice.setState(DiceWidget.State.READY);
-                    gameController.setTurnPhase(GameplayController.TurnPhase.START);
-                }
-                break;
-
-            case START: // Start of current player turn. Phase end when user or ai roll dice
-                if (debug) System.out.println("TurnPhase.START");
-                if (!infoLabel.hasActions()) {
-                    if (!gameController.getCurrentPlayer().isPlayable() || autoRollButton.isChecked()) dice.roll();
-                    if (dice.getState() == DiceWidget.State.ROLLING) gameController.setTurnPhase(GameplayController.TurnPhase.DICE_ROLLING);
-                }
-                break;
-
-            case DICE_ROLLING:  // Wait when dice roll animation finish
-                if (debug) System.out.println("TurnPhase.DICE_ROLLING");
-                if (dice.getState() == DiceWidget.State.ROLLED) {
-                    dice.unActivate();
-                    gameController.setTurnPhase(GameplayController.TurnPhase.DICE_ROLLED);
-                }
-                break;
-
-            case DICE_ROLLED:   // Determines number of fields what current player must go
-                // TODO: looks like this phase is not necessary
-                if (debug) System.out.println("TurnPhase.DICE_ROLLED");
-                gameController.getCurrentPlayer().getChip().moveOn(dice.getRollResult());
-                gameController.setTurnPhase(GameplayController.TurnPhase.MOVEMENT);
-                break;
-
-            case MOVEMENT:  // Move current player chip
-                if (debug) System.out.println("TurnPhase.MOVEMENT");
-                //gameController.getCurrentPlayer().move();
-                if (gameController.getCurrentPlayer().isMoved()) gameController.setTurnPhase(GameplayController.TurnPhase.END);
-                break;
-
-            case END:   // End current turn
-                if (debug) System.out.println("TurnPhase.END");
-                if (!infoLabel.hasActions()) {
-                    gameController.endTurn();
-                    if (!gameController.gameOver()) gameController.setTurnPhase(GameplayController.TurnPhase.PREPARATION);
-                }
-                break;
-        }
-
-
-    }
-
     @Override
     public void render(float dt) {
         /*-----------------------------------UPDATE SECTION-------------------------------------------------*/
         if (!paused) {
             uiStage.act(dt);
             mainStage.act(dt);
-            update(dt);
+            gameController.update();
+            //update(dt);
         }
 
         /*-----------------------------------OUTPUT SECTION-------------------------------------------------*/

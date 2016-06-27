@@ -23,7 +23,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 
 public class BoardGame extends Game {
     InputMultiplexer im;
-	//private GameScreen mainScreen;
 	Skin skin;
 
     @Override
@@ -69,11 +68,17 @@ public class BoardGame extends Game {
         skin.add("textButtonStyle", tbs);
         skin.add("checkBoxStyle", cbs);
         skin.add("textFieldStyle", tfs);
-        //skin.get("textButtonStyle", TextButton.TextButtonStyle.class).fontColor.set(Color.DARK_GRAY);
 
-        // load star screen
-        setScreen(new TitleScreen(this));
+        // Load start screen
+        setScreen(new SetupScreen(this));
 	}
+
+    @Override
+    public void render() {
+
+
+        super.render();
+    }
 
     @Override
     public void dispose() {
