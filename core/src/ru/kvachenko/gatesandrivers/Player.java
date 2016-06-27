@@ -34,6 +34,7 @@ public class Player {
     private ChipActor chip;
     private String name;
     private boolean playable;       // indicates who control this player: human or ai
+    private boolean autoRoll;       // If true, player makes roll automatic
 
     /** Possible colors of Players */
     static {
@@ -56,6 +57,7 @@ public class Player {
         // Basic initialization
         name = "Mr. " + names.remove(0);
         playable = false;
+        autoRoll = true;
 
         chip = new ChipActor();
         chip.setColor(colors.remove(0));
@@ -63,13 +65,20 @@ public class Player {
         chip.setOrigin(16, 16);
     }
 
-    public void makePlayable() { playable = true; }
+    public void makePlayable() {
+        playable = true;
+        autoRoll = false;
+    }
 
 //    public void setPlayable(boolean b) { playable = b; }
 
     public ChipActor getChip() { return chip; }
 
     public String getName() { return name; }
+
+    public boolean getAutoRoll() { return autoRoll; }
+
+    public void setAutoRoll(boolean b) { autoRoll = b; }
 
     public boolean isMoved() { return chip.getState() == ChipActor.State.MOVED; }
 

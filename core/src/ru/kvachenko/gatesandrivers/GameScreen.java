@@ -33,8 +33,11 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import ru.kvachenko.basegame.BaseScreen;
+
+import java.util.ArrayList;
 
 /**
  * @author Sasha Kvachenko
@@ -53,7 +56,7 @@ class GameScreen extends BaseScreen {
     //private Vector2 camTarget;
 
     private GameplayController gameController;
-
+    private Label playerName;
     // Temp variables
     private boolean debug = false;
     //private Player currentPlayer;
@@ -107,20 +110,23 @@ class GameScreen extends BaseScreen {
         // TODO: get players from Setup Screen
         new Player();
         new Player();
-        new Player();
-        new Player();
-        //Player.getPlayersList().get(0).makePlayable();
+        //new Player();
+        //new Player();
+        Player.getPlayersList().get(0).makePlayable();
         for (Player p: Player.getPlayersList()) { mainStage.addActor(p.getChip()); }
         gameController = new GameplayController(Player.getPlayersList(), bg.skin);
-        //gameController.setInfoLabel(infoLabel);
 
         // User interface
         Table diceBox = new Table().background(bg.skin.getDrawable("frameImg"));
-        Label autoRollLabel = new Label("AUTO ROLL", bg.skin, "labelStyle");
+        Label autoRollLabel = gameController.getAutoRollLabel();
+        playerName = new Label(gameController.getCurrentPlayer().getName(), bg.skin, "labelStyle");
+        diceBox.add(playerName).colspan(2).uniformY();
+        diceBox.row();
         diceBox.add(gameController.getDice()).colspan(2);
         diceBox.row().uniformY();
         diceBox.add(autoRollLabel).right();
         diceBox.add(gameController.getAutoRollSwitch());
+        if (debug) diceBox.debug();
 
         Table statsList = new Table();
         statsList.add(gameController.new RoundCounterLabel("", bg.skin, "labelStyle")).right().top().padTop(5);
@@ -184,8 +190,9 @@ class GameScreen extends BaseScreen {
         if (!paused) {
             uiStage.act(dt);
             mainStage.act(dt);
-            gameController.update();
-            //update(dt);
+            gameController.update(paused);
+            playerName.setText(gameController.getCurrentPlayer().getName());
+            playerName.setColor(gameController.getCurrentPlayer().getChip().getColor());
         }
 
         /*-----------------------------------OUTPUT SECTION-------------------------------------------------*/

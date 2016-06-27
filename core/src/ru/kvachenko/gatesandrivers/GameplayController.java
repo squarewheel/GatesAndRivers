@@ -14,6 +14,7 @@
 
 package ru.kvachenko.gatesandrivers;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
@@ -64,14 +65,15 @@ public class GameplayController {
 
     private DiceWidget dice;
     private CheckBox autoRollSwitch;
-
     private ArrayList<Player> players;  // list of players
     private Player currentPlayer;       // indicates whose turn now
     private TurnPhase turnPhase;        // Current phase of turn
     private int roundCounter;
     private Label roundCounterLabel;
     private Label infoLabel;
+    private Label autoRollLabel;
     private Player winner;              // If win condition is done, game not ends
+    //private boolean paused;             // If paused, game state not updated
     //private int turnsInRound;
     //private int turnCounter;
 
@@ -79,12 +81,12 @@ public class GameplayController {
         // Basic initialization
         dice = new DiceWidget();
         autoRollSwitch = new CheckBox("", skin, "checkBoxStyle");
-        infoLabel = new Label("Im Love my Wife", skin, "infoLabelStyle");
-
         players = p;
-        roundCounter = 0;
         currentPlayer = p.get(p.size()-1);
         turnPhase = TurnPhase.END;
+        roundCounter = 0;
+        infoLabel = new Label("Im Love my Wife", skin, "infoLabelStyle");
+        autoRollLabel = new Label("AUTO ROLL", skin, "labelStyle");
 
         dice.addListener(new InputListener(){
             @Override
@@ -100,20 +102,23 @@ public class GameplayController {
 
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                //return !paused;   // TODO: return paused check
+                //return !paused; // TODO: return pause check
                 return true;
             }
         });
         autoRollSwitch.addListener(new InputListener(){
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                if (dice.isActive()) dice.unActivate();
-                else if (currentPlayer.isPlayable() && dice.getState() == DiceWidget.State.READY) dice.activate();
+                if (dice.getState() == DiceWidget.State.READY) {
+                    if (dice.isActive()) dice.unActivate();
+                    else dice.activate();
+                }
+                currentPlayer.setAutoRoll(!currentPlayer.getAutoRoll());
             }
 
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                return true;
+                return !autoRollSwitch.isDisabled();
             }
         });
     }
@@ -128,6 +133,10 @@ public class GameplayController {
 
     public Label getInfoLabel() {
         return infoLabel;
+    }
+
+    public Label getAutoRollLabel() {
+        return autoRollLabel;
     }
 
     public DiceWidget getDice() { return dice; }
@@ -172,10 +181,9 @@ public class GameplayController {
                 currentPlayer = players.get(0);
             }
         }
-        //setTurnPhase(TurnPhase.START);
     }
 
-    public void update() {
+    public void update(boolean p) {
         // Update game state
         switch (turnPhase) {
             // TODO: encapsulate game progress into Round class
@@ -185,7 +193,7 @@ public class GameplayController {
                     infoLabel.setText(currentPlayer.getName() + " Turn");
                     infoLabel.setColor(currentPlayer.getChip().getColor());
                     infoLabel.addAction(Actions.sequence(Actions.fadeIn(0.5f), Actions.delay(1.5f), Actions.fadeOut(0.5f)));
-                    if (currentPlayer.isPlayable() && !autoRollSwitch.isChecked()) dice.activate();
+                    if (currentPlayer.isPlayable() && !currentPlayer.getAutoRoll()) dice.activate();
                     dice.setState(DiceWidget.State.READY);
                     setTurnPhase(TurnPhase.START);
                 }
@@ -194,7 +202,7 @@ public class GameplayController {
             case START: // Start of current player turn. Phase end when user or ai roll dice
                 //if (debug) System.out.println("TurnPhase.START");
                 if (!infoLabel.hasActions()) {
-                    if (!currentPlayer.isPlayable() || autoRollSwitch.isChecked()) dice.roll();
+                    if (!currentPlayer.isPlayable() || currentPlayer.getAutoRoll()) dice.roll();
                     if (dice.getState() == DiceWidget.State.ROLLING) setTurnPhase(TurnPhase.DICE_ROLLING);
                 }
                 break;
@@ -224,6 +232,19 @@ public class GameplayController {
                 //if (debug) System.out.println("TurnPhase.END");
                 if (!infoLabel.hasActions()) {
                     endTurn();
+                    if (!currentPlayer.isPlayable()) {
+                        autoRollSwitch.setChecked(true);
+                        autoRollSwitch.addAction(Actions.parallel(Actions.alpha(0.3f)));
+                        autoRollLabel.addAction(Actions.parallel(Actions.color(Color.LIGHT_GRAY), Actions.alpha(0.3f)));
+                        autoRollSwitch.setDisabled(true);
+                    }
+                    else {
+                        autoRollSwitch.setChecked(currentPlayer.getAutoRoll());
+                        autoRollSwitch.addAction(Actions.parallel(Actions.alpha(1)));
+                        autoRollLabel.addAction(Actions.parallel(Actions.alpha(1), Actions.color(Color.WHITE)));
+                        autoRollSwitch.setDisabled(false);
+                    }
+
                     if (!gameOver()) setTurnPhase(TurnPhase.PREPARATION);
                 }
                 break;
