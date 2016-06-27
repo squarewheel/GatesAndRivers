@@ -22,7 +22,10 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.sun.deploy.util.StringUtils;
 import ru.kvachenko.basegame.BaseScreen;
+
+import java.util.ArrayList;
 
 /**
  * @author Sasha Kvachenko
@@ -33,29 +36,75 @@ import ru.kvachenko.basegame.BaseScreen;
 public class SetupScreen extends BaseScreen {
     private SetupLine[] setupLines;
     private Stage setupStage;
+    private ArrayList<String> names;
+    private ArrayList<Color> colors;
+    private Label errorList;
+    private Dialog errorWindow;
 
     public SetupScreen(final BoardGame game) {
         super();
+        colors = new ArrayList<Color>();
+        names = new ArrayList<String>();
+
+        // Default players names and colors
+        colors.add(Color.RED);
+        colors.add(Color.SKY);
+        colors.add(Color.GREEN);
+        colors.add(Color.YELLOW);
+        names.add("Mr. Red");
+        names.add("Mr. Blue");
+        names.add("Mr. Green");
+        names.add("Mr. Yellow");
+
         Label title = new Label("New Game Setup", game.skin, "infoLabelStyle");
         final TextButton startButton = new TextButton("Start Game", game.skin, "textButtonStyle");
         setupStage = new Stage(new ScreenViewport());
-        Table layout = new Table(game.skin).top();
-        setupStage.addActor(layout);
-        layout.setFillParent(true);
 
-        layout.add(title).top();
         setupLines = new SetupLine[4];
         Table linesGroup = new Table();
+        linesGroup.add(new Label("Name", game.skin, "labelStyle")).left().pad(0, 5, 5, 0);
+        linesGroup.add(new Label("Playable", game.skin, "labelStyle")).pad(0, 5, 5, 0);
+        linesGroup.add(new Label("Enable", game.skin, "labelStyle")).pad(0, 5, 5, 0);
         for (int i = 0; i < setupLines.length ; i++) {
-            setupLines[i] = new SetupLine(Color.GOLDENROD, "Player " + (i+1), game.skin);
+            setupLines[i] = new SetupLine(colors.remove(0), names.remove(0), game.skin);
             linesGroup.row();
-            linesGroup.add(setupLines[i]).expandX().fillX();
+            linesGroup.add(setupLines[i].nameField).expandX().fillX();
+            linesGroup.add(setupLines[i].playable);
+            linesGroup.add(setupLines[i].available);
         }
+
+        Table layout = new Table(game.skin) {
+            @Override
+            public void act(float delta) {
+                super.act(delta);
+                for (SetupLine l: setupLines) {
+                    l.colorImage.setColor(l.available.isChecked() ? l.playerColor : Color.LIGHT_GRAY);
+                    l.nameFieldStyle.fontColor = l.available.isChecked() ? l.playerColor : Color.LIGHT_GRAY;
+                }
+
+            }
+        };
+        setupStage.addActor(layout);
+
+        layout.top();
+        layout.setFillParent(true);
+        layout.add(title).top();
+        layout.row().expandY().maxWidth(title.getWidth() - 100);
         layout.row().expandY();
         layout.add(linesGroup).bottom().expandX().maxWidth(title.getWidth() - 100).fillX();
         layout.row().expandY();
         layout.add(startButton).fillX().top().maxWidth(title.getWidth() - 100).padTop(10);
         //layout.debug();
+
+        errorList = new Label("", game.skin, "labelStyle");
+        //errorList.setColor(Color.LIME);
+        errorWindow = new Dialog("The following errors must be fixed", game.skin, "windowStyle");
+        errorWindow.padTop(30);
+        errorWindow.setColor(Color.ORANGE);
+        errorWindow.text(errorList);
+        errorWindow.button(new TextButton("OK", game.skin, "textButtonStyle"));
+        errorWindow.setWidth(title.getWidth());
+        //errorWindow.debug();
 
         startButton.addListener(new InputListener(){
             @Override
@@ -65,10 +114,29 @@ public class SetupScreen extends BaseScreen {
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                errorList.setText("");
                 if (x > 0 && x < startButton.getWidth() && y > 0 && y < startButton.getHeight()) {
-                    startButton.setDisabled(true);
-                    game.im.removeProcessor(setupStage);
-                    game.setScreen(new GameScreen(game));
+                    boolean startGame = true;
+                    int enabledPlayers = 0;
+                    for (SetupLine l: setupLines) {
+                        if (l.available.isChecked()) {
+                            if (StringUtils.trimWhitespace(l.nameField.getText()).isEmpty()) {
+                                startGame = false;
+                                errorList.setText(" - Name cannot be blank \n");
+                            }
+                            enabledPlayers++;
+                        }
+                    }
+                    if (enabledPlayers < 2) {
+                        startGame = false;
+                        errorList.setText(errorList.getText() + " - At at least two players must be enabled");
+                    }
+                    if (startGame) {
+                        startButton.setDisabled(true);
+                        game.im.removeProcessor(setupStage);
+                        game.setScreen(new GameScreen(game));
+                    }
+                    else errorWindow.show(setupStage);
                 }
             }
         });
@@ -95,14 +163,15 @@ public class SetupScreen extends BaseScreen {
         setupStage.dispose();
     }
 
-    private class SetupLine extends Table {
+    private class SetupLine {
         private Color playerColor;
         private Image colorImage;
         private TextField.TextFieldStyle nameFieldStyle;
         private TextField nameField;
         private CheckBox available;
+        private CheckBox playable;
 
-        public SetupLine(Color c, String name, Skin skin) {
+        SetupLine(Color c, String name, Skin skin) {
             super();
             playerColor = c;
             colorImage = new Image(skin.getDrawable("checkBoxImg"));
@@ -110,21 +179,8 @@ public class SetupScreen extends BaseScreen {
             nameFieldStyle = new TextField.TextFieldStyle(skin.get("textFieldStyle", TextField.TextFieldStyle.class));
             nameField = new TextField(name, nameFieldStyle);
             available = new CheckBox("", skin, "checkBoxStyle");
+            playable = new CheckBox("", skin, "checkBoxStyle");
             available.setChecked(true);
-
-            //add(colorImage).left();
-            add(nameField).left().expandX().fillX().padRight(5);
-            add(available).right();
-            //debug();
-        }
-
-        public boolean isAvailable() { return available.isChecked(); }
-
-        @Override
-        public void act(float delta) {
-            super.act(delta);
-            colorImage.setColor(available.isChecked() ? playerColor : Color.LIGHT_GRAY);
-            nameFieldStyle.fontColor = available.isChecked() ? playerColor : Color.LIGHT_GRAY;
         }
     }
 }
