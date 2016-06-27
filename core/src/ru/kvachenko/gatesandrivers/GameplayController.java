@@ -14,7 +14,6 @@
 
 package ru.kvachenko.gatesandrivers;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
@@ -73,9 +72,6 @@ public class GameplayController {
     private Label infoLabel;
     private Label autoRollLabel;
     private Player winner;              // If win condition is done, game not ends
-    //private boolean paused;             // If paused, game state not updated
-    //private int turnsInRound;
-    //private int turnCounter;
 
     public GameplayController(ArrayList<Player> p, Skin skin) {
         // Basic initialization
@@ -234,14 +230,14 @@ public class GameplayController {
                     endTurn();
                     if (!currentPlayer.isPlayable()) {
                         autoRollSwitch.setChecked(true);
-                        autoRollSwitch.addAction(Actions.parallel(Actions.alpha(0.3f)));
-                        autoRollLabel.addAction(Actions.parallel(Actions.color(Color.LIGHT_GRAY), Actions.alpha(0.3f)));
+                        autoRollSwitch.addAction(Actions.parallel(Actions.alpha(0.6f)));
+                        autoRollLabel.addAction(Actions.alpha(0.6f));
                         autoRollSwitch.setDisabled(true);
                     }
                     else {
                         autoRollSwitch.setChecked(currentPlayer.getAutoRoll());
                         autoRollSwitch.addAction(Actions.parallel(Actions.alpha(1)));
-                        autoRollLabel.addAction(Actions.parallel(Actions.alpha(1), Actions.color(Color.WHITE)));
+                        autoRollLabel.addAction((Actions.alpha(1)));
                         autoRollSwitch.setDisabled(false);
                     }
 

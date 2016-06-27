@@ -71,7 +71,7 @@ public class BoardGame extends Game {
         skin.add("textFieldStyle", tfs);
 
         // Load start screen
-        setScreen(new SetupScreen(this));
+        setScreen(new TitleScreen(this));
 	}
 
     @Override

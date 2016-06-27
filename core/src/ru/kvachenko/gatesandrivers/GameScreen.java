@@ -31,9 +31,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import ru.kvachenko.basegame.BaseScreen;
 
@@ -63,10 +61,10 @@ class GameScreen extends BaseScreen {
     //int viewWidth = 1200;
     //int viewHeight = 600;
 
-    public GameScreen(BoardGame bg) {
+    public GameScreen(BoardGame game, SetupItem[] options) {
         super();
 
-        //game = bg;
+        //game = game;
         worldWidth = 64 * 32;
         worldHeight = 64 * 32;
         mainStage = new Stage(new ScreenViewport());
@@ -107,19 +105,20 @@ class GameScreen extends BaseScreen {
         }
 
         // Players and gameController initialization
-        // TODO: get players from Setup Screen
-        new Player();
-        new Player();
-        //new Player();
-        //new Player();
-        Player.getPlayersList().get(0).makePlayable();
-        for (Player p: Player.getPlayersList()) { mainStage.addActor(p.getChip()); }
-        gameController = new GameplayController(Player.getPlayersList(), bg.skin);
+        ArrayList<Player> playersList = new ArrayList<Player>();
+        for (SetupItem item: options) {
+            if (!item.available.isChecked()) continue;
+            Player player = new Player(item.getName(), item.playerColor);
+            if (item.playable.isChecked()) player.makePlayable();
+            playersList.add(player);
+            mainStage.addActor(player.getChip());
+        }
+        gameController = new GameplayController(playersList, game.skin);
 
         // User interface
-        Table diceBox = new Table().background(bg.skin.getDrawable("frameImg"));
+        Table diceBox = new Table().background(game.skin.getDrawable("frameImg"));
         Label autoRollLabel = gameController.getAutoRollLabel();
-        playerName = new Label(gameController.getCurrentPlayer().getName(), bg.skin, "labelStyle");
+        playerName = new Label(gameController.getCurrentPlayer().getName(), game.skin, "labelStyle");
         diceBox.add(playerName).colspan(2).uniformY();
         diceBox.row();
         diceBox.add(gameController.getDice()).colspan(2);
@@ -129,11 +128,11 @@ class GameScreen extends BaseScreen {
         if (debug) diceBox.debug();
 
         Table statsList = new Table();
-        statsList.add(gameController.new RoundCounterLabel("", bg.skin, "labelStyle")).right().top().padTop(5);
+        statsList.add(gameController.new RoundCounterLabel("", game.skin, "labelStyle")).right().top().padTop(5);
 
-        final TextButton pauseButton = new TextButton("PAUSE", bg.skin, "textButtonStyle");
+        final TextButton pauseButton = new TextButton("PAUSE", game.skin, "textButtonStyle");
 
-        Table uiTable = new Table(bg.skin);
+        Table uiTable = new Table(game.skin);
         uiStage.addActor(uiTable);
         uiTable.setFillParent(true);
         uiTable.top();
@@ -161,8 +160,8 @@ class GameScreen extends BaseScreen {
                 }
             }
         });
-        bg.im.addProcessor(uiStage);
-        bg.im.addProcessor(new InputAdapter(){
+        game.im.addProcessor(uiStage);
+        game.im.addProcessor(new InputAdapter(){
             Vector3 lastTouchDown;
 
             public boolean touchDown(int x, int y, int pointer, int button) {
