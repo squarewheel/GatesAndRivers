@@ -22,7 +22,6 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import com.sun.deploy.util.StringUtils;
 import ru.kvachenko.basegame.BaseScreen;
 
 import java.util.ArrayList;
@@ -119,7 +118,7 @@ public class SetupScreen extends BaseScreen {
                     int enabledPlayers = 0;
                     for (SetupItem l: options) {
                         if (l.available.isChecked()) {
-                            if (StringUtils.trimWhitespace(l.nameField.getText()).isEmpty()) {
+                            if (l.nameField.getText().trim().isEmpty()) {
                                 startGame = false;
                                 errorList.setText(" - Name cannot be blank \n");
                             }
