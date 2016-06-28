@@ -36,7 +36,7 @@ public class TitleScreen extends BaseScreen{
     public TitleScreen(final BoardGame game) {
         super();
         Label title = new Label("Gates and Rivers", game.skin, "infoLabelStyle");
-        Label info = new Label("tap to continue", game.skin, "labelStyle");
+        Label info = new Label("tap to continue", game.skin);
         titleStage = new Stage(new ScreenViewport());
         Table layout = new Table(game.skin);
         titleStage.addActor(layout);

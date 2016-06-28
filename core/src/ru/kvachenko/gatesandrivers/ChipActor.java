@@ -18,6 +18,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import ru.kvachenko.basegame.BaseActor;
+import ru.kvachenko.gatesandrivers.gameboard.Fields;
 
 /**
  * @author Sasha Kvachenko
@@ -53,7 +54,7 @@ public class ChipActor extends BaseActor {
         Texture playerTexture = (new Texture("chip_white.png"));
         playerTexture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
         setTexture(new TextureRegion(playerTexture, 64, 64));
-        currentField = FieldActor.getFieldsList().get(0);
+        currentField = Fields.getFieldsList().get(47);
         moves = 0;
         //busy = false;
         direction = Direction.FORWARD;

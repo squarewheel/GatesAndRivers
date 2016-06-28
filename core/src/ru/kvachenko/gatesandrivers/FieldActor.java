@@ -16,6 +16,7 @@ package ru.kvachenko.gatesandrivers;
 
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import ru.kvachenko.gatesandrivers.gameboard.Fields;
 
 import java.util.*;
 
@@ -27,7 +28,6 @@ import java.util.*;
  *         Field must be created before players;
  */
 public class FieldActor extends Group{
-    private static ArrayList<FieldActor> fieldsList = new ArrayList<FieldActor>();
     private FieldActor nextField;
     private FieldActor previousField;
     private Layout layout;
@@ -39,8 +39,8 @@ public class FieldActor extends Group{
     //static { fieldsList = new ArrayList<FieldActor>(); }
 
     public FieldActor() {
-        fieldsList.add(this);
-        ListIterator<FieldActor> fieldsItr = fieldsList.listIterator(fieldsList.indexOf(this));
+        Fields.add(this);
+        ListIterator<FieldActor> fieldsItr = Fields.getFieldsList().listIterator(Fields.getFieldsList().indexOf(this));
         previousField = fieldsItr.hasPrevious() ? fieldsItr.previous() : null;
         if (hasPreviousField()) getPreviousField().setNextField(this);
         layout = new Layout();
@@ -81,9 +81,9 @@ public class FieldActor extends Group{
 
     public boolean hasMover() { return mover != null; }
 
-    public static ArrayList<FieldActor> getFieldsList() {
-        return fieldsList;
-    }
+//    public static ArrayList<FieldActor> getFieldsList() {
+//        return fieldsList;
+//    }
 
     public void setMover(Mover m) {
         mover = m;

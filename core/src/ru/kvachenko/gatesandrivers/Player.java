@@ -70,7 +70,7 @@ public class Player {
 
     public void setAutoRoll(boolean b) { autoRoll = b; }
 
-    public boolean isMoved() { return chip.getState() == ChipActor.State.MOVED; }
+//    public boolean isMoved() { return chip.getState() == ChipActor.State.MOVED; }
 
     public boolean isPlayable() { return playable; }
 

@@ -19,6 +19,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import ru.kvachenko.basegame.BaseActor;
+import ru.kvachenko.gatesandrivers.gameboard.Gates;
 
 import java.util.ArrayList;
 
@@ -29,30 +30,22 @@ import java.util.ArrayList;
  *         Gate teleport chip to torget field.
  */
 public class Gate extends BaseActor implements Mover {
-    private static ArrayList<Color> colorsList = new ArrayList<Color>();// List of possible portals colors
-//    private static ArrayList<Gate> gatesList = new ArrayList<Gate>();   // List of all created gates
-    private FieldActor targetField;                                     // Endpoint of this gate
-
-    static {
-        colorsList.add(Color.RED);
-        colorsList.add(Color.SKY);
-        colorsList.add(Color.LIME);
-        colorsList.add(Color.GOLD);
-        colorsList.add(Color.PINK);
-    }
+    private FieldActor targetField;                                         // Endpoint of this gate
 
     public Gate(FieldActor target) {
         super(new TextureRegion(new Texture("portal2.png")));
         targetField = target;
         setSize(56, 64);
-        setColor(colorsList.remove(0));
+
+        setColor(Gates.getNextFreeColor());
+
         BaseActor endPoint = new BaseActor(new TextureRegion(new Texture("endpoint_portal.png")));
         endPoint.setColor(getColor());
         //endPoint.setOrigin(endPoint.getWidth()/2, endPoint.getHeight()/2);
         endPoint.setPosition(targetField.getWidth()/5*2, targetField.getHeight()/5*2);  // Hardcoding is bad!
         targetField.addActor(endPoint);
 
-//        gatesList.add(this);
+        Gates.add(this);
     }
 
     @Override

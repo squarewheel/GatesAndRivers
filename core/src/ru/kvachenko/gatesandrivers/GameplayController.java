@@ -20,6 +20,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import ru.kvachenko.gatesandrivers.gameboard.Fields;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -31,8 +32,6 @@ import java.util.Iterator;
  *         The game is divided into rounds.
  *         Round ends when all players have complete their turns (made their move).
  *         In entTurn checks win conditions, if no one player resolve win conditions, starts new round.
- *         Turn of each player divided into several phases.
- *         TODO: totally refactor this class
  */
 public class GameplayController {
 
@@ -62,16 +61,16 @@ public class GameplayController {
         END
     }
 
-    private DiceWidget dice;
-    private CheckBox autoRollSwitch;
-    private ArrayList<Player> players;  // list of players
-    private Player currentPlayer;       // indicates whose turn now
+    private DiceWidget dice;            // D6
+    private CheckBox autoRollSwitch;    // If checked, dice roll automatic
+    private ArrayList<Player> players;  // List of all players
+    private Player currentPlayer;       // Indicates whose turn now
     private TurnPhase turnPhase;        // Current phase of turn
     private int roundCounter;
     private Label roundCounterLabel;
     private Label infoLabel;
     private Label autoRollLabel;
-    private Player winner;              // If win condition is done, game not ends
+    private Player winner;              // If win condition is done, game ends
 
     public GameplayController(ArrayList<Player> p, Skin skin) {
         // Basic initialization
@@ -82,7 +81,7 @@ public class GameplayController {
         turnPhase = TurnPhase.END;
         roundCounter = 0;
         infoLabel = new Label("Im Love my Wife", skin, "infoLabelStyle");
-        autoRollLabel = new Label("AUTO ROLL", skin, "labelStyle");
+        autoRollLabel = new Label("AUTO ROLL", skin);
 
         dice.addListener(new InputListener(){
             @Override
@@ -141,37 +140,37 @@ public class GameplayController {
         return autoRollSwitch;
     }
 
-//    public TurnPhase getTurnPhase() { return turnPhase; }
+    public Player getWinner() { return winner; }
+
+    public TurnPhase getTurnPhase() { return turnPhase; }
 
     public boolean gameOver() {
         return winner != null;
     }
 
-    public void endTurn() {
+    /** Method calls in end of each player turn.
+     *  If not all players make theirs turns in current round, starts new turn.
+     *  Otherwise, checks win condition and if has winner, game ends.
+     *  Game ends when on one of players chips end turn on last field of gameboard. */
+    private void endTurn() {
         if (winner != null) return; // If game over, do nothing
 
-        // if all players made his turns, start new round
+        // If all players made his turns, start new round
         Iterator<Player> playersItr = players.listIterator(players.indexOf(currentPlayer)+1);
         if (playersItr.hasNext()) currentPlayer = playersItr.next();
         else {
+            // Check win condition
             int chipsFinished = 0;
             Player possibleWinner = null;
             for (Player p: players) {
-                if (FieldActor.getFieldsList().indexOf(p.getChip().getCurrentField()) ==
-                        (FieldActor.getFieldsList().size() - 1)) {
+                if (Fields.getFieldsList().indexOf(p.getChip().getCurrentField()) ==
+                        (Fields.getFieldsList().size() - 1)) {
                     chipsFinished++;
                     possibleWinner = p;
                 }
                 p.getChip().setState(ChipActor.State.WAIT);
             }
-            if (chipsFinished == 1) {
-                winner = possibleWinner;
-                if (infoLabel != null) {
-                    infoLabel.setText("Winner is " + winner.getName());
-                    infoLabel.setColor(winner.getChip().getColor());
-                    infoLabel.addAction(Actions.after(Actions.fadeIn(0.1f)));
-                }
-            }
+            if (chipsFinished == 1) winner = possibleWinner;
             else {
                 roundCounter++;
                 currentPlayer = players.get(0);
@@ -179,8 +178,8 @@ public class GameplayController {
         }
     }
 
-    public void update(boolean p) {
-        // Update game state
+    /** Main game loop. Method must be called before each render */
+    public void update() {
         switch (turnPhase) {
             // TODO: encapsulate game progress into Round class
             case PREPARATION:   // Prepare game state to new turn
@@ -221,7 +220,7 @@ public class GameplayController {
             case MOVEMENT:  // Move current player chip
                 //if (debug) System.out.println("TurnPhase.MOVEMENT");
                 //gameController.getCurrentPlayer().move();
-                if (currentPlayer.isMoved()) setTurnPhase(TurnPhase.END);
+                if (currentPlayer.getChip().getState() == ChipActor.State.MOVED) setTurnPhase(TurnPhase.END);
                 break;
 
             case END:   // End current turn
@@ -247,8 +246,8 @@ public class GameplayController {
         }
     }
 
-    @Override
-    public String toString() {
-        return Integer.toString(roundCounter);
-    }
+//    @Override
+//    public String toString() {
+//        return Integer.toString(roundCounter);
+//    }
 }

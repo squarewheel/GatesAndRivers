@@ -22,11 +22,13 @@ import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 
 public class BoardGame extends Game {
+    GameScreen gameScreen;
     InputMultiplexer im;
 	Skin skin;
 
     @Override
 	public void create () {
+        gameScreen = null;
         im = new InputMultiplexer();
         Gdx.input.setInputProcessor(im);
         // System.out.println(im.getProcessors());
@@ -38,13 +40,14 @@ public class BoardGame extends Game {
         skin.add("defaultFont", defaultFont);
         skin.add("infoLabelFont", new BitmapFont(Gdx.files.local("sansman64.fnt")));
         skin.add("infoLabelStyle", new Label.LabelStyle(skin.getFont("infoLabelFont"), Color.WHITE));
-        skin.add("labelStyle", new Label.LabelStyle(skin.getFont("defaultFont"), Color.WHITE));
+        skin.add("default", new Label.LabelStyle(skin.getFont("defaultFont"), Color.WHITE));
         skin.add("buttonUpImg", new NinePatch(new Texture("grey_button12.png"), 10, 10, 10, 10));
         skin.add("buttonDownImg", new NinePatch(new Texture("grey_button13.png"), 10, 10, 10, 10));
         skin.add("checkBoxImg", new NinePatch(new Texture("grey_box.png"), 8, 8, 8, 8));
         skin.add("checkBoxMarkImg", new NinePatch(new Texture("grey_boxCheckmark.png"), 8, 8, 8, 8));
         skin.add("frameImg", new NinePatch(new Texture("grey_frame.png"), 8, 8, 8, 8));
         skin.add("windowStyle", new Window.WindowStyle(skin.getFont("defaultFont"), Color.LIGHT_GRAY, skin.getDrawable("checkBoxImg")));
+        skin.add("gameOverWindowStyle", new Window.WindowStyle(skin.getFont("infoLabelFont"), Color.WHITE, skin.getDrawable("checkBoxImg")));
         skin.add("defaultButtonStyle", new Button.ButtonStyle(
                 skin.getDrawable("buttonUpImg"),
                 skin.getDrawable("buttonDownImg"),
@@ -60,6 +63,8 @@ public class BoardGame extends Game {
                 skin.getFont("defaultFont"),
                 Color.WHITE);
         tbs.pressedOffsetY = -4;
+        //tbs.checkedOffsetY = -4;
+        //tbs.checkedOffsetY = -4;
         tbs.fontColor = Color.LIGHT_GRAY;
         tbs.disabled = skin.getDrawable("buttonDownImg");
         TextField.TextFieldStyle tfs = new TextField.TextFieldStyle();

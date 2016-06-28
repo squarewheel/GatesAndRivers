@@ -32,8 +32,11 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import ru.kvachenko.basegame.BaseScreen;
+import ru.kvachenko.gatesandrivers.gameboard.Fields;
+import ru.kvachenko.gatesandrivers.gameboard.Gates;
 
 import java.util.ArrayList;
 
@@ -55,16 +58,20 @@ class GameScreen extends BaseScreen {
 
     private GameplayController gameController;
     private Label playerName;
+    private Label gameOverLabel;
+    private Dialog gameOverWindow;
+
     // Temp variables
     private boolean debug = false;
     //private Player currentPlayer;
     //int viewWidth = 1200;
     //int viewHeight = 600;
 
-    public GameScreen(BoardGame game, SetupItem[] options) {
+    public GameScreen(final BoardGame game, SetupItem[] options) {
         super();
+        game.gameScreen = this;
 
-        //game = game;
+        //this.game = game;
         worldWidth = 64 * 32;
         worldHeight = 64 * 32;
         mainStage = new Stage(new ScreenViewport());
@@ -85,14 +92,14 @@ class GameScreen extends BaseScreen {
             MapProperties fieldProperties = mo.getProperties();
             if (fieldProperties.containsKey("portalEndpoint")) {
                 Gate g = new Gate(field); //g.debug();
-                FieldActor gateField = FieldActor.getFieldsList().get(Integer.valueOf((String) fieldProperties.get("portalEndpoint")) - 1);
+                FieldActor gateField = Fields.getFieldsList().get(Integer.valueOf((String) fieldProperties.get("portalEndpoint")) - 1);
                 gateField.addActor(g);
                 gateField.setMover(g);
                 g.setPosition(gateField.getWidth()/2 - g.getWidth()/2, gateField.getHeight()/2 - g.getHeight()/2);
                 //gateField.debug();
             }
             else if (fieldProperties.containsKey("river")) {
-                River r = new River(FieldActor.getFieldsList().get(Integer.valueOf((String) fieldProperties.get("riverEndpoint")) - 1));
+                River r = new River(Fields.getFieldsList().get(Integer.valueOf((String) fieldProperties.get("riverEndpoint")) - 1));
                 String riverName = "river" + fieldProperties.get("river");
                 MapObjects waypoints = tiledMap.getLayers().get(riverName).getObjects();
                 for (MapObject waypoint: waypoints) {
@@ -103,6 +110,7 @@ class GameScreen extends BaseScreen {
             }
             mainStage.addActor(field);
         }
+        tiledMap.dispose();
 
         // Players and gameController initialization
         ArrayList<Player> playersList = new ArrayList<Player>();
@@ -118,7 +126,7 @@ class GameScreen extends BaseScreen {
         // User interface
         Table diceBox = new Table().background(game.skin.getDrawable("frameImg"));
         Label autoRollLabel = gameController.getAutoRollLabel();
-        playerName = new Label(gameController.getCurrentPlayer().getName(), game.skin, "labelStyle");
+        playerName = new Label(gameController.getCurrentPlayer().getName(), game.skin);
         diceBox.add(playerName).colspan(2).uniformY();
         diceBox.row();
         diceBox.add(gameController.getDice()).colspan(2);
@@ -128,7 +136,7 @@ class GameScreen extends BaseScreen {
         if (debug) diceBox.debug();
 
         Table statsList = new Table();
-        statsList.add(gameController.new RoundCounterLabel("", game.skin, "labelStyle")).right().top().padTop(5);
+        statsList.add(gameController.new RoundCounterLabel("", game.skin, "default")).right().top().padTop(5);
 
         final TextButton pauseButton = new TextButton("PAUSE", game.skin, "textButtonStyle");
 
@@ -145,6 +153,16 @@ class GameScreen extends BaseScreen {
         uiTable.add(diceBox).right().bottom().pad(0, 0, 5, 5);
         if (debug) uiTable.setDebug(true);
 
+        gameOverWindow = new Dialog("Game Over", game.skin, "windowStyle");
+        gameOverWindow.setVisible(false);
+        gameOverWindow.padTop(30);
+        gameOverLabel = new Label("", game.skin, "infoLabelStyle");
+        final TextButton exitButton = new TextButton("Exit", game.skin, "textButtonStyle");
+        final TextButton newGameButton = new TextButton("New Game", game.skin, "textButtonStyle");
+        gameOverWindow.text(gameOverLabel);
+        gameOverWindow.getButtonTable().add(newGameButton);
+        gameOverWindow.getButtonTable().add(exitButton);
+
         // Input handlers
         pauseButton.addListener(new InputListener(){
             @Override
@@ -156,8 +174,40 @@ class GameScreen extends BaseScreen {
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                 if (x > 0 && x < pauseButton.getWidth() && y > 0 && y < pauseButton.getHeight()) {
                     paused = !paused;
-                    pauseButton.setText((paused) ? "RESUME" : "PAUSE");
+                    pauseButton.setText((paused) ? "PAUSED" : "PAUSE");
+                    //pauseButton.setDisabled(paused);
+                    //pauseButton.set(paused);
                 }
+            }
+        });
+        newGameButton.addListener(new InputListener(){
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                if (x > 0 && x < newGameButton.getWidth() && y > 0 && y < newGameButton.getHeight()) {
+                    gameOverWindow.cancel();
+                    newGameButton.setDisabled(true);
+                    game.setScreen(new SetupScreen(game));
+                }
+            }
+
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
+        });
+        exitButton.addListener(new InputListener(){
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                if (x > 0 && x < exitButton.getWidth() && y > 0 && y < exitButton.getHeight()) {
+                    gameOverWindow.cancel();
+                    exitButton.setDisabled(true);
+                    Gdx.app.exit();
+                }
+            }
+
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                return true;
             }
         });
         game.im.addProcessor(uiStage);
@@ -189,9 +239,22 @@ class GameScreen extends BaseScreen {
         if (!paused) {
             uiStage.act(dt);
             mainStage.act(dt);
-            gameController.update(paused);
-            playerName.setText(gameController.getCurrentPlayer().getName());
-            playerName.setColor(gameController.getCurrentPlayer().getChip().getColor());
+            gameController.update();
+            if (gameController.getTurnPhase() == GameplayController.TurnPhase.PREPARATION) {
+                playerName.setText(gameController.getCurrentPlayer().getName());
+                playerName.setColor(gameController.getCurrentPlayer().getChip().getColor());
+            }
+            if (gameController.gameOver()) {
+                if (!gameOverWindow.isVisible()) {
+                    //gameOverWindow.setColor(gameController.getWinner().getChip().getColor());
+                    //gameOverWindow.text("Winner is " + gameController.getWinner().getName());
+                    gameOverLabel.setText("Winner is " + gameController.getWinner().getName() + "!");
+                    gameOverLabel.setColor(gameController.getWinner().getChip().getColor());
+                    gameOverWindow.setVisible(true);
+                    gameOverWindow.show(uiStage);
+                    if (debug) gameOverWindow.setPosition(0, 0);
+                }
+            }
         }
 
         /*-----------------------------------OUTPUT SECTION-------------------------------------------------*/
@@ -228,5 +291,7 @@ class GameScreen extends BaseScreen {
     public void dispose() {
         mainStage.dispose();
         uiStage.dispose();
+        Gates.clear();
+        Fields.clear();
     }
 }

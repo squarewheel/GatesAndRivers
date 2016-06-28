@@ -41,6 +41,8 @@ public class SetupScreen extends BaseScreen {
 
     public SetupScreen(final BoardGame game) {
         super();
+        if (game.gameScreen != null) game.gameScreen.dispose();
+
         ArrayList<Color> colors = new ArrayList<Color>();
         ArrayList<String> names = new ArrayList<String>();
 
@@ -60,9 +62,9 @@ public class SetupScreen extends BaseScreen {
 
         options = new SetupItem[4];
         Table linesGroup = new Table();
-        linesGroup.add(new Label("Name", game.skin, "labelStyle")).left().pad(0, 5, 5, 0);
-        linesGroup.add(new Label("Playable", game.skin, "labelStyle")).pad(0, 0, 5, 0);
-        linesGroup.add(new Label("Enable", game.skin, "labelStyle")).pad(0, 5, 5, 0);
+        linesGroup.add(new Label("Name", game.skin)).left().pad(0, 5, 5, 0);
+        linesGroup.add(new Label("Playable", game.skin)).pad(0, 0, 5, 0);
+        linesGroup.add(new Label("Enable", game.skin)).pad(0, 5, 5, 0);
         for (int i = 0; i < options.length ; i++) {
             options[i] = new SetupItem(colors.remove(0), names.remove(0), game.skin);
             linesGroup.row();
@@ -94,13 +96,13 @@ public class SetupScreen extends BaseScreen {
         layout.add(startButton).fillX().top().maxWidth(title.getWidth() - 100).padTop(10);
         //layout.debug();
 
-        errorList = new Label("", game.skin, "labelStyle");
+        errorList = new Label("", game.skin);
         errorWindow = new Dialog("The following errors must be fixed", game.skin, "windowStyle");
         errorWindow.padTop(30);
         errorWindow.setColor(Color.ORANGE);
         errorWindow.text(errorList);
         errorWindow.button(new TextButton("OK", game.skin, "textButtonStyle"));
-        errorWindow.setWidth(title.getWidth());
+        //errorWindow.setWidth(title.getWidth());
         //errorWindow.debug();
 
         startButton.addListener(new InputListener(){
