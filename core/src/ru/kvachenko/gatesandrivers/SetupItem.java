@@ -19,7 +19,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
-import com.sun.deploy.util.StringUtils;
 
 /**
  * @author Sasha Kvachenko
@@ -48,5 +47,5 @@ public class SetupItem {
 
     public Color getColor() { return playerColor; };
 
-    public String getName() { return StringUtils.trimWhitespace(nameField.getText()); }
+    public String getName() { return nameField.getText().trim(); }
 }
