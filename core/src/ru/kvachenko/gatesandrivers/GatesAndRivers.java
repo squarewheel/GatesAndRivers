@@ -46,8 +46,8 @@ public class GatesAndRivers extends Game {
         skin.add("checkBoxImg", new NinePatch(new Texture("grey_box.png"), 8, 8, 8, 8));
         skin.add("checkBoxMarkImg", new NinePatch(new Texture("grey_boxCheckmark.png"), 8, 8, 8, 8));
         skin.add("frameImg", new NinePatch(new Texture("grey_frame.png"), 8, 8, 8, 8));
-        skin.add("windowStyle", new Window.WindowStyle(skin.getFont("defaultFont"), Color.LIGHT_GRAY, skin.getDrawable("checkBoxImg")));
-        skin.add("gameOverWindowStyle", new Window.WindowStyle(skin.getFont("infoLabelFont"), Color.WHITE, skin.getDrawable("checkBoxImg")));
+        skin.add("default", new Window.WindowStyle(skin.getFont("defaultFont"), Color.LIGHT_GRAY, skin.getDrawable("checkBoxImg")));
+        //skin.add("gameOverWindowStyle", new Window.WindowStyle(skin.getFont("infoLabelFont"), Color.WHITE, skin.getDrawable("checkBoxImg")));
         skin.add("defaultButtonStyle", new Button.ButtonStyle(
                 skin.getDrawable("buttonUpImg"),
                 skin.getDrawable("buttonDownImg"),

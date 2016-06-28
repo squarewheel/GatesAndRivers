@@ -31,6 +31,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import ru.kvachenko.basegame.BaseScreen;
@@ -58,7 +59,10 @@ class GameScreen extends BaseScreen {
     private GameplayController gameController;
     private Label playerName;
     private Label gameOverLabel;
+    private TextButton exitButton;
+    private TextButton newGameButton;
     private Dialog gameOverWindow;
+    private Dialog pauseWindow;
 
     // Temp variables
     private boolean debug = false;
@@ -74,7 +78,7 @@ class GameScreen extends BaseScreen {
         worldWidth = 64 * 32;
         worldHeight = 64 * 32;
         mainStage = new Stage(new ScreenViewport());
-        mainStage.addActor(new Image(new TextureRegion(new Texture("main_screen3.png"))));  // background
+        mainStage.addActor(new Image(new TextureRegion(new Texture("main_screen3.png"))));  // Background
         uiStage = new Stage(new ScreenViewport());
         camera = mainStage.getCamera();
 //        camTarget = new Vector2();
@@ -152,17 +156,43 @@ class GameScreen extends BaseScreen {
         uiTable.add(diceBox).right().bottom().pad(0, 0, 5, 5);
         if (debug) uiTable.setDebug(true);
 
-        gameOverWindow = new Dialog("Game Over", game.skin, "windowStyle");
+        final TextButton resumeButton = new TextButton("Resume Game", game.skin, "textButtonStyle");
+        exitButton = new TextButton("Exit", game.skin, "textButtonStyle");
+        newGameButton = new TextButton("New Game", game.skin, "textButtonStyle");
+
+        pauseWindow = new Dialog("Game Paused", game.skin);
+        pauseWindow.padTop(30);
+        pauseWindow.getButtonTable().add(resumeButton).fillX();
+        pauseWindow.getButtonTable().row();
+        pauseWindow.getButtonTable().add(newGameButton).fillX();
+        pauseWindow.getButtonTable().row();
+        pauseWindow.getButtonTable().add(exitButton).fillX();
+        //pauseWindow.show(uiStage);
+
+        gameOverWindow = new Dialog("Game Over", game.skin);
         gameOverWindow.setVisible(false);
         gameOverWindow.padTop(30);
         gameOverLabel = new Label("", game.skin, "infoLabelStyle");
-        final TextButton exitButton = new TextButton("Exit", game.skin, "textButtonStyle");
-        final TextButton newGameButton = new TextButton("New Game", game.skin, "textButtonStyle");
         gameOverWindow.text(gameOverLabel);
-        gameOverWindow.getButtonTable().add(newGameButton);
-        gameOverWindow.getButtonTable().add(exitButton);
+//        gameOverWindow.getButtonTable().add(newGameButton);
+//        gameOverWindow.getButtonTable().add(exitButton);
 
         // Input handlers
+        resumeButton.addListener(new InputListener(){
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                if (x > 0 && x < resumeButton.getWidth() && y > 0 && y < resumeButton.getHeight()) {
+                    paused = false;
+                    pauseButton.setText((paused) ? "PAUSED" : "PAUSE");
+                    pauseWindow.remove();
+                }
+            }
+
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
+        });
         pauseButton.addListener(new InputListener(){
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -172,8 +202,9 @@ class GameScreen extends BaseScreen {
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                 if (x > 0 && x < pauseButton.getWidth() && y > 0 && y < pauseButton.getHeight()) {
-                    paused = !paused;
+                    paused = true;
                     pauseButton.setText((paused) ? "PAUSED" : "PAUSE");
+                    pauseWindow.show(uiStage);
                     //pauseButton.setDisabled(paused);
                     //pauseButton.set(paused);
                 }
@@ -245,10 +276,10 @@ class GameScreen extends BaseScreen {
             }
             if (gameController.gameOver()) {
                 if (!gameOverWindow.isVisible()) {
-                    //gameOverWindow.setColor(gameController.getWinner().getChip().getColor());
-                    //gameOverWindow.text("Winner is " + gameController.getWinner().getName());
                     gameOverLabel.setText("Winner is " + gameController.getWinner().getName() + "!");
                     gameOverLabel.setColor(gameController.getWinner().getChip().getColor());
+                    gameOverWindow.getButtonTable().add(newGameButton);
+                    gameOverWindow.getButtonTable().add(exitButton);
                     gameOverWindow.setVisible(true);
                     gameOverWindow.show(uiStage);
                     if (debug) gameOverWindow.setPosition(0, 0);

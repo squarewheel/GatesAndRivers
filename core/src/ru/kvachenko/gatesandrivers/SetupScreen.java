@@ -97,7 +97,7 @@ public class SetupScreen extends BaseScreen {
         //layout.debug();
 
         errorList = new Label("", game.skin);
-        errorWindow = new Dialog("The following errors must be fixed", game.skin, "windowStyle");
+        errorWindow = new Dialog("The following errors must be fixed", game.skin);
         errorWindow.padTop(30);
         errorWindow.setColor(Color.ORANGE);
         errorWindow.text(errorList);
