@@ -296,7 +296,7 @@ class GameScreen extends BaseScreen {
                     //if (!camTarget.hasActions()) camTarget.setPosition(c.getX() + c.getOriginX(), c.getY() + c.getOriginY());
                     camTarget.addAction(Actions.after(Actions.moveTo(
                             c.getX() + c.getOriginX(),
-                            c.getY() + c.getOriginY(), 0.02f)));
+                            c.getY() + c.getOriginY(), 0.018f)));
                     break;
             }
         }

@@ -33,11 +33,6 @@ public class FieldActor extends Group{
     private Layout layout;
     private Mover mover;
 
-    // Debug variable
-    // private Label debugLabel;
-
-    //static { fieldsList = new ArrayList<FieldActor>(); }
-
     public FieldActor() {
         Fields.add(this);
         ListIterator<FieldActor> fieldsItr = Fields.getFieldsList().listIterator(Fields.getFieldsList().indexOf(this));
@@ -47,15 +42,6 @@ public class FieldActor extends Group{
         mover = null;
 //        debug();
     }
-
-//    /* Only for debug*/
-//    public void setDebugLabel(String text, Skin skin, String style) {
-//        //this.debugLabel = debugLabel;
-//        debugLabel = new Label(text, skin, style);
-//        addActor(debugLabel);
-//        debugLabel.setPosition(0, 0);
-//    }
-//    /* delete after debug! */
 
     public FieldActor getNextField() {
         return nextField;
@@ -80,10 +66,6 @@ public class FieldActor extends Group{
     }
 
     public boolean hasMover() { return mover != null; }
-
-//    public static ArrayList<FieldActor> getFieldsList() {
-//        return fieldsList;
-//    }
 
     public void setMover(Mover m) {
         mover = m;
@@ -116,14 +98,10 @@ public class FieldActor extends Group{
             owner.addAction(Actions.after(Actions.moveBy(
                     getPositionX() - (chip.getX() - getX()),
                     getPositionY() - (chip.getY() - getY()), 0.3f)));
-//                    getPositionX() - layout.getFieldCenterX(),
-//                    getPositionY() - layout.getFieldCenterY(), 0.3f)));
         }
 
         void removeOwner() {
-            //ChipActor chip = owner;
             owner = null;
-            //return chip;
         }
 
         void setPosition(float newX, float newY) {
@@ -155,7 +133,7 @@ public class FieldActor extends Group{
     private class LayoutRow {
         private float indent;                       // Indent from bottom edge of field, determines Y position
         private int length;                         // Num of positions in current row, by default two
-        private LayoutPosition[] positions;    // Contains all positions of this row
+        private LayoutPosition[] positions;         // Contains all positions of this row
 
         LayoutRow() {
             indent = 0;
@@ -196,8 +174,6 @@ public class FieldActor extends Group{
         private LayoutRow firstRow;
         private LayoutRow secondRow;
 
-        private int counter; // TODO: delete after debug
-
         Layout() {
             positionsList = new ArrayList<LayoutPosition>(4);
             shiftQueue = new ArrayDeque<ChipActor>(4);
@@ -206,8 +182,6 @@ public class FieldActor extends Group{
             Collections.addAll(positionsList, firstRow.getPositions());
             Collections.addAll(positionsList, secondRow.getPositions());
             setSize();
-//            counter = 0;
-            //for (int i = 0; i < 4; i++) positionsList.add(new FieldLayoutPosition());
         }
 
         /** Set layout size. Use after resize Field. */
@@ -247,22 +221,12 @@ public class FieldActor extends Group{
                     p.setOwner(chip);
                     break;
             }
-//            counter++;
-//            if (debugLabel != null) {
-//                //int counter = 0;
-////                    for (LayoutPosition p: positionsList) {
-////                        if (!p.isFree()) counter++;
-////                    }
-//                debugLabel.setText("" + counter);
-//            }
         }
 
         void removeChip(ChipActor chip) {
             for (LayoutPosition p: positionsList) {
                 if (p.getOwner() == chip) {
                     p.removeOwner();
-                    counter--;
-                    //update();
                     int index = positionsList.indexOf(p);
                     if (index < positionsList.size() - 1) { // if p has next
                         LayoutPosition nextPosition = positionsList.get(index + 1);
@@ -271,8 +235,6 @@ public class FieldActor extends Group{
                             removeChip(nextPosition.getOwner());
                         }
                     }
-//                    p.removeOwner();
-                    //update();
                 }
             }
             update();
@@ -283,16 +245,6 @@ public class FieldActor extends Group{
 
         /** Moves freed positions to its default places. */
         void update() {
-//            if (getDebug()) {
-//                if (debugLabel != null) {
-//                    //int counter = 0;
-//                    for (LayoutPosition p: positionsList) {
-//                        if (!p.isFree()) counter++;
-//                    }
-//                    debugLabel.setText("" + counter);
-//                }
-//            }
-            //int index = FOURTH_POS;
             if (positionsList.get(FOURTH_POS).isFree()) {
                 positionsList.get(THIRD_POS).setPosition(fieldCenterX, secondRow.getIndent());
                 if (positionsList.get(THIRD_POS).isFree()) {
@@ -330,13 +282,6 @@ public class FieldActor extends Group{
             while (!positionsList.get(index).isFree()) index++;
             return positionsList.get(index);
         }
-
-//        private LayoutPosition getPositionOwnedBy(ChipActor chip) {
-//            for (LayoutPosition p: positionsList) {
-//                if (p.getOwner() == chip) return p;
-//                else return null;
-//            }
-//        }
 
         float getFieldCenterX() {
             return fieldCenterX;

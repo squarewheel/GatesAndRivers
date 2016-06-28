@@ -97,7 +97,6 @@ public class GameplayController {
 
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                //return !paused; // TODO: return pause check
                 return true;
             }
         });
@@ -181,7 +180,6 @@ public class GameplayController {
     /** Main game loop. Method must be called before each render */
     public void update() {
         switch (turnPhase) {
-            // TODO: encapsulate game progress into Round class
             case PREPARATION:   // Prepare game state to new turn
                 //if (debug) System.out.println("TurnPhase.PREPARATION");
                 if (!infoLabel.hasActions()) {
