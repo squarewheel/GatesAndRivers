@@ -28,6 +28,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -46,15 +47,14 @@ import java.util.ArrayList;
  *         <p>
  *         Class for main game screen.
  */
-// TODO: add dot in center of screen and bind camera position ti that dot
 class GameScreen extends BaseScreen {
-    //private GatesAndRivers game;
+    private GatesAndRivers game;
     private int worldWidth;
     private int worldHeight;
     private Stage mainStage;
     private Stage uiStage;
     private Camera camera;
-    //private Vector2 camTarget;
+    private Actor camTarget;    // Camera always bind to cam target
 
     private GameplayController gameController;
     private Label playerName;
@@ -67,23 +67,22 @@ class GameScreen extends BaseScreen {
     // Temp variables
     private boolean debug = false;
     //private Player currentPlayer;
-    //int viewWidth = 1200;
-    //int viewHeight = 600;
 
     public GameScreen(final GatesAndRivers game, SetupItem[] options) {
         super();
         game.gameScreen = this;
 
-        //this.game = game;
+        this.game = game;
         worldWidth = 64 * 32;
         worldHeight = 64 * 32;
         mainStage = new Stage(new ScreenViewport());
         mainStage.addActor(new Image(new TextureRegion(new Texture("main_screen3.png"))));  // Background
         uiStage = new Stage(new ScreenViewport());
         camera = mainStage.getCamera();
-//        camTarget = new Vector2();
+        camTarget = new Actor();
+        mainStage.addActor(camTarget);
 
-        // Gameboard fields
+        /*-----------------------------------GAMEBOARD INITIALIZATION---------------------------------------*/
         // TODO: may be need special class for creating gameboard
         TiledMap tiledMap = new TmxMapLoader().load("main_screen3.tmx");
         MapObjects fieldObjects = tiledMap.getLayers().get("fields").getObjects();
@@ -115,7 +114,7 @@ class GameScreen extends BaseScreen {
         }
         tiledMap.dispose();
 
-        // Players and gameController initialization
+        /*-----------------------------------PLAYERS AND GAME MECHANIC INITIALIZATION-----------------------*/
         ArrayList<Player> playersList = new ArrayList<Player>();
         for (SetupItem item: options) {
             if (!item.available.isChecked()) continue;
@@ -126,7 +125,7 @@ class GameScreen extends BaseScreen {
         }
         gameController = new GameplayController(playersList, game.skin);
 
-        // User interface
+        /*-----------------------------------USER INTERFACE INITIALIZATION----------------------------------*/
         Table diceBox = new Table().background(game.skin.getDrawable("frameImg"));
         Label autoRollLabel = gameController.getAutoRollLabel();
         playerName = new Label(gameController.getCurrentPlayer().getName(), game.skin);
@@ -167,17 +166,14 @@ class GameScreen extends BaseScreen {
         pauseWindow.getButtonTable().add(newGameButton).fillX();
         pauseWindow.getButtonTable().row();
         pauseWindow.getButtonTable().add(exitButton).fillX();
-        //pauseWindow.show(uiStage);
 
         gameOverWindow = new Dialog("Game Over", game.skin);
         gameOverWindow.setVisible(false);
         gameOverWindow.padTop(30);
         gameOverLabel = new Label("", game.skin, "infoLabelStyle");
         gameOverWindow.text(gameOverLabel);
-//        gameOverWindow.getButtonTable().add(newGameButton);
-//        gameOverWindow.getButtonTable().add(exitButton);
 
-        // Input handlers
+        /*-----------------------------------INPUT HANDLERS SECTION-----------------------------------------*/
         resumeButton.addListener(new InputListener(){
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
@@ -244,21 +240,20 @@ class GameScreen extends BaseScreen {
         game.im.addProcessor(new InputAdapter(){
             Vector3 lastTouchDown;
 
+            @Override
             public boolean touchDown(int x, int y, int pointer, int button) {
                 lastTouchDown = new Vector3(x, y, 0);
-                return false;
+                return true;
             }
 
             @Override
             public boolean touchDragged(int x, int y, int pointer) {
                 // Map scrolling with touch
-                Camera stageCamera = mainStage.getCamera();
                 Vector3 newPos = new Vector3(x, y, 0);
                 Vector3 offset = newPos.sub(lastTouchDown);
-                stageCamera.position.x = stageCamera.position.x - offset.x;
-                stageCamera.position.y = stageCamera.position.y + offset.y;
+                camTarget.setPosition(camera.position.x - offset.x, camera.position.y + offset.y);
                 lastTouchDown.add(offset);
-                return false;
+                return true;
             }
         });
     }
@@ -285,18 +280,31 @@ class GameScreen extends BaseScreen {
                     if (debug) gameOverWindow.setPosition(0, 0);
                 }
             }
+
+            // Update camera position
+            ChipActor c = gameController.getCurrentPlayer().getChip();  // Current player chip
+            switch (gameController.getTurnPhase()) {
+                case DICE_ROLLED:
+                case PREPARATION:
+                    //if (!camTarget.hasActions()) camTarget.addAction(Actions.after(Actions.moveTo(
+                    camTarget.addAction(Actions.after(Actions.moveTo(
+                            c.getX() + c.getOriginX(),
+                            c.getY() + c.getOriginY(), 0.4f)));
+                    break;
+
+                case MOVEMENT:
+                    //if (!camTarget.hasActions()) camTarget.setPosition(c.getX() + c.getOriginX(), c.getY() + c.getOriginY());
+                    camTarget.addAction(Actions.after(Actions.moveTo(
+                            c.getX() + c.getOriginX(),
+                            c.getY() + c.getOriginY(), 0.02f)));
+                    break;
+            }
         }
 
         /*-----------------------------------OUTPUT SECTION-------------------------------------------------*/
-        // Update camera position
-        ChipActor currentPlayerChip = gameController.getCurrentPlayer().getChip();
-        if (currentPlayerChip.getState() != ChipActor.State.WAIT) {
-            camera.position.x = currentPlayerChip.getX() - currentPlayerChip.getWidth() / 2;
-            camera.position.y = currentPlayerChip.getY() - currentPlayerChip.getHeight() / 2;
-            //System.out.println("cam pos: " + mainCamera.position);
-            //System.out.println("chip pos: " + p.getPositionX() / 2 + " " + p.getPositionY() / 2);
-            //System.out.println();
-        }
+        camera.position.x = camTarget.getX();
+        camera.position.y = camTarget.getY();
+
         camera.position.x = MathUtils.clamp(camera.position.x,
                 camera.viewportWidth/2,
                 worldWidth - camera.viewportWidth/2);
@@ -323,5 +331,6 @@ class GameScreen extends BaseScreen {
         uiStage.dispose();
         Gates.clear();
         Fields.clear();
+        game.im.clear();
     }
 }

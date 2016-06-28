@@ -211,7 +211,6 @@ public class GameplayController {
                 break;
 
             case DICE_ROLLED:   // Determines number of fields what current player must go
-                // TODO: looks like this phase is not necessary
                 //if (debug) System.out.println("TurnPhase.DICE_ROLLED");
                 currentPlayer.getChip().moveOn(dice.getRollResult());
                 setTurnPhase(TurnPhase.MOVEMENT);
