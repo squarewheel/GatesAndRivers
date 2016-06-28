@@ -21,7 +21,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 
-public class BoardGame extends Game {
+public class GatesAndRivers extends Game {
     GameScreen gameScreen;
     InputMultiplexer im;
 	Skin skin;

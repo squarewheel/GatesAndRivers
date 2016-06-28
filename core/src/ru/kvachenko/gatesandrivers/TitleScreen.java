@@ -33,7 +33,7 @@ import ru.kvachenko.basegame.BaseScreen;
 public class TitleScreen extends BaseScreen{
     private Stage titleStage;
 
-    public TitleScreen(final BoardGame game) {
+    public TitleScreen(final GatesAndRivers game) {
         super();
         Label title = new Label("Gates and Rivers", game.skin, "infoLabelStyle");
         Label info = new Label("tap to continue", game.skin);

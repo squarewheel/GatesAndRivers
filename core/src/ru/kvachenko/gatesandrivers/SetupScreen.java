@@ -39,7 +39,7 @@ public class SetupScreen extends BaseScreen {
     private Label errorList;
     private Dialog errorWindow;
 
-    public SetupScreen(final BoardGame game) {
+    public SetupScreen(final GatesAndRivers game) {
         super();
         if (game.gameScreen != null) game.gameScreen.dispose();
 

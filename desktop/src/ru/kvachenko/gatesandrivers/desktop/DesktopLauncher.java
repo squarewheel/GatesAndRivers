@@ -2,7 +2,7 @@ package ru.kvachenko.gatesandrivers.desktop;
 
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
-import ru.kvachenko.gatesandrivers.BoardGame;
+import ru.kvachenko.gatesandrivers.GatesAndRivers;
 
 public class DesktopLauncher {
 	public static void main (String[] arg) {
@@ -10,6 +10,6 @@ public class DesktopLauncher {
 		config.title = "Gates and Rivers";
 		config.width = 800;
 		config.height = 480;
-		new LwjglApplication(new BoardGame(), config);
+		new LwjglApplication(new GatesAndRivers(), config);
 	}
 }

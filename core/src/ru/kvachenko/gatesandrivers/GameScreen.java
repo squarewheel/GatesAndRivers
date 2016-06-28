@@ -32,7 +32,6 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
-import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import ru.kvachenko.basegame.BaseScreen;
 import ru.kvachenko.gatesandrivers.gameboard.Fields;
@@ -48,7 +47,7 @@ import java.util.ArrayList;
  */
 // TODO: add dot in center of screen and bind camera position ti that dot
 class GameScreen extends BaseScreen {
-    //private BoardGame game;
+    //private GatesAndRivers game;
     private int worldWidth;
     private int worldHeight;
     private Stage mainStage;
@@ -67,7 +66,7 @@ class GameScreen extends BaseScreen {
     //int viewWidth = 1200;
     //int viewHeight = 600;
 
-    public GameScreen(final BoardGame game, SetupItem[] options) {
+    public GameScreen(final GatesAndRivers game, SetupItem[] options) {
         super();
         game.gameScreen = this;
 

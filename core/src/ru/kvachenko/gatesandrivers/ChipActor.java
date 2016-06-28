@@ -54,7 +54,7 @@ public class ChipActor extends BaseActor {
         Texture playerTexture = (new Texture("chip_white.png"));
         playerTexture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
         setTexture(new TextureRegion(playerTexture, 64, 64));
-        currentField = Fields.getFieldsList().get(47);
+        currentField = Fields.getFieldsList().get(0);
         moves = 0;
         //busy = false;
         direction = Direction.FORWARD;
